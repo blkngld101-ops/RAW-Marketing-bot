@@ -1,0 +1,137 @@
+{
+  "source_snapshot_date": "2026-03-31",
+  "brand_pillars": [
+    {
+      "id": "action-intention-purpose",
+      "label": "Action. Intention. Purpose.",
+      "summary": "RAW frames the work around purposeful choices rather than vague emotional performance.",
+      "source_url": "https://www.rawactorstudio.com/"
+    },
+    {
+      "id": "repeatable-system",
+      "label": "A Clear, Repeatable System",
+      "summary": "RAW teaches a structured process for script analysis, preparation, and execution.",
+      "source_url": "https://www.rawactorstudio.com/"
+    },
+    {
+      "id": "industry-reality",
+      "label": "Training That Meets Industry Reality",
+      "summary": "The studio explicitly connects craft to audition standards, on-set expectations, and working efficiency under pressure.",
+      "source_url": "https://www.rawactorstudio.com/"
+    },
+    {
+      "id": "serious-supportive",
+      "label": "A Serious, Supportive Community",
+      "summary": "The room is positioned as focused and respectful, with challenge but not teardown teaching.",
+      "source_url": "https://www.rawactorstudio.com/"
+    }
+  ],
+  "faculty": [
+    {
+      "id": "sophie-ann-rooney",
+      "name": "Sophie Ann Rooney",
+      "role": "Founder & Director",
+      "proof_points": [
+        "Award-winning director and filmmaker with more than 20 years across film, television, theatre, video games, and voice direction.",
+        "Directed for Netflix's Daniel Spellbound and worked in AAA gaming with Ubisoft.",
+        "Training includes Royal Central, Oxford, EICAR Paris, Amy Werba, and Blanche Salant lineage."
+      ],
+      "source_urls": [
+        "https://www.rawactorstudio.com/",
+        "https://www.rawactorstudio.com/faculty",
+        "https://www.rawactorstudio.com/about-the-studio"
+      ]
+    },
+    {
+      "id": "grisha-pasternak",
+      "name": "Grisha Pasternak",
+      "role": "Coach & Director",
+      "proof_points": [
+        "Filmmaker, actor, and mentor with more than 17 years of experience on both sides of the camera.",
+        "Trained in film at Toronto Metropolitan University.",
+        "Known on the site for practical tools, preparation process, and on-set expectations."
+      ],
+      "source_urls": [
+        "https://www.rawactorstudio.com/",
+        "https://www.rawactorstudio.com/faculty"
+      ]
+    }
+  ],
+  "social_proof": [
+    {
+      "id": "testimonial-artist-seen",
+      "type": "testimonial",
+      "summary": "Student feedback says Sophie and Grisha see the artist clearly and support them in the right ways.",
+      "attribution": "Arshdeep Purba / homepage testimonial",
+      "source_url": "https://www.rawactorstudio.com/"
+    },
+    {
+      "id": "testimonial-tools-practical",
+      "type": "testimonial",
+      "summary": "Student feedback says the classes provide practical tools that can be applied immediately.",
+      "attribution": "Alejandra Zapico / homepage testimonial",
+      "source_url": "https://www.rawactorstudio.com/"
+    },
+    {
+      "id": "testimonial-unique-setting",
+      "type": "testimonial",
+      "summary": "Student feedback describes RAW as a uniquely growth-oriented setting for personal and professional development.",
+      "attribution": "Kevin Kenaley / homepage testimonial",
+      "source_url": "https://www.rawactorstudio.com/"
+    },
+    {
+      "id": "bookings-logos",
+      "type": "proof",
+      "summary": "Homepage highlights actors booking with outlets including CBC, Netflix, Paramount+, and Prime Video.",
+      "attribution": "homepage logos",
+      "source_url": "https://www.rawactorstudio.com/"
+    },
+    {
+      "id": "trusted-by-1000",
+      "type": "proof",
+      "summary": "Homepage claims RAW is trusted by over 1000 artists worldwide.",
+      "attribution": "homepage trust marker",
+      "source_url": "https://www.rawactorstudio.com/"
+    }
+  ],
+  "offer_proof": [
+    {
+      "id": "audit-functional-snapshot",
+      "offer_id": "free-audit",
+      "summary": "The audit is positioned as a functional skills snapshot built around what casting responds to under pressure.",
+      "source_url": "https://www.rawactorstudio.com/"
+    },
+    {
+      "id": "master-repeat-taking",
+      "offer_id": "master-class",
+      "summary": "The Master Class is framed as repeatable training actors take again to fine-tune preparation and execution with new material.",
+      "source_url": "https://www.rawactorstudio.com/course-descriptions"
+    },
+    {
+      "id": "audition-practical-system",
+      "offer_id": "on-camera-audition",
+      "summary": "On-Camera Audition is positioned as practical training in script analysis, preparation, connection, focus, and truth for real audition pressure.",
+      "source_url": "https://www.rawactorstudio.com/service-page/on-camera-audition-class-february"
+    },
+    {
+      "id": "reels-proof-of-work",
+      "offer_id": "raw-reels",
+      "summary": "RAW Reels positions demo footage as proof-of-work and claims multiple actors reported bookings tied to the material.",
+      "source_url": "https://www.rawactorstudio.com/reels"
+    }
+  ],
+  "human_source_note_placeholders": [
+    {
+      "id": "weekly-class-moment",
+      "description": "Add 1-3 observations from class or rehearsal that only Sophie / Grisha would say."
+    },
+    {
+      "id": "teacher-line",
+      "description": "Add a direct coaching note that came up repeatedly in the room that week."
+    },
+    {
+      "id": "student-breakthrough",
+      "description": "Add a short factual summary of a student shift, not a vague transformation claim."
+    }
+  ]
+}

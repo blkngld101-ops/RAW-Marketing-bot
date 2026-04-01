@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>RAW Philosophy</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap");
+
+      :root {
+        --bg: #090909;
+        --fg: #f0f0f0;
+        --accent: #c4a35a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1080px;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 18% 18%, rgba(196, 163, 90, 0.18), transparent 24%),
+          linear-gradient(135deg, #090909 0%, #131313 100%);
+        color: var(--fg);
+      }
+
+      body {
+        position: relative;
+        font-family: "Inter", sans-serif;
+      }
+
+      .filmstrip {
+        position: absolute;
+        top: 112px;
+        right: 82px;
+        width: 240px;
+        height: 676px;
+        border: 1px solid rgba(240, 240, 240, 0.12);
+        border-radius: 28px;
+        overflow: hidden;
+        opacity: 0;
+        background:
+          linear-gradient(180deg, rgba(10, 10, 10, 0.08), rgba(10, 10, 10, 0.72)),
+          linear-gradient(135deg, rgba(196, 163, 90, 0.3), rgba(255, 255, 255, 0.08));
+        background-size: cover;
+        background-position: center;
+      }
+
+      body[data-layout="photo-led"] .filmstrip {
+        opacity: 1;
+      }
+
+      .frame {
+        position: relative;
+        height: 100%;
+        padding: 72px;
+      }
+
+      .wordmark {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .quote-wrap {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: calc(100% - 130px);
+        max-width: 760px;
+      }
+
+      body[data-layout="photo-led"] .quote-wrap {
+        max-width: 620px;
+      }
+
+      .eyebrow {
+        color: rgba(196, 163, 90, 0.88);
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+
+      .quote {
+        margin: 28px 0 30px;
+        font-family: "DM Serif Display", serif;
+        font-style: italic;
+        font-size: 84px;
+        line-height: 0.98;
+        letter-spacing: -0.01em;
+      }
+
+      .attribution {
+        font-size: 23px;
+        font-weight: 300;
+        color: rgba(240, 240, 240, 0.7);
+      }
+
+      .bar {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 4px;
+        background: var(--accent);
+      }
+    </style>
+  </head>
+  <body data-layout="text-led">
+    <div class="filmstrip" id="photo"></div>
+    <div class="frame">
+      <div class="wordmark">RAW ACTOR STUDIO</div>
+      <div class="quote-wrap">
+        <div class="eyebrow" id="label">AUTHORSHIP</div>
+        <div class="quote" id="quote">Train with clarity. Own the work.</div>
+        <div class="attribution" id="attribution">RAW Actor Studio</div>
+      </div>
+      <div class="bar"></div>
+    </div>
+    <!-- RAW_PAYLOAD -->
+    <script>
+      const post = window.__RAW_POST__ || {};
+      const setText = (id, value, fallback = "") => {
+        const node = document.getElementById(id);
+        if (node) {
+          node.textContent = value || fallback;
+        }
+      };
+
+      document.body.dataset.layout =
+        post.layout_variant === "photo-led" ? "photo-led" : "text-led";
+
+      setText("label", post.label || "RAW PHILOSOPHY");
+      setText("quote", post.headline || "Train with clarity.");
+      setText(
+        "attribution",
+        post.image_body || post.visual_direction || "Training That Meets Industry Reality."
+      );
+
+      const photo = document.getElementById("photo");
+      const imageUrl = post.media?.image_url || post.photo_url || "";
+      if (imageUrl) {
+        photo.style.backgroundImage = `linear-gradient(180deg, rgba(10, 10, 10, 0.08), rgba(10, 10, 10, 0.72)), url("${imageUrl}")`;
+      }
+    </script>
+  </body>
+</html>

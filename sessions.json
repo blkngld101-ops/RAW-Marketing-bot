@@ -1,0 +1,50 @@
+[
+  {
+    "id": "master-l1-2026-04",
+    "class_name": "The Master: Level 1",
+    "start_date": "2026-04-27",
+    "end_date": "2026-06-01",
+    "price": 550,
+    "currency": "CAD",
+    "duration": "6 weeks",
+    "schedule": "Mondays, 6:30pm–10:30pm",
+    "enrollment_open": "2026-04-01",
+    "early_bird_deadline": null,
+    "discount_code": "RAW10",
+    "discount_percent": 10,
+    "max_spots": 12,
+    "location": "1110 Dupont Street, Toronto"
+  },
+  {
+    "id": "audition-l1-2026-05",
+    "class_name": "On-Camera Audition Class: Level 1",
+    "start_date": "2026-05-26",
+    "end_date": "2026-06-30",
+    "price": 550,
+    "currency": "CAD",
+    "duration": "6 weeks",
+    "schedule": "Tuesdays, 6:30pm–10:30pm",
+    "enrollment_open": "2026-04-01",
+    "early_bird_deadline": null,
+    "discount_code": "RAW10",
+    "discount_percent": 10,
+    "max_spots": 12,
+    "location": "1110 Dupont Street, Toronto"
+  },
+  {
+    "id": "reps-2026-06",
+    "class_name": "The Master REPS",
+    "start_date": "2026-06-22",
+    "end_date": "2026-07-27",
+    "price": 550,
+    "currency": "CAD",
+    "duration": "6 weeks",
+    "schedule": "Mondays, 6:30pm–10:30pm",
+    "enrollment_open": "2026-04-01",
+    "early_bird_deadline": null,
+    "discount_code": "RAW10",
+    "discount_percent": 10,
+    "max_spots": 12,
+    "location": "1110 Dupont Street, Toronto"
+  }
+]

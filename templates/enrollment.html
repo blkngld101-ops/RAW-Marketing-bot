@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>RAW Enrollment</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap");
+
+      :root {
+        --bg: #1a1714;
+        --fg: #f0f0f0;
+        --muted: rgba(240, 240, 240, 0.72);
+        --accent: #c4a35a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1080px;
+        overflow: hidden;
+        background:
+          linear-gradient(140deg, rgba(196, 163, 90, 0.08), transparent 40%),
+          radial-gradient(circle at 72% 18%, rgba(196, 163, 90, 0.16), transparent 18%),
+          linear-gradient(140deg, #14110f 0%, var(--bg) 100%);
+        color: var(--fg);
+      }
+
+      body {
+        position: relative;
+        font-family: "Inter", sans-serif;
+      }
+
+      .photo {
+        position: absolute;
+        right: 72px;
+        bottom: 72px;
+        width: 360px;
+        height: 420px;
+        border-radius: 30px;
+        border: 1px solid rgba(240, 240, 240, 0.12);
+        overflow: hidden;
+        opacity: 0;
+        background:
+          linear-gradient(180deg, rgba(10, 10, 10, 0.18), rgba(10, 10, 10, 0.76)),
+          linear-gradient(135deg, rgba(196, 163, 90, 0.26), rgba(255, 255, 255, 0.08));
+        background-size: cover;
+        background-position: center;
+      }
+
+      body[data-layout="photo-led"] .photo {
+        opacity: 1;
+      }
+
+      .frame {
+        position: relative;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        height: 100%;
+        padding: 72px;
+      }
+
+      .top {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .wordmark {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .urgency {
+        padding: 14px 18px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: #121212;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      main {
+        align-self: center;
+        max-width: 620px;
+      }
+
+      body[data-layout="photo-led"] main {
+        max-width: 540px;
+      }
+
+      .label {
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      .class-name {
+        margin: 20px 0 18px;
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 90px;
+        line-height: 0.94;
+      }
+
+      .details {
+        font-size: 27px;
+        line-height: 1.45;
+        color: var(--muted);
+        white-space: pre-line;
+      }
+
+      .bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 24px;
+      }
+
+      .discount {
+        display: inline-flex;
+        padding: 12px 18px;
+        border: 1px solid rgba(196, 163, 90, 0.75);
+        border-radius: 999px;
+        color: var(--accent);
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .cta {
+        font-size: 20px;
+        font-weight: 500;
+        color: rgba(240, 240, 240, 0.82);
+      }
+    </style>
+  </head>
+  <body data-layout="text-led">
+    <div class="photo" id="photo"></div>
+    <div class="frame">
+      <div class="top">
+        <div class="wordmark">RAW ACTOR STUDIO</div>
+        <div class="urgency" id="urgency">ENROLLMENT OPEN</div>
+      </div>
+      <main>
+        <div class="label" id="label">UPCOMING CLASS</div>
+        <div class="class-name" id="class-name">THE MASTER CLASS</div>
+        <div class="details" id="details">Build a clear, repeatable process for scene work.</div>
+      </main>
+      <div class="bottom">
+        <div class="discount" id="discount">BOOK A FREE AUDIT</div>
+        <div class="cta" id="cta">rawactorstudio.com</div>
+      </div>
+    </div>
+    <!-- RAW_PAYLOAD -->
+    <script>
+      const post = window.__RAW_POST__ || {};
+      const setText = (id, value, fallback = "") => {
+        const node = document.getElementById(id);
+        if (node) {
+          node.textContent = value || fallback;
+        }
+      };
+
+      document.body.dataset.layout =
+        post.layout_variant === "photo-led" ? "photo-led" : "text-led";
+
+      const detailsParts = [
+        post.image_body,
+        post.cta_type === "audit" ? "Free audit available." : "",
+        post.cta_url ? post.cta_url.replace(/^https?:\/\//, "") : ""
+      ].filter(Boolean);
+
+      setText(
+        "urgency",
+        post.cta_type === "audit"
+          ? "FREE AUDIT"
+          : post.status === "needs_revision"
+            ? "REVIEW"
+            : "ENROLLMENT OPEN"
+      );
+      setText("label", post.label || "UPCOMING OFFER");
+      setText("class-name", post.headline, "RAW Offer");
+      setText("details", detailsParts.join("\n"), "Clear offer details here.");
+      setText(
+        "discount",
+        post.cta_type === "audit"
+          ? "BOOK A FREE AUDIT"
+          : post.offer_id === "raw-reels"
+            ? "EMAIL RAW REELS"
+            : "TRAIN WITH CLARITY"
+      );
+      setText("cta", post.cta_url ? post.cta_url.replace(/^https?:\/\//, "") : "rawactorstudio.com");
+
+      const photo = document.getElementById("photo");
+      const imageUrl = post.media?.image_url || post.photo_url || "";
+      if (imageUrl) {
+        photo.style.backgroundImage = `linear-gradient(180deg, rgba(10, 10, 10, 0.18), rgba(10, 10, 10, 0.76)), url("${imageUrl}")`;
+      }
+    </script>
+  </body>
+</html>

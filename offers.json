@@ -1,0 +1,174 @@
+{
+  "source_snapshot_date": "2026-03-31",
+  "source_policy": {
+    "primary_domain": "https://www.rawactorstudio.com",
+    "notes": [
+      "Use official RAW web properties as the primary public source.",
+      "If a fact is not verified, do not inject it into generated captions.",
+      "Location data conflicts across official pages; use with care."
+    ]
+  },
+  "contacts": {
+    "general_email": "admin@rawactorstudio.com",
+    "reels_email": "rawstudioreels@gmail.com"
+  },
+  "location": {
+    "display_name": "1110 Dupont St, The Salon",
+    "city": "Toronto",
+    "region": "ON",
+    "postal_code": "M6H 2A2",
+    "verification_status": "assumed_current",
+    "verification_note": "Homepage, adult programs, and RAW Reels pages point to this address. Other official pages still show 1224 King St W.",
+    "alternate_official_locations": [
+      "1224 King St W, 3rd floor, Toronto, ON M6K 1G4"
+    ],
+    "source_urls": [
+      "https://www.rawactorstudio.com/",
+      "https://www.rawactorstudio.com/adult-classes",
+      "https://www.rawactorstudio.com/reels"
+    ]
+  },
+  "offers": [
+    {
+      "id": "free-audit",
+      "name": "Free Audit",
+      "category": "lead_magnet",
+      "priority": 2,
+      "cta_label": "Book a Free Audit",
+      "cta_url": "https://www.rawactorstudio.com/adult-classes",
+      "audience": [
+        "emerging",
+        "working",
+        "career_reset"
+      ],
+      "positioning": "A functional skills snapshot built around what casting actually responds to under pressure, in self-tapes, and in the room.",
+      "tax_note": "free",
+      "verification_status": "verified",
+      "source_urls": [
+        "https://www.rawactorstudio.com/",
+        "https://www.rawactorstudio.com/adult-classes"
+      ]
+    },
+    {
+      "id": "master-class",
+      "name": "The Master Class",
+      "category": "class",
+      "priority": 1,
+      "cta_label": "Learn About The Master Class",
+      "cta_url": "https://www.rawactorstudio.com/service-page/the-master-aug-sept",
+      "audience": [
+        "emerging",
+        "working"
+      ],
+      "price_cad": 550,
+      "tax_note": "+ HST",
+      "payment_options": [
+        "1 payment of 550",
+        "2 payments of 275",
+        "3 payments of 183.33",
+        "4 payments available through shop plans"
+      ],
+      "positioning": "Build a clear, repeatable process for script analysis, preparation, and execution. Scene-based work designed to stop guessing and sharpen real craft.",
+      "verification_status": "partially_verified",
+      "source_urls": [
+        "https://www.rawactorstudio.com/",
+        "https://www.rawactorstudio.com/course-descriptions",
+        "https://www.rawactorstudio.com/service-page/the-master-aug-sept",
+        "https://www.rawactorstudio.com/shop"
+      ]
+    },
+    {
+      "id": "on-camera-audition",
+      "name": "On-Camera Audition",
+      "category": "class",
+      "priority": 1,
+      "cta_label": "Learn About On-Camera Audition",
+      "cta_url": "https://www.rawactorstudio.com/service-page/on-camera-audition-class-february",
+      "audience": [
+        "emerging",
+        "career_reset",
+        "working"
+      ],
+      "price_cad": 550,
+      "tax_note": "+ HST",
+      "payment_options": [
+        "1 payment of 550",
+        "2 payments of 275",
+        "3 payments of 183.33"
+      ],
+      "positioning": "A practical audition system for breaking down sides, making clear choices, and delivering grounded work on camera under pressure.",
+      "verification_status": "partially_verified",
+      "source_urls": [
+        "https://www.rawactorstudio.com/",
+        "https://www.rawactorstudio.com/course-descriptions",
+        "https://www.rawactorstudio.com/service-page/on-camera-audition-class-february"
+      ]
+    },
+    {
+      "id": "reps",
+      "name": "REPS",
+      "category": "class",
+      "priority": 1,
+      "cta_label": "Learn About REPS",
+      "cta_url": "https://www.rawactorstudio.com/",
+      "audience": [
+        "working",
+        "advanced"
+      ],
+      "price_cad": 550,
+      "tax_note": "confirm before publishing",
+      "payment_options": [
+        "confirm current payment plan before publishing"
+      ],
+      "positioning": "Practice-heavy training built around repetition, precision, and pressure until the work becomes instinctive and professionally reliable.",
+      "verification_status": "brand_verified_fact_details_unverified",
+      "source_urls": [
+        "https://www.rawactorstudio.com/"
+      ]
+    },
+    {
+      "id": "raw-reels",
+      "name": "RAW Reels",
+      "category": "service",
+      "priority": 3,
+      "cta_label": "Email RAW Reels",
+      "cta_url": "https://www.rawactorstudio.com/reels",
+      "audience": [
+        "working",
+        "career_reset",
+        "advanced"
+      ],
+      "positioning": "Shot-like-a-film demo footage that gives agents, managers, and casting a clearer sense of range, archetype, and proof-of-work.",
+      "price_cad": null,
+      "tax_note": "contact for pricing",
+      "payment_options": [],
+      "verification_status": "verified",
+      "source_urls": [
+        "https://www.rawactorstudio.com/reels"
+      ]
+    },
+    {
+      "id": "career-consult",
+      "name": "Career Consult with Sophie",
+      "category": "service",
+      "priority": 3,
+      "cta_label": "View Shop",
+      "cta_url": "https://www.rawactorstudio.com/shop",
+      "audience": [
+        "working",
+        "career_reset"
+      ],
+      "positioning": "Actor package and career support for artists who need an honest industry-facing review.",
+      "price_cad": 250,
+      "tax_note": "confirm before publishing",
+      "payment_options": [
+        "payment plan available in shop"
+      ],
+      "verification_status": "partially_verified",
+      "source_urls": [
+        "https://www.rawactorstudio.com/about-the-studio",
+        "https://www.rawactorstudio.com/shop"
+      ]
+    }
+  ]
+}

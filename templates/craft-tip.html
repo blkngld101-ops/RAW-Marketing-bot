@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>RAW Craft Tip</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap");
+
+      :root {
+        --bg: #0a0a0a;
+        --bg-alt: #16110f;
+        --fg: #f0f0f0;
+        --muted: rgba(240, 240, 240, 0.68);
+        --accent: #c4a35a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1080px;
+        overflow: hidden;
+        background: radial-gradient(circle at top right, rgba(196, 163, 90, 0.16), transparent 28%),
+          linear-gradient(140deg, var(--bg) 0%, #141414 58%, var(--bg-alt) 100%);
+        color: var(--fg);
+      }
+
+      body {
+        position: relative;
+        font-family: "Inter", sans-serif;
+      }
+
+      body::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.05) 0.6px, transparent 0.6px);
+        background-size: 11px 11px;
+        opacity: 0.08;
+        pointer-events: none;
+      }
+
+      .photo {
+        position: absolute;
+        inset: 84px 72px auto auto;
+        width: 320px;
+        height: 430px;
+        border-radius: 26px;
+        overflow: hidden;
+        background:
+          linear-gradient(180deg, rgba(10, 10, 10, 0.2), rgba(10, 10, 10, 0.82)),
+          linear-gradient(135deg, rgba(196, 163, 90, 0.28), rgba(255, 255, 255, 0.08));
+        background-size: cover;
+        background-position: center;
+        border: 1px solid rgba(240, 240, 240, 0.12);
+        opacity: 0;
+        transform: translateX(24px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+      }
+
+      body[data-layout="photo-led"] .photo {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .frame {
+        position: relative;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        height: 100%;
+        padding: 72px;
+      }
+
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+      }
+
+      .wordmark {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .category {
+        max-width: 320px;
+        padding: 14px 18px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: #111;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      main {
+        align-self: center;
+        max-width: 660px;
+        padding-top: 48px;
+      }
+
+      body[data-layout="photo-led"] main {
+        max-width: 560px;
+      }
+
+      .label {
+        color: var(--accent);
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+      }
+
+      .headline {
+        margin: 22px 0 20px;
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 96px;
+        line-height: 0.92;
+        letter-spacing: 0.01em;
+      }
+
+      .body {
+        max-width: 520px;
+        font-size: 30px;
+        line-height: 1.35;
+        font-weight: 300;
+        color: var(--muted);
+      }
+
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 24px;
+      }
+
+      .tagline {
+        font-family: "DM Serif Display", serif;
+        font-style: italic;
+        font-size: 24px;
+        color: rgba(196, 163, 90, 0.82);
+      }
+
+      .note {
+        max-width: 340px;
+        text-align: right;
+        font-size: 16px;
+        line-height: 1.45;
+        color: rgba(240, 240, 240, 0.58);
+      }
+    </style>
+  </head>
+  <body data-layout="text-led">
+    <div class="photo" id="photo"></div>
+    <div class="frame">
+      <div class="top">
+        <div class="wordmark">RAW ACTOR STUDIO</div>
+        <div class="category" id="category">ON-CAMERA TECHNIQUE</div>
+      </div>
+      <main>
+        <div class="label" id="label">AUDITION PREP</div>
+        <h1 class="headline" id="headline">Make The First Pass Count</h1>
+        <div class="body" id="body">
+          Stop chasing emotion before you know what you are doing to the other person.
+        </div>
+      </main>
+      <div class="footer">
+        <div class="tagline">Training That Meets Industry Reality.</div>
+        <div class="note" id="note"></div>
+      </div>
+    </div>
+    <!-- RAW_PAYLOAD -->
+    <script>
+      const post = window.__RAW_POST__ || {};
+      const setText = (id, value, fallback = "") => {
+        const node = document.getElementById(id);
+        if (node) {
+          node.textContent = value || fallback;
+        }
+      };
+
+      document.body.dataset.layout =
+        post.layout_variant === "photo-led" ? "photo-led" : "text-led";
+
+      setText("category", post.label || "ON-CAMERA TECHNIQUE");
+      setText("label", post.label || "CRAFT");
+      setText("headline", post.headline, "RAW Craft");
+      setText("body", post.image_body, "Specific tools. Clear choices. Usable process.");
+      setText("note", post.visual_direction || "");
+
+      const photo = document.getElementById("photo");
+      const imageUrl = post.media?.image_url || post.photo_url || "";
+      if (imageUrl) {
+        photo.style.backgroundImage = `linear-gradient(180deg, rgba(10, 10, 10, 0.2), rgba(10, 10, 10, 0.82)), url("${imageUrl}")`;
+      }
+    </script>
+  </body>
+</html>

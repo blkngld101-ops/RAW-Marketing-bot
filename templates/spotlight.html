@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>RAW Spotlight</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap");
+
+      :root {
+        --bg: #0a0a0a;
+        --fg: #f0f0f0;
+        --muted: rgba(240, 240, 240, 0.72);
+        --accent: #c4a35a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1080px;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 18% 18%, rgba(196, 163, 90, 0.18), transparent 24%),
+          linear-gradient(135deg, #0a0a0a 0%, #141414 100%);
+        color: var(--fg);
+      }
+
+      body {
+        position: relative;
+        font-family: "Inter", sans-serif;
+      }
+
+      .portrait {
+        position: absolute;
+        top: 146px;
+        right: 72px;
+        width: 290px;
+        height: 426px;
+        border-radius: 28px;
+        border: 1px solid rgba(240, 240, 240, 0.12);
+        overflow: hidden;
+        opacity: 0;
+        background:
+          linear-gradient(180deg, rgba(10, 10, 10, 0.14), rgba(10, 10, 10, 0.78)),
+          linear-gradient(135deg, rgba(196, 163, 90, 0.26), rgba(255, 255, 255, 0.08));
+        background-size: cover;
+        background-position: center;
+      }
+
+      body[data-layout="photo-led"] .portrait {
+        opacity: 1;
+      }
+
+      .frame {
+        position: relative;
+        height: 100%;
+        padding: 72px;
+      }
+
+      .wordmark {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .label {
+        margin-top: 66px;
+        color: var(--accent);
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+
+      .card {
+        margin-top: 24px;
+        max-width: 680px;
+        min-height: 560px;
+        padding: 48px;
+        border-radius: 26px;
+        background: rgba(240, 240, 240, 0.06);
+        border: 1px solid rgba(240, 240, 240, 0.08);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        backdrop-filter: blur(14px);
+      }
+
+      body[data-layout="photo-led"] .card {
+        max-width: 600px;
+      }
+
+      .quote {
+        font-size: 38px;
+        line-height: 1.32;
+        font-weight: 400;
+      }
+
+      .attribution {
+        margin-top: 36px;
+        font-size: 21px;
+        font-weight: 300;
+        color: var(--muted);
+      }
+
+      .proof {
+        margin-top: 28px;
+        font-size: 16px;
+        line-height: 1.45;
+        color: rgba(240, 240, 240, 0.58);
+      }
+    </style>
+  </head>
+  <body data-layout="text-led">
+    <div class="portrait" id="portrait"></div>
+    <div class="frame">
+      <div class="wordmark">RAW ACTOR STUDIO</div>
+      <div class="label" id="label">STUDENT SPOTLIGHT</div>
+      <div class="card">
+        <div class="quote" id="quote">
+          Strong proof points deserve stronger framing than generic praise.
+        </div>
+        <div>
+          <div class="attribution" id="attribution">RAW Actor Studio</div>
+          <div class="proof" id="proof-line"></div>
+        </div>
+      </div>
+    </div>
+    <!-- RAW_PAYLOAD -->
+    <script>
+      const post = window.__RAW_POST__ || {};
+      const setText = (id, value, fallback = "") => {
+        const node = document.getElementById(id);
+        if (node) {
+          node.textContent = value || fallback;
+        }
+      };
+
+      document.body.dataset.layout =
+        post.layout_variant === "photo-led" ? "photo-led" : "text-led";
+
+      setText("label", post.label || "STUDENT SPOTLIGHT");
+      setText("quote", post.image_body || post.headline || "RAW spotlight");
+      setText("attribution", post.headline || "RAW Actor Studio");
+      setText("proof-line", post.visual_direction || post.caption?.split("\n")[0] || "");
+
+      const portrait = document.getElementById("portrait");
+      const imageUrl = post.media?.image_url || post.photo_url || "";
+      if (imageUrl) {
+        portrait.style.backgroundImage = `linear-gradient(180deg, rgba(10, 10, 10, 0.14), rgba(10, 10, 10, 0.78)), url("${imageUrl}")`;
+      }
+    </script>
+  </body>
+</html>

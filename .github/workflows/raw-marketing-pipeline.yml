@@ -1,0 +1,92 @@
+name: RAW Marketing Pipeline
+
+on:
+  schedule:
+    - cron: "0 13 * * 1"
+  workflow_dispatch:
+
+jobs:
+  generate-and-render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: Generate content
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          RAW_DEFAULT_TIMEZONE: America/Toronto
+          RAW_QUEUE_MIN: "6"
+        run: node scripts/generate.js --min-queue 6 --count 6
+
+      - name: Render queue
+        env:
+          RAW_DEFAULT_TIMEZONE: America/Toronto
+        run: node scripts/render.js
+
+      - name: Commit generated content
+        run: |
+          git config user.name "RAW Marketing Bot"
+          git config user.email "bot@rawactorstudio.com"
+          git add pending/queue.json approved-posts/
+          git diff --staged --quiet || git commit -m "chore(raw): refresh content queue $(date +%Y-%m-%d)"
+          git push
+
+      - name: Notify Telegram
+        env:
+          RAW_TELEGRAM_BOT_TOKEN: ${{ secrets.RAW_TELEGRAM_BOT_TOKEN }}
+          RAW_TELEGRAM_CHAT_ID: ${{ secrets.RAW_TELEGRAM_CHAT_ID }}
+          GITHUB_REPO: ${{ github.repository }}
+        run: |
+          node --input-type=module <<'EOF'
+          import fs from "node:fs/promises";
+
+          const queue = JSON.parse(await fs.readFile("pending/queue.json", "utf8"));
+          const first = queue.posts.find((post) => post.status === "pending");
+
+          if (!first) {
+            process.exit(0);
+          }
+
+          const imageUrl = first.image_path
+            ? `https://raw.githubusercontent.com/${process.env.GITHUB_REPO}/main/${first.image_path}`
+            : null;
+
+          if (imageUrl) {
+            await fetch(`https://api.telegram.org/bot${process.env.RAW_TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                chat_id: process.env.RAW_TELEGRAM_CHAT_ID,
+                photo: imageUrl,
+                caption: `${first.headline}\n${first.date} | ${first.type}`.slice(0, 1024)
+              })
+            });
+          }
+
+          await fetch(`https://api.telegram.org/bot${process.env.RAW_TELEGRAM_BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              chat_id: process.env.RAW_TELEGRAM_CHAT_ID,
+              text: `New RAW content batch is ready.\n\nFirst post: ${first.headline}\nDate: ${first.date}\nType: ${first.type}\n\nSend /review to continue.`
+            })
+          });
+          EOF
