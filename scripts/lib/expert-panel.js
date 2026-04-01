@@ -66,23 +66,31 @@ Return:
 }
 
 async function callAnthropicJson({ system, prompt, maxTokens = 1000 }) {
-  const { Anthropic } = await import("@anthropic-ai/sdk");
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  const response = await client.messages.create({
-    model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6",
-    max_tokens: maxTokens,
-    system,
-    messages: [{ role: "user", content: prompt }]
-  });
+  try {
+    const { Anthropic } = await import("@anthropic-ai/sdk");
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const response = await client.messages.create({
+      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6",
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: "user", content: prompt }]
+    });
 
-  const text = response.content
-    .filter((item) => item.type === "text")
-    .map((item) => item.text)
-    .join("\n");
+    const text = response.content
+      .filter((item) => item.type === "text")
+      .map((item) => item.text)
+      .join("\n");
 
-  const fenced = text.match(/```json\s*([\s\S]*?)```/i);
-  const jsonStr = fenced ? fenced[1].trim() : text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1);
-  return JSON.parse(jsonStr);
+    const fenced = text.match(/```json\s*([\s\S]*?)```/i);
+    const jsonStr = fenced
+      ? fenced[1].trim()
+      : text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1);
+
+    if (!jsonStr) return null;
+    return JSON.parse(jsonStr);
+  } catch {
+    return null;
+  }
 }
 
 async function scorePost(post) {
@@ -92,10 +100,23 @@ async function scorePost(post) {
     maxTokens: 600
   });
 
+  if (!result) {
+    return {
+      scores: {},
+      total: 0,
+      weakest_dimension: "brand_voice",
+      revision_instruction: "Tighten the brand voice."
+    };
+  }
+
   const scores = result.scores || {};
   const total =
-    result.total ||
-    Object.values(scores).reduce((sum, value) => sum + Number(value || 0), 0);
+    typeof result.total === "number"
+      ? result.total
+      : Object.values(scores).reduce((sum, value) => {
+          const n = Number(value);
+          return sum + (Number.isFinite(n) ? n : 0);
+        }, 0);
 
   return {
     scores,
@@ -105,12 +126,18 @@ async function scorePost(post) {
   };
 }
 
+function buildRevisionSystemPrompt() {
+  return `You are a content writer for RAW Actor Studio, a professional acting school in Toronto. Your job is to revise Instagram posts to fix a specific issue identified by our expert review panel. Return only the revised fields as JSON — do not add commentary or explanation.`;
+}
+
 async function applyRevision(post, panelResult) {
   const patch = await callAnthropicJson({
-    system: buildPanelSystemPrompt(),
+    system: buildRevisionSystemPrompt(),
     prompt: buildRevisionPrompt(post, panelResult),
     maxTokens: 800
   });
+
+  if (!patch) return post;
 
   return {
     ...post,
