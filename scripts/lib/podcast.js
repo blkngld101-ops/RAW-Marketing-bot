@@ -1,5 +1,5 @@
 import { getTodayIso } from "./raw-core.js";
-import { transcribeAudioBuffer } from "./sources.js";
+import { transcribeAudioBuffer, processClassTranscriptSource } from "./sources.js";
 
 function cleanText(value) {
   return String(value || "")
@@ -22,7 +22,11 @@ function decodeEntities(value) {
 
 function extractTag(xml, tag) {
   const match = xml.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i"));
-  return match ? cleanText(decodeEntities(match[1].replace(/<[^>]+>/g, ""))) : "";
+  if (!match) return "";
+  const inner = match[1]
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
+    .replace(/<[^>]+>/g, "");
+  return cleanText(decodeEntities(inner));
 }
 
 function extractAttr(xml, tag, attr) {
@@ -31,7 +35,7 @@ function extractAttr(xml, tag, attr) {
 }
 
 function parseEpisodes(rssXml) {
-  const items = [...rssXml.matchAll(/<item>([\s\S]*?)<\/item>/gi)].map(
+  const items = [...rssXml.matchAll(/<item[^>]*>([\s\S]*?)<\/item>/gi)].map(
     (match) => match[1]
   );
 
@@ -94,8 +98,6 @@ export async function processPodcastEpisode({
   queue,
   mock = false
 }) {
-  const { processClassTranscriptSource } = await import("./sources.js");
-
   const episodes = await fetchRssFeed(rssUrl);
   const episode = episodes[episodeIndex];
 
