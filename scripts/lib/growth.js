@@ -81,6 +81,7 @@ function bestPerformingAngle(outcomes) {
 export function buildScorecard(experiments, windowDays = 28) {
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - windowDays);
+  cutoff.setHours(0, 0, 0, 0);
 
   const outcomes = (experiments.outcomes || []).filter(
     (outcome) => new Date(outcome.recorded_at) >= cutoff
