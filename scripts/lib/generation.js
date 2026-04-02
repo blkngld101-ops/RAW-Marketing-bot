@@ -13,6 +13,7 @@ import {
   wordCount,
   writeJsonFile
 } from "./raw-core.js";
+import { runExpertPanel } from "./expert-panel.js";
 
 const BRAND_HASHTAGS = ["#RAWActorStudio", "#ActingToronto", "#OnCameraActing"];
 const GENERIC_TRIGGER_PHRASES = [
@@ -599,7 +600,7 @@ export async function generatePostFromBrief({
     recentContent
   );
 
-  return buildPostRecord(
+  const baseRecord = buildPostRecord(
     {
       ...draft,
       cta_type: brief.cta_type,
@@ -608,6 +609,29 @@ export async function generatePostFromBrief({
     brief,
     lintResult
   );
+
+  if (process.env.RAW_EXPERT_PANEL === "1" && !mock) {
+    const panelResult = await runExpertPanel(baseRecord, { mock });
+    const panelNotes = panelResult.panel_passed
+      ? []
+      : [
+          {
+            source: "expert-panel",
+            note: `Panel score ${panelResult.panel_score}/100 after ${panelResult.panel_attempts} attempt(s). Did not reach threshold.`,
+            recorded_at: new Date().toISOString()
+          }
+        ];
+    return {
+      ...panelResult.post,
+      status: panelResult.panel_passed ? baseRecord.status : "needs_revision",
+      panel_score: panelResult.panel_score,
+      panel_attempts: panelResult.panel_attempts,
+      panel_passed: panelResult.panel_passed,
+      review_notes: [...(baseRecord.review_notes || []), ...panelNotes]
+    };
+  }
+
+  return baseRecord;
 }
 
 export async function reviseExistingPost({
