@@ -33,6 +33,7 @@ export const DATA_PATHS = {
   reviewMemory: path.join(ROOT_DIR, "pending", "review-memory.json"),
   sourceDocuments: path.join(ROOT_DIR, "pending", "source-documents.json"),
   supplementalBank: path.join(ROOT_DIR, "pending", "supplemental-bank.json"),
+  experiments: path.join(ROOT_DIR, "pending", "ab-experiments.json"),
   approvedPosts: path.join(ROOT_DIR, "approved-posts"),
   templates: path.join(ROOT_DIR, "templates")
 };

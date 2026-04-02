@@ -86,7 +86,8 @@ function resolveLocalPath(targetPath) {
     "pending/queue.json": DATA_PATHS.queue,
     "pending/review-memory.json": DATA_PATHS.reviewMemory,
     "pending/source-documents.json": DATA_PATHS.sourceDocuments,
-    "pending/supplemental-bank.json": DATA_PATHS.supplementalBank
+    "pending/supplemental-bank.json": DATA_PATHS.supplementalBank,
+    "pending/ab-experiments.json": DATA_PATHS.experiments
   };
 
   return (
@@ -277,6 +278,44 @@ export async function saveSupplementalBank(
     value: supplementalBank,
     sha,
     message: `chore(raw): update supplemental bank ${getTodayIso()}`
+  });
+}
+
+export async function getExperiments(
+  token,
+  repo,
+  targetPath = "pending/ab-experiments.json"
+) {
+  const { data, sha } = await getJsonBlob({
+    token,
+    repo,
+    targetPath,
+    fallback: {
+      updated_at: null,
+      outcomes: []
+    }
+  });
+
+  return {
+    experiments: data,
+    sha
+  };
+}
+
+export async function saveExperiments(
+  token,
+  repo,
+  experiments,
+  sha = null,
+  targetPath = "pending/ab-experiments.json"
+) {
+  return saveJsonBlob({
+    token,
+    repo,
+    targetPath,
+    value: experiments,
+    sha,
+    message: `chore(raw): update experiments ${getTodayIso()}`
   });
 }
 
