@@ -22,11 +22,12 @@ import {
   saveQueue,
   saveReviewMemory,
   saveSourceDocuments,
-  saveSupplementalBank
+  saveSupplementalBank,
+  getExperiments,
+  saveExperiments
 } from "../scripts/queue.js";
 import { processPodcastEpisode, fetchRssFeed, formatEpisodeList } from "../scripts/lib/podcast.js";
 import { recordOutcome, buildScorecard } from "../scripts/lib/growth.js";
-import { getExperiments, saveExperiments } from "../scripts/queue.js";
 
 const REASON_CODES = {
   tg: "too generic",
@@ -753,7 +754,7 @@ async function handleTextMessage(update, context) {
       const list = formatEpisodeList(episodes);
       await sendMessage(
         chatId,
-        `Found ${episodes.length} episode(s). Processing episode 0 (latest):\n\n${list}\n\nTo pick a different episode: /podcast ${rssUrl} <index>`
+        `Found ${episodes.length} episode(s). Ingesting episode 0 (latest):\n\n${list}\n\nTo pick a different episode next time: /podcast ${rssUrl} <index>`
       );
     }
 
