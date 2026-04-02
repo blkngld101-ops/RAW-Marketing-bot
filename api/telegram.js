@@ -24,6 +24,9 @@ import {
   saveSourceDocuments,
   saveSupplementalBank
 } from "../scripts/queue.js";
+import { processPodcastEpisode, fetchRssFeed, formatEpisodeList } from "../scripts/lib/podcast.js";
+import { recordOutcome, buildScorecard } from "../scripts/lib/growth.js";
+import { getExperiments, saveExperiments } from "../scripts/queue.js";
 
 const REASON_CODES = {
   tg: "too generic",
@@ -518,6 +521,17 @@ async function persistContext(context, fields = ["queue", "reviewMemory", "sourc
     );
   }
 
+  if (fields.includes("experiments")) {
+    tasks.push(
+      saveExperiments(
+        process.env.GITHUB_TOKEN,
+        process.env.GITHUB_REPO,
+        context.experiments,
+        context.experimentsSha
+      )
+    );
+  }
+
   await Promise.all(tasks);
 }
 
@@ -711,6 +725,58 @@ async function handleTextMessage(update, context) {
     return;
   }
 
+  if (lower.startsWith("/scorecard")) {
+    const scorecard = buildScorecard(context.experiments);
+    await sendMessage(chatId, scorecard);
+    return;
+  }
+
+  if (lower.startsWith("/podcast")) {
+    const remainder = text.replace(/^\/podcast/i, "").trim();
+
+    if (!remainder) {
+      await sendMessage(chatId, "Use /podcast <rss_url> to ingest the latest episode, or /podcast <rss_url> <index> for a specific episode.");
+      return;
+    }
+
+    const parts = remainder.split(/\s+/);
+    const rssUrl = parts[0];
+    const episodeIndex = parts[1] ? Number(parts[1]) : 0;
+
+    if (!rssUrl.startsWith("http")) {
+      await sendMessage(chatId, "Provide a full RSS URL starting with http.");
+      return;
+    }
+
+    if (!parts[1]) {
+      const episodes = await fetchRssFeed(rssUrl);
+      const list = formatEpisodeList(episodes);
+      await sendMessage(
+        chatId,
+        `Found ${episodes.length} episode(s). Processing episode 0 (latest):\n\n${list}\n\nTo pick a different episode: /podcast ${rssUrl} <index>`
+      );
+    }
+
+    const result = await processPodcastEpisode({
+      rssUrl,
+      episodeIndex,
+      submittedBy: update.message.from?.username || String(update.message.from?.id || "unknown"),
+      data: context.data,
+      sourceDocuments: context.sourceDocuments,
+      supplementalBank: context.supplementalBank,
+      queue: context.queue,
+      mock: !process.env.ANTHROPIC_API_KEY
+    });
+
+    context.sourceDocuments = result.sourceDocuments;
+    context.supplementalBank = result.supplementalBank;
+    context.queue = result.queue;
+
+    await persistContext(context, ["queue", "sourceDocuments", "supplementalBank"]);
+    await sendMessage(chatId, summarizeSourceResult(result));
+    return;
+  }
+
   if (
     context.reviewMemory.awaiting_input?.mode === "class" &&
     String(context.reviewMemory.awaiting_input.chat_id) === String(chatId)
@@ -844,7 +910,8 @@ async function handleCallback(update, context) {
       }
     ].slice(-200);
     context.reviewMemory.updated_at = new Date().toISOString();
-    await persistContext(context, ["queue", "reviewMemory"]);
+    context.experiments = recordOutcome(context.experiments, post, "approved");
+    await persistContext(context, ["queue", "reviewMemory", "experiments"]);
     await telegramApi("answerCallbackQuery", {
       callback_query_id: callback.id,
       text: "Approved and pushed to Buffer."
@@ -907,7 +974,8 @@ async function handleCallback(update, context) {
       }
     ].slice(-200);
     context.reviewMemory.updated_at = new Date().toISOString();
-    await persistContext(context, ["queue", "reviewMemory"]);
+    context.experiments = recordOutcome(context.experiments, post, "rejected", reason);
+    await persistContext(context, ["queue", "reviewMemory", "experiments"]);
     await telegramApi("answerCallbackQuery", {
       callback_query_id: callback.id,
       text: `Saved: ${reason}`
@@ -927,12 +995,13 @@ export default async function handler(req, res) {
       return json(res, 200, { ok: true, ignored: "unauthorized_chat" });
     }
 
-    const [queueState, reviewMemoryState, sourceDocumentState, supplementalState, data] =
+    const [queueState, reviewMemoryState, sourceDocumentState, supplementalState, experimentsState, data] =
       await Promise.all([
         getQueue(process.env.GITHUB_TOKEN, process.env.GITHUB_REPO),
         getReviewMemory(process.env.GITHUB_TOKEN, process.env.GITHUB_REPO),
         getSourceDocuments(process.env.GITHUB_TOKEN, process.env.GITHUB_REPO),
         getSupplementalBank(process.env.GITHUB_TOKEN, process.env.GITHUB_REPO),
+        getExperiments(process.env.GITHUB_TOKEN, process.env.GITHUB_REPO),
         loadProjectData()
       ]);
 
@@ -945,7 +1014,9 @@ export default async function handler(req, res) {
       sourceDocuments: sourceDocumentState.sourceDocuments,
       sourceDocumentsSha: sourceDocumentState.sha,
       supplementalBank: supplementalState.supplementalBank,
-      supplementalBankSha: supplementalState.sha
+      supplementalBankSha: supplementalState.sha,
+      experiments: experimentsState.experiments,
+      experimentsSha: experimentsState.sha
     };
 
     if (update.message?.text) {
