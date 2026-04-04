@@ -240,35 +240,25 @@ async function triggerWorkflow() {
 }
 
 async function postToInstagram(post) {
-  const igUserId = process.env.INSTAGRAM_USER_ID;
-  const token = process.env.INSTAGRAM_ACCESS_TOKEN;
-  if (!igUserId || !token) throw new Error("INSTAGRAM_USER_ID and INSTAGRAM_ACCESS_TOKEN are required.");
+  if (!process.env.MAKE_WEBHOOK_URL) throw new Error("MAKE_WEBHOOK_URL is required.");
 
   const imageUrl = buildPublicImageUrl(post);
   if (!imageUrl) throw new Error("No image path on post — render first.");
 
   const caption = `${post.caption}\n\n${(post.hashtags || []).join(" ")}`.trim();
 
-  const containerRes = await fetch(
-    `https://graph.instagram.com/v21.0/${igUserId}/media`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image_url: imageUrl, caption, access_token: token })
-    }
-  );
-  const container = await containerRes.json();
-  if (!container.id) throw new Error(`Instagram container error: ${JSON.stringify(container)}`);
+  const res = await fetch(process.env.MAKE_WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image_url: imageUrl, caption })
+  });
 
-  const publishRes = await fetch(
-    `https://graph.instagram.com/v21.0/${igUserId}/media_publish`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ creation_id: container.id, access_token: token })
-    }
-  );
-  return publishRes.json();
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Make.com webhook failed: ${res.status} ${text}`);
+  }
+
+  return res.json();
 }
 
 function buildWixRichContent(articleText) {
