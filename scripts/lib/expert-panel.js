@@ -8,7 +8,7 @@ function buildPanelSystemPrompt() {
 
 Panel members:
 1. Casting Director — evaluates professional credibility and industry voice
-2. Sophie (RAW Acting Coach) — evaluates alignment with RAW's teaching philosophy
+2. RAW Instructor — evaluates alignment with RAW's teaching philosophy and craft standards
 3. Working Toronto Actor — evaluates practical usefulness vs. generic noise
 
 Score each dimension 0–20. Be strict. Generic acting content that could come from any studio scores low on brand_voice. Vague emotional language scores low on hook_specificity. Invented results or promises score 0 on copy_accuracy.`;

@@ -28,32 +28,18 @@
   ],
   "faculty": [
     {
-      "id": "sophie-ann-rooney",
-      "name": "Sophie Ann Rooney",
-      "role": "Founder & Director",
+      "id": "lineage-based-teaching",
+      "name": "RAW Faculty",
+      "role": "Instructors",
       "proof_points": [
-        "Award-winning director and filmmaker with more than 20 years across film, television, theatre, video games, and voice direction.",
-        "Directed for Netflix's Daniel Spellbound and worked in AAA gaming with Ubisoft.",
-        "Training includes Royal Central, Oxford, EICAR Paris, Amy Werba, and Blanche Salant lineage."
+        "Training lineage includes Royal Central, Oxford, EICAR Paris, Amy Werba, and Blanche Salant.",
+        "Faculty bring more than 20 years of combined experience across film, television, theatre, and on-camera direction.",
+        "Known for practical tools, preparation process, and on-set expectations grounded in real industry conditions."
       ],
       "source_urls": [
         "https://www.rawactorstudio.com/",
         "https://www.rawactorstudio.com/faculty",
         "https://www.rawactorstudio.com/about-the-studio"
-      ]
-    },
-    {
-      "id": "grisha-pasternak",
-      "name": "Grisha Pasternak",
-      "role": "Coach & Director",
-      "proof_points": [
-        "Filmmaker, actor, and mentor with more than 17 years of experience on both sides of the camera.",
-        "Trained in film at Toronto Metropolitan University.",
-        "Known on the site for practical tools, preparation process, and on-set expectations."
-      ],
-      "source_urls": [
-        "https://www.rawactorstudio.com/",
-        "https://www.rawactorstudio.com/faculty"
       ]
     }
   ],
@@ -61,7 +47,7 @@
     {
       "id": "testimonial-artist-seen",
       "type": "testimonial",
-      "summary": "Student feedback says Sophie and Grisha see the artist clearly and support them in the right ways.",
+      "summary": "Student feedback says RAW instructors see the artist clearly and support them in the right ways.",
       "attribution": "Arshdeep Purba / homepage testimonial",
       "source_url": "https://www.rawactorstudio.com/"
     },

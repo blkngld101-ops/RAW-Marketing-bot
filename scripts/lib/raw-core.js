@@ -162,7 +162,7 @@ const PHILOSOPHY_ANGLES = [
     acting_keywords: ["lineage", "technique", "contemporary", "camera"],
     problem: "Technique language can become either museum talk or trend talk.",
     tool: "RAW ties lineage to modern audition and on-camera realities.",
-    proof_sources: ["industry-reality", "sophie-ann-rooney"]
+    proof_sources: ["industry-reality", "lineage-based-teaching"]
   },
   {
     id: "acting-is-a-job",
@@ -172,7 +172,7 @@ const PHILOSOPHY_ANGLES = [
     acting_keywords: ["industry", "professional", "on set", "pressure"],
     problem: "The room should prepare actors for actual standards, not fantasy conditions.",
     tool: "Training has to work when time is short and the pressure is real.",
-    proof_sources: ["industry-reality", "grisha-pasternak"]
+    proof_sources: ["industry-reality", "repeatable-system"]
   }
 ];
 
