@@ -7,13 +7,20 @@
     "price": 550,
     "currency": "CAD",
     "duration": "6 weeks",
-    "schedule": "Mondays, 6:30pm–10:30pm",
+    "payment_options": [
+      { "label": "Full payment", "amount": 550 },
+      { "label": "2 payments", "amount": 275, "interval": "every 2 weeks" },
+      { "label": "3 payments", "amount": 183.33, "interval": "every 2 weeks" }
+    ],
     "enrollment_open": "2026-04-01",
+    "urgency_stage": "enrollment_open",
     "early_bird_deadline": null,
     "discount_code": "RAW10",
     "discount_percent": 10,
     "max_spots": 12,
-    "location": "1110 Dupont Street, Toronto"
+    "location": "1110 Dupont St, The Salon, Toronto",
+    "booking_url": "https://www.rawactorstudio.com/book",
+    "level": "All Skill Levels"
   },
   {
     "id": "audition-l1-2026-05",
@@ -23,13 +30,20 @@
     "price": 550,
     "currency": "CAD",
     "duration": "6 weeks",
-    "schedule": "Tuesdays, 6:30pm–10:30pm",
+    "payment_options": [
+      { "label": "Full payment", "amount": 550 },
+      { "label": "2 payments", "amount": 275, "interval": "every 2 weeks" },
+      { "label": "3 payments", "amount": 183.33, "interval": "every 2 weeks" }
+    ],
     "enrollment_open": "2026-04-01",
+    "urgency_stage": "enrollment_open",
     "early_bird_deadline": null,
     "discount_code": "RAW10",
     "discount_percent": 10,
     "max_spots": 12,
-    "location": "1110 Dupont Street, Toronto"
+    "location": "1110 Dupont St, The Salon, Toronto",
+    "booking_url": "https://www.rawactorstudio.com/book",
+    "level": "All Levels"
   },
   {
     "id": "reps-2026-06",
@@ -39,12 +53,19 @@
     "price": 550,
     "currency": "CAD",
     "duration": "6 weeks",
-    "schedule": "Mondays, 6:30pm–10:30pm",
+    "payment_options": [
+      { "label": "Full payment", "amount": 550 },
+      { "label": "2 payments", "amount": 275, "interval": "every 2 weeks" },
+      { "label": "3 payments", "amount": 183.33, "interval": "every 2 weeks" }
+    ],
     "enrollment_open": "2026-04-01",
+    "urgency_stage": "awareness",
     "early_bird_deadline": null,
     "discount_code": "RAW10",
     "discount_percent": 10,
     "max_spots": 12,
-    "location": "1110 Dupont Street, Toronto"
+    "location": "1110 Dupont St, The Salon, Toronto",
+    "booking_url": "https://www.rawactorstudio.com/book",
+    "level": "All Skill Levels"
   }
 ]
