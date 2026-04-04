@@ -6,9 +6,10 @@ RAW is not positioned as a soft, inspirational acting school. The public-facing 
 
 1. Clarity over vagueness
 2. Authorship over guessing
-3. Repeatable tools over hype
-4. Industry reality over hobbyist language
-5. Serious support over ego or teardown teaching
+3. Autonomy over dependency — actors leave with tools they own, not a method they need a coach to unlock
+4. Repeatable tools over hype
+5. Industry reality over hobbyist language
+6. Serious support over ego or teardown teaching
 
 The strongest current phrases from official RAW pages are:
 

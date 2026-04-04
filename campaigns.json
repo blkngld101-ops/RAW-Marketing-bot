@@ -1,1 +1,36 @@
-[]
+[
+  {
+    "id": "precision-under-pressure",
+    "theme": "Precision Under Pressure",
+    "pillar": "craft",
+    "angle_seeds": [
+      "Precision Under Pressure",
+      "Clarity Is Your Edge",
+      "Repeatable Professionalism",
+      "Beyond Acting Theory"
+    ],
+    "notes": "Core craft campaign — actors who want to stop guessing and build a repeatable process. Use across Tuesday craft posts and Thursday philosophy posts."
+  },
+  {
+    "id": "pilot-season",
+    "theme": "Pilot Season Is Coming",
+    "pillar": "conversion",
+    "angle_seeds": [
+      "Pilot Season Is Coming",
+      "Master the Professional System",
+      "The Pathway to Set-Ready"
+    ],
+    "notes": "Seasonal campaign for January–February and September. Enrollment push framing around industry deadlines."
+  },
+  {
+    "id": "summer-season",
+    "theme": "Own the Summer Season",
+    "pillar": "conversion",
+    "angle_seeds": [
+      "Own the Summer Season",
+      "Marketable Presence",
+      "Performance Excellence"
+    ],
+    "notes": "Summer enrollment campaign. Actors who want to use the off-season to sharpen before fall audition cycles."
+  }
+]
