@@ -133,11 +133,8 @@ Reject content if:
 - it repeats recent hooks or sentence shapes
 - it uses a location, price, or class fact that is not marked verified
 
-## Canonical Fact Warning
+## Canonical Location
 
-Official RAW pages currently conflict on location details.
+**Verified address:** 1110 Dupont St, The Salon, Toronto, ON M6H 2A2
 
-- Newer-looking / more recent pages point to `1110 Dupont St, The Salon`
-- Other official pages still show `1224 King St W, 3rd floor`
-
-Until that is resolved, the generator must avoid using a street address in public-facing captions unless the fact is explicitly overridden in `offers.json` or a session record.
+Use this address only when a session record or offer explicitly includes it. Do not use 1224 King St W — that location is no longer current.

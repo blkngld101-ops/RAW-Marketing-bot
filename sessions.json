@@ -7,6 +7,7 @@
     "price": 550,
     "currency": "CAD",
     "duration": "6 weeks",
+    "schedule": "Mondays, 6:30pm–10:30pm",
     "payment_options": [
       { "label": "Full payment", "amount": 550 },
       { "label": "2 payments", "amount": 275, "interval": "every 2 weeks" },
