@@ -239,46 +239,77 @@ async function triggerWorkflow() {
   }
 }
 
-async function pushToBuffer(post) {
-  if (!process.env.BUFFER_ACCESS_TOKEN || !process.env.BUFFER_PROFILE_IDS) {
-    throw new Error("BUFFER_ACCESS_TOKEN and BUFFER_PROFILE_IDS are required.");
-  }
-
-  const profileId = process.env.BUFFER_PROFILE_IDS.split(",")
-    .map((item) => item.trim())
-    .find(Boolean);
-
-  if (!profileId) {
-    throw new Error("BUFFER_PROFILE_IDS is empty.");
-  }
-
-  const form = new URLSearchParams();
-  form.append("access_token", process.env.BUFFER_ACCESS_TOKEN);
-  form.append("profile_ids[]", profileId);
-  form.append("text", `${post.caption}\n\n${(post.hashtags || []).join(" ")}`.trim());
-  form.append("top", "false");
-  form.append("shorten", "false");
-  form.append("now", "false");
+async function postToInstagram(post) {
+  const igUserId = process.env.INSTAGRAM_USER_ID;
+  const token = process.env.INSTAGRAM_ACCESS_TOKEN;
+  if (!igUserId || !token) throw new Error("INSTAGRAM_USER_ID and INSTAGRAM_ACCESS_TOKEN are required.");
 
   const imageUrl = buildPublicImageUrl(post);
-  if (imageUrl) {
-    form.append("media[photo]", imageUrl);
+  if (!imageUrl) throw new Error("No image path on post — render first.");
+
+  const caption = `${post.caption}\n\n${(post.hashtags || []).join(" ")}`.trim();
+
+  const containerRes = await fetch(
+    `https://graph.instagram.com/v21.0/${igUserId}/media`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image_url: imageUrl, caption, access_token: token })
+    }
+  );
+  const container = await containerRes.json();
+  if (!container.id) throw new Error(`Instagram container error: ${JSON.stringify(container)}`);
+
+  const publishRes = await fetch(
+    `https://graph.instagram.com/v21.0/${igUserId}/media_publish`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ creation_id: container.id, access_token: token })
+    }
+  );
+  return publishRes.json();
+}
+
+function buildWixRichContent(articleText) {
+  const paragraphs = String(articleText || "").split(/\n\n+/).filter(Boolean);
+  return {
+    nodes: paragraphs.map((text) => ({
+      type: "PARAGRAPH",
+      nodes: [{ type: "TEXT", textData: { text: text.trim(), decorations: [] } }],
+      paragraphData: {}
+    }))
+  };
+}
+
+async function postToWixBlog(post) {
+  if (!process.env.WIX_API_KEY || !process.env.WIX_SITE_ID) {
+    throw new Error("WIX_API_KEY and WIX_SITE_ID are required.");
   }
 
-  const response = await fetch("https://api.bufferapp.com/1/updates/create.json", {
+  const res = await fetch("https://www.wixapis.com/blog/v3/posts", {
     method: "POST",
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
+      Authorization: `Bearer ${process.env.WIX_API_KEY}`,
+      "wix-site-id": process.env.WIX_SITE_ID,
+      "Content-Type": "application/json"
     },
-    body: form
+    body: JSON.stringify({
+      post: {
+        title: post.blog_seo_title,
+        excerpt: post.blog_meta_description || "",
+        richContent: buildWixRichContent(post.blog_article),
+        language: "en"
+      }
+    })
   });
 
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Buffer create failed: ${response.status} ${text}`);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Wix Blog API failed: ${res.status} ${text}`);
   }
 
-  return response.json();
+  return res.json();
 }
 
 function createEnrollmentBrief(data) {
@@ -881,12 +912,23 @@ async function handleCallback(update, context) {
   }
 
   if (action === "apr") {
-    const bufferResponse = await pushToBuffer(post);
+    const hasBlog = Boolean(post.blog_article && post.blog_seo_title);
+    const [igResult, blogResult] = await Promise.allSettled([
+      postToInstagram(post),
+      hasBlog ? postToWixBlog(post) : Promise.resolve(null)
+    ]);
+
+    const igOk = igResult.status === "fulfilled";
+    const blogOk = !hasBlog || blogResult.status === "fulfilled";
+    const igErr = igResult.reason?.message || "";
+    const blogErr = blogResult.reason?.message || "";
+
     const approvedPost = {
       ...post,
       status: "approved",
       approved_at: new Date().toISOString(),
-      buffer_update_id: bufferResponse?.updates?.[0]?.id || null
+      instagram_post_id: igOk ? (igResult.value?.id || null) : null,
+      wix_draft_id: (hasBlog && blogOk) ? (blogResult.value?.post?.id || null) : null
     };
     context.queue = replacePost(context.queue, approvedPost);
     context.reviewMemory.approved_exemplars = [
@@ -913,11 +955,15 @@ async function handleCallback(update, context) {
     context.reviewMemory.updated_at = new Date().toISOString();
     context.experiments = recordOutcome(context.experiments, post, "approved");
     await persistContext(context, ["queue", "reviewMemory", "experiments"]);
+
+    const statusParts = [`Instagram: ${igOk ? "posted" : "failed — " + igErr}`];
+    if (hasBlog) statusParts.push(`Wix blog: ${blogOk ? "draft created" : "failed — " + blogErr}`);
+
     await telegramApi("answerCallbackQuery", {
       callback_query_id: callback.id,
-      text: "Approved and pushed to Buffer."
+      text: igOk ? "Approved and posted." : "Approve attempted — check status."
     });
-    await sendMessage(chatId, `Approved ${approvedPost.headline} and queued it in Buffer.`);
+    await sendMessage(chatId, `${approvedPost.headline}\n${statusParts.join(" | ")}`);
     return;
   }
 

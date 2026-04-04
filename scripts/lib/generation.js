@@ -163,7 +163,11 @@ Return JSON only in this shape:
   "proof_sources": ["repeatable-system"],
   "source_notes": ["short source anchor"],
   "layout_variant": "text-led or photo-led",
-  "visual_direction": "brief rendering note"
+  "visual_direction": "brief rendering note"${brief.pillar === "craft" ? `,
+  "blog_seo_title": "SEO-optimised title (60 chars max, target keyword first)",
+  "blog_meta_description": "140-155 char meta description with a clear value prop",
+  "blog_target_keyword": "primary search keyword phrase (e.g. 'how to cold read an audition')",
+  "blog_article": "600-900 word article. Plain paragraphs separated by blank lines. No markdown headers or bullet points. Lead with a direct answer to the target keyword. Use real technique language throughout. Tie every point to RAW's repeatable system approach. End with a single CTA to book a free audit at rawactorstudio.com."` : ""}
 }
 `;
 }
@@ -325,7 +329,15 @@ function buildMockDraft(brief, data) {
     visual_direction:
       brief.cta_type === "reels"
         ? "Use a photo-led frame with cinematic crop and proof-of-work energy."
-        : "Use a text-led frame with strong hierarchy and restrained cinematic texture."
+        : "Use a text-led frame with strong hierarchy and restrained cinematic texture.",
+    ...(brief.pillar === "craft"
+      ? {
+          blog_seo_title: `${headline} — RAW Actor Studio Toronto`,
+          blog_meta_description: `Learn how to work with ${brief.acting_concept} in on-camera auditions. RAW Actor Studio's approach to craft training in Toronto.`,
+          blog_target_keyword: brief.acting_concept,
+          blog_article: `${buildMockCaption(brief, proofSummary)}\n\nThis is the standard RAW trains to. Not confidence — clarity. Not inspiration — process.\n\nIf you want to find out where your own work holds and where it breaks, book a free audit at rawactorstudio.com.`
+        }
+      : {})
   };
 }
 
@@ -398,7 +410,7 @@ function sanitizeDraft(draft, brief) {
     ? draft.source_notes.map((item) => String(item).trim()).filter(Boolean)
     : [...brief.source_notes];
 
-  return {
+  const sanitized = {
     headline: String(draft.headline || "").trim(),
     label: label || brief.label,
     image_body: String(draft.image_body || "").trim(),
@@ -412,6 +424,15 @@ function sanitizeDraft(draft, brief) {
       draft.layout_variant === "photo-led" ? "photo-led" : "text-led",
     visual_direction: String(draft.visual_direction || "").trim()
   };
+
+  if (brief.pillar === "craft") {
+    sanitized.blog_seo_title = String(draft.blog_seo_title || "").trim();
+    sanitized.blog_meta_description = String(draft.blog_meta_description || "").trim();
+    sanitized.blog_target_keyword = String(draft.blog_target_keyword || "").trim();
+    sanitized.blog_article = String(draft.blog_article || "").trim();
+  }
+
+  return sanitized;
 }
 
 export function lintGeneratedPost(post, brief, data, recentContent) {
@@ -533,7 +554,11 @@ function buildPostRecord(draft, brief, lintResult) {
     supplemental: Boolean(brief.supplemental),
     freshness_window: brief.freshness_window || null,
     generated_at: nowIso,
-    image_path: null
+    image_path: null,
+    blog_seo_title: draft.blog_seo_title || null,
+    blog_meta_description: draft.blog_meta_description || null,
+    blog_target_keyword: draft.blog_target_keyword || null,
+    blog_article: draft.blog_article || null
   };
 }
 
