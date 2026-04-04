@@ -42,9 +42,9 @@ export async function renderSinglePost(browser, post, options = {}) {
   });
 
   await page.setContent(injectPayload(html, post), {
-    waitUntil: "domcontentloaded"
+    waitUntil: "networkidle"
   });
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(300);
 
   const outputDir = options.outputDir || DATA_PATHS.approvedPosts;
   await ensureDir(outputDir);

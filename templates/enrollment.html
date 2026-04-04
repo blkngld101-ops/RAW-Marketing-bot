@@ -177,8 +177,7 @@
 
       const detailsParts = [
         post.image_body,
-        post.cta_type === "audit" ? "Free audit available." : "",
-        post.cta_url ? post.cta_url.replace(/^https?:\/\//, "") : ""
+        post.cta_type === "audit" ? "Free audit available." : ""
       ].filter(Boolean);
 
       setText(
@@ -200,7 +199,7 @@
             ? "EMAIL RAW REELS"
             : "TRAIN WITH CLARITY"
       );
-      setText("cta", post.cta_url ? post.cta_url.replace(/^https?:\/\//, "") : "rawactorstudio.com");
+      setText("cta", post.cta_type === "enrollment" ? "rawactorstudio.com/book" : "rawactorstudio.com");
 
       const photo = document.getElementById("photo");
       const imageUrl = post.media?.image_url || post.photo_url || "";
