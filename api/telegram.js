@@ -201,11 +201,15 @@ async function sendReviewPost(chatId, post) {
   const imageUrl = buildPublicImageUrl(post);
 
   if (imageUrl) {
-    await telegramApi("sendPhoto", {
-      chat_id: chatId,
-      photo: imageUrl,
-      caption: `${post.headline}\n${post.date} | ${post.type}`.slice(0, 1024)
-    });
+    try {
+      await telegramApi("sendPhoto", {
+        chat_id: chatId,
+        photo: imageUrl,
+        caption: `${post.headline}\n${post.date} | ${post.type}`.slice(0, 1024)
+      });
+    } catch {
+      // Photo failed — continue to text review message regardless
+    }
   }
 
   await sendMessage(chatId, summarizePost(post), {
