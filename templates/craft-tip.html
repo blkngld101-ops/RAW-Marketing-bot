@@ -4,203 +4,449 @@
     <meta charset="utf-8" />
     <title>RAW Craft Tip</title>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&family=DM+Serif+Display:ital@0;1&display=swap");
 
       :root {
-        --bg: #0a0a0a;
-        --bg-alt: #16110f;
+        --accent: #d4a520;
+        --dark: #0a0a0a;
         --fg: #f0f0f0;
-        --muted: rgba(240, 240, 240, 0.68);
-        --accent: #c4a35a;
+        --muted: rgba(240,240,240,0.62);
+        --band: 88px;
       }
 
-      * {
-        box-sizing: border-box;
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { width: 1080px; height: 1080px; overflow: hidden; position: relative; }
+
+      /* ─── SHARED ELEMENTS ─── */
+
+      /* Gold left band — always present */
+      .band {
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: var(--band);
+        background: var(--accent);
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .band-text {
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 38px;
+        letter-spacing: 0.26em;
+        color: var(--dark);
+        white-space: nowrap;
       }
 
-      html,
-      body {
-        margin: 0;
-        width: 1080px;
-        height: 1080px;
-        overflow: hidden;
-        background: radial-gradient(circle at top right, rgba(196, 163, 90, 0.16), transparent 28%),
-          linear-gradient(140deg, var(--bg) 0%, #141414 58%, var(--bg-alt) 100%);
+      /* Logo + wordmark */
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .logo { width: 52px; height: 52px; object-fit: contain; }
+      .wordmark {
+        font-size: 34px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      /* SVG grain overlay — always on top */
+      .grain {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 50;
+        mix-blend-mode: soft-light;
+        opacity: 0.42;
+      }
+
+      /* Vignette — dark corner pull, cinematic depth */
+      .vignette {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 48;
+        background: radial-gradient(ellipse at 50% 50%, transparent 52%, rgba(0,0,0,0.58) 100%);
+      }
+
+      /* ─── MODE: type — pure typography, no photo ─── */
+      body[data-mode="type"] {
+        background:
+          radial-gradient(ellipse at 95% 5%, rgba(212,165,32,0.18) 0%, transparent 35%),
+          linear-gradient(155deg, #111010 0%, var(--dark) 60%, #0e0d0b 100%);
         color: var(--fg);
-      }
-
-      body {
-        position: relative;
         font-family: "Inter", sans-serif;
       }
 
-      body::before {
-        content: "";
+      body[data-mode="type"] .frame-type {
         position: absolute;
-        inset: 0;
-        background-image: radial-gradient(rgba(255, 255, 255, 0.05) 0.6px, transparent 0.6px);
-        background-size: 11px 11px;
-        opacity: 0.08;
-        pointer-events: none;
-      }
-
-      .photo {
-        position: absolute;
-        inset: 84px 72px auto auto;
-        width: 320px;
-        height: 430px;
-        border-radius: 26px;
-        overflow: hidden;
-        background:
-          linear-gradient(180deg, rgba(10, 10, 10, 0.2), rgba(10, 10, 10, 0.82)),
-          linear-gradient(135deg, rgba(196, 163, 90, 0.28), rgba(255, 255, 255, 0.08));
-        background-size: cover;
-        background-position: center;
-        border: 1px solid rgba(240, 240, 240, 0.12);
-        opacity: 0;
-        transform: translateX(24px);
-        transition: opacity 0.2s ease, transform 0.2s ease;
-      }
-
-      body[data-layout="photo-led"] .photo {
-        opacity: 1;
-        transform: translateX(0);
-      }
-
-      .frame {
-        position: relative;
+        left: var(--band); top: 0; right: 0; bottom: 0;
         display: grid;
         grid-template-rows: auto 1fr auto;
-        height: 100%;
-        padding: 72px;
+        padding: 68px 72px 68px 64px;
       }
 
-      .top {
+      body[data-mode="type"] .top-row {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
-        gap: 24px;
+        align-items: center;
       }
 
-      .wordmark {
-        font-size: 18px;
-        font-weight: 600;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
+      body[data-mode="type"] .headline {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 210px;
+        line-height: 0.86;
+        letter-spacing: 0.01em;
+        color: var(--fg);
       }
 
-      .category {
-        max-width: 320px;
-        padding: 14px 18px;
-        border-radius: 999px;
+      body[data-mode="type"] .rule {
+        margin: 24px 0;
+        width: 68px; height: 4px;
         background: var(--accent);
-        color: #111;
-        font-size: 15px;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
       }
 
-      main {
-        align-self: center;
-        max-width: 660px;
-        padding-top: 48px;
-      }
-
-      body[data-layout="photo-led"] main {
+      body[data-mode="type"] .body-text {
+        font-size: 36px;
+        line-height: 1.36;
+        font-weight: 300;
+        color: var(--muted);
         max-width: 560px;
       }
 
-      .label {
-        color: var(--accent);
-        font-size: 18px;
+      body[data-mode="type"] .footer-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+
+      body[data-mode="type"] .tagline {
+        font-family: "DM Serif Display", serif;
+        font-style: italic;
+        font-size: 28px;
+        color: rgba(212,165,32,0.72);
+      }
+
+      body[data-mode="type"] .eyebrow {
+        font-size: 32px;
         font-weight: 600;
         letter-spacing: 0.24em;
         text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 16px;
       }
 
-      .headline {
-        margin: 22px 0 20px;
-        font-family: "Bebas Neue", sans-serif;
-        font-size: 96px;
-        line-height: 0.92;
-        letter-spacing: 0.01em;
+      /* ─── MODE: photo-split — diagonal photo right, text left ─── */
+      body[data-mode="photo-split"] {
+        background: var(--dark);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
       }
 
-      .body {
-        max-width: 520px;
-        font-size: 30px;
-        line-height: 1.35;
-        font-weight: 300;
-        color: var(--muted);
+      .photo-split-bg {
+        display: none;
+        position: absolute;
+        right: 0; top: 0; bottom: 0;
+        width: 660px;
+        background-size: cover;
+        background-position: center;
+        clip-path: polygon(12% 0, 100% 0, 100% 100%, 0% 100%);
+      }
+      .photo-split-bg::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(90deg, rgba(10,10,10,0.98) 0%, rgba(10,10,10,0.55) 35%, rgba(10,10,10,0.12) 100%);
       }
 
-      .footer {
+      body[data-mode="photo-split"] .photo-split-bg { display: block; }
+
+      body[data-mode="photo-split"] .frame-split {
+        position: absolute;
+        left: var(--band); top: 0; right: 0; bottom: 0;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        padding: 68px 72px 68px 64px;
+      }
+
+      body[data-mode="photo-split"] .top-row {
         display: flex;
         justify-content: space-between;
-        align-items: end;
-        gap: 24px;
+        align-items: center;
       }
 
-      .tagline {
+      body[data-mode="photo-split"] .headline {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 168px;
+        line-height: 0.88;
+        letter-spacing: 0.01em;
+        max-width: 580px;
+      }
+
+      body[data-mode="photo-split"] .rule {
+        margin: 22px 0;
+        width: 68px; height: 4px;
+        background: var(--accent);
+      }
+
+      body[data-mode="photo-split"] .body-text {
+        font-size: 34px;
+        line-height: 1.38;
+        font-weight: 300;
+        color: var(--muted);
+        max-width: 480px;
+      }
+
+      body[data-mode="photo-split"] .footer-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+
+      body[data-mode="photo-split"] .tagline {
         font-family: "DM Serif Display", serif;
         font-style: italic;
-        font-size: 24px;
-        color: rgba(196, 163, 90, 0.82);
+        font-size: 28px;
+        color: rgba(212,165,32,0.72);
       }
 
-      .note {
-        max-width: 340px;
-        text-align: right;
-        font-size: 16px;
-        line-height: 1.45;
-        color: rgba(240, 240, 240, 0.58);
+      body[data-mode="photo-split"] .eyebrow {
+        font-size: 32px;
+        font-weight: 600;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 16px;
       }
+
+      /* ─── MODE: photo-full — photo behind, text in bottom band ─── */
+      body[data-mode="photo-full"] {
+        background: var(--dark);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+
+      .photo-full-bg {
+        display: none;
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+      }
+      .photo-full-bg::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(180deg,
+            rgba(10,10,10,0.3) 0%,
+            rgba(10,10,10,0.2) 35%,
+            rgba(10,10,10,0.75) 60%,
+            rgba(10,10,10,0.97) 100%
+          );
+      }
+
+      body[data-mode="photo-full"] .photo-full-bg { display: block; }
+
+      .frame-full {
+        display: none;
+        position: absolute;
+        left: var(--band); top: 0; right: 0; bottom: 0;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 0 72px 68px 64px;
+      }
+
+      body[data-mode="photo-full"] .frame-full {
+        display: flex;
+      }
+
+      /* Top brand floats over photo */
+      .frame-full .top-float {
+        position: absolute;
+        top: 68px;
+        left: 64px;
+        right: 72px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 10;
+      }
+
+      body[data-mode="photo-full"] .headline {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 148px;
+        line-height: 0.9;
+        letter-spacing: 0.01em;
+        position: relative;
+        z-index: 5;
+      }
+
+      body[data-mode="photo-full"] .rule {
+        margin: 18px 0;
+        width: 68px; height: 4px;
+        background: var(--accent);
+        position: relative;
+        z-index: 5;
+      }
+
+      body[data-mode="photo-full"] .body-text {
+        font-size: 32px;
+        line-height: 1.36;
+        font-weight: 300;
+        color: rgba(240,240,240,0.82);
+        max-width: 640px;
+        position: relative;
+        z-index: 5;
+      }
+
+      body[data-mode="photo-full"] .eyebrow {
+        font-size: 32px;
+        font-weight: 600;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 14px;
+        position: relative;
+        z-index: 5;
+      }
+
+      /* hide unused frames */
+      .frame-type, .frame-split, .frame-full { display: none; }
+      body[data-mode="type"] .frame-type { display: grid; }
+      body[data-mode="photo-split"] .frame-split { display: grid; }
+      body[data-mode="photo-full"] .frame-full { display: flex; }
     </style>
   </head>
-  <body data-layout="text-led">
-    <div class="photo" id="photo"></div>
-    <div class="frame">
-      <div class="top">
-        <div class="wordmark">RAW ACTOR STUDIO</div>
-        <div class="category" id="category">ON-CAMERA TECHNIQUE</div>
-      </div>
-      <main>
-        <div class="label" id="label">AUDITION PREP</div>
-        <h1 class="headline" id="headline">Make The First Pass Count</h1>
-        <div class="body" id="body">
-          Stop chasing emotion before you know what you are doing to the other person.
+  <body data-mode="type">
+
+    <!-- Gold band — always -->
+    <div class="band">
+      <div class="band-text" id="band-text">CRAFT</div>
+    </div>
+
+    <!-- Photo layers (hidden unless mode activates) -->
+    <div class="photo-split-bg" id="photo-split-bg"></div>
+    <div class="photo-full-bg" id="photo-full-bg"></div>
+
+    <!-- Vignette -->
+    <div class="vignette" aria-hidden="true"></div>
+
+    <!-- SVG grain — two passes: fine detail + medium texture -->
+    <div class="grain" aria-hidden="true">
+      <svg width="1080" height="1080" xmlns="http://www.w3.org/2000/svg">
+        <filter id="g1"><feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch"/></filter>
+        <filter id="g2"><feTurbulence type="fractalNoise" baseFrequency="0.32" numOctaves="2" stitchTiles="stitch"/></filter>
+        <rect width="1080" height="1080" filter="url(#g1)" opacity="0.62"/>
+        <rect width="1080" height="1080" filter="url(#g2)" opacity="0.22"/>
+      </svg>
+    </div>
+
+    <!-- TYPE frame -->
+    <div class="frame-type">
+      <div class="top-row">
+        <div class="brand">
+          <img class="logo" id="logo" src="" alt="RAW" />
+          <div class="wordmark">RAW Actor Studio</div>
         </div>
-      </main>
-      <div class="footer">
+      </div>
+      <div>
+        <div class="eyebrow" id="eyebrow-t">CRAFT</div>
+        <div class="headline" id="headline-t">Make The First Pass Count</div>
+        <div class="rule"></div>
+        <div class="body-text" id="body-t">Stop chasing emotion before you know what you are doing to the other person.</div>
+      </div>
+      <div class="footer-row">
         <div class="tagline">Training That Meets Industry Reality.</div>
-        <div class="note" id="note"></div>
       </div>
     </div>
+
+    <!-- SPLIT frame -->
+    <div class="frame-split">
+      <div class="top-row">
+        <div class="brand">
+          <img class="logo" id="logo2" src="" alt="RAW" />
+          <div class="wordmark">RAW Actor Studio</div>
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow" id="eyebrow-s">CRAFT</div>
+        <div class="headline" id="headline-s">Make The First Pass Count</div>
+        <div class="rule"></div>
+        <div class="body-text" id="body-s">Stop chasing emotion before you know what you are doing to the other person.</div>
+      </div>
+      <div class="footer-row">
+        <div class="tagline">Training That Meets Industry Reality.</div>
+      </div>
+    </div>
+
+    <!-- FULL frame -->
+    <div class="frame-full">
+      <div class="top-float">
+        <div class="brand">
+          <img class="logo" id="logo3" src="" alt="RAW" />
+          <div class="wordmark">RAW Actor Studio</div>
+        </div>
+      </div>
+      <div class="eyebrow" id="eyebrow-f">CRAFT</div>
+      <div class="headline" id="headline-f">Make The First Pass Count</div>
+      <div class="rule"></div>
+      <div class="body-text" id="body-f">Stop chasing emotion before you know what you are doing to the other person.</div>
+    </div>
+
     <!-- RAW_PAYLOAD -->
     <script>
       const post = window.__RAW_POST__ || {};
-      const setText = (id, value, fallback = "") => {
-        const node = document.getElementById(id);
-        if (node) {
-          node.textContent = value || fallback;
-        }
-      };
+      const assets = window.__RAW_ASSETS__ || {};
 
-      document.body.dataset.layout =
-        post.layout_variant === "photo-led" ? "photo-led" : "text-led";
+      // Set logos
+      ["logo","logo2","logo3"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && assets.logoSrc) el.src = assets.logoSrc;
+      });
 
-      setText("category", post.label || "ON-CAMERA TECHNIQUE");
-      setText("label", post.label || "CRAFT");
-      setText("headline", post.headline, "RAW Craft");
-      setText("body", post.image_body, "Specific tools. Clear choices. Usable process.");
-      setText("note", post.visual_direction || "");
+      // Resolve photo source
+      const bgPhoto = assets.photoBgSrc || assets.photoUrl || post.media?.image_url || post.photo_url || "";
+      const isPhotoLed = post.layout_variant === "photo-led";
 
-      const photo = document.getElementById("photo");
-      const imageUrl = post.media?.image_url || post.photo_url || "";
-      if (imageUrl) {
-        photo.style.backgroundImage = `linear-gradient(180deg, rgba(10, 10, 10, 0.2), rgba(10, 10, 10, 0.82)), url("${imageUrl}")`;
+      // Set mode
+      let mode;
+      if (!bgPhoto) {
+        mode = "type";
+      } else if (isPhotoLed) {
+        mode = "photo-full";
+      } else {
+        mode = "photo-split";
       }
+      document.body.dataset.mode = mode;
+
+      // Inject photo into relevant panels
+      if (bgPhoto) {
+        const photoRef = bgPhoto.startsWith("data:") ? `url("${bgPhoto}")` : `url("${bgPhoto}")`;
+        document.getElementById("photo-split-bg").style.backgroundImage = photoRef;
+        document.getElementById("photo-full-bg").style.backgroundImage = photoRef;
+      }
+
+      // Set text
+      const label = post.label || "CRAFT";
+      const headline = post.headline || "RAW Craft";
+      const body = post.image_body || "Specific tools. Clear choices. Usable process.";
+
+      ["t","s","f"].forEach(suffix => {
+        const bEl = document.getElementById(`band-text`);
+        if (bEl) bEl.textContent = label;
+        const eEl = document.getElementById(`eyebrow-${suffix}`);
+        if (eEl) eEl.textContent = label;
+        const hEl = document.getElementById(`headline-${suffix}`);
+        if (hEl) hEl.textContent = headline;
+        const bxEl = document.getElementById(`body-${suffix}`);
+        if (bxEl) bxEl.textContent = body;
+      });
     </script>
   </body>
 </html>

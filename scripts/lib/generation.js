@@ -153,6 +153,28 @@ ${JSON.stringify(
     2
   )}
 
+${brief.pillar === "philosophy" && data.quoteBank?.length ? `
+Available quotes to choose from (pick ONE that best fits the angle — use exact text, do not paraphrase):
+${JSON.stringify(
+  data.quoteBank.map((q) => ({
+    id: q.id,
+    text: q.text,
+    attribution_name: q.attribution_name,
+    attribution_sub: q.attribution_sub,
+    attribution_pool: q.pool,
+    attribution_photo_url: q.photo_url || "",
+    tags: q.tags
+  })),
+  null,
+  2
+)}
+
+Rules for quote selection:
+- Use the EXACT text field as the "headline" value
+- Copy attribution_name, attribution_sub, attribution_pool, attribution_photo_url exactly from the chosen entry
+- The caption should discuss WHY this quote matters to working actors, connecting it to RAW's approach
+- Do not mix quotes from different people
+` : ""}
 Return JSON only in this shape:
 {
   "headline": "max 10 words",
@@ -167,7 +189,11 @@ Return JSON only in this shape:
   "blog_seo_title": "SEO-optimised title (60 chars max, target keyword first)",
   "blog_meta_description": "140-155 char meta description with a clear value prop",
   "blog_target_keyword": "primary search keyword phrase (e.g. 'how to cold read an audition')",
-  "blog_article": "600-900 word article. Plain paragraphs separated by blank lines. No markdown headers or bullet points. Lead with a direct answer to the target keyword. Use real technique language throughout. Tie every point to RAW's repeatable system approach. End with a single CTA to book a free audit at rawactorstudio.com."` : ""}
+  "blog_article": "600-900 word article. Plain paragraphs separated by blank lines. No markdown headers or bullet points. Lead with a direct answer to the target keyword. Use real technique language throughout. Tie every point to RAW's repeatable system approach. End with a single CTA to book a free audit at rawactorstudio.com."` : ""}${brief.pillar === "philosophy" ? `,
+  "attribution_name": "person name if quoting an external source, or 'RAW Actor Studio'",
+  "attribution_sub": "book title or source context, or empty for RAW-authored posts",
+  "attribution_pool": "pool letter A/B/C/D/E matching the source pool, or empty for RAW posts",
+  "attribution_photo_url": "use photo_url from quote-bank entry if available, otherwise empty string"` : ""}
 }
 `;
 }
@@ -432,6 +458,13 @@ function sanitizeDraft(draft, brief) {
     sanitized.blog_article = String(draft.blog_article || "").trim();
   }
 
+  if (brief.pillar === "philosophy") {
+    sanitized.attribution_name = String(draft.attribution_name || "").trim();
+    sanitized.attribution_sub = String(draft.attribution_sub || "").trim();
+    sanitized.attribution_pool = String(draft.attribution_pool || "").trim();
+    sanitized.attribution_photo_url = String(draft.attribution_photo_url || "").trim();
+  }
+
   return sanitized;
 }
 
@@ -444,7 +477,10 @@ export function lintGeneratedPost(post, brief, data, recentContent) {
     issues.push("Missing headline.");
   }
 
-  if (wordCount(post.headline) > 10) {
+  // Philosophy posts use the full quote text as the headline — skip the word
+  // limit for those since the prompt explicitly requires the exact quote.
+  const isQuotePost = brief.pillar === "philosophy" && Boolean(post.attribution_name);
+  if (!isQuotePost && wordCount(post.headline) > 10) {
     issues.push("Headline exceeds 10 words.");
   }
 
@@ -558,7 +594,11 @@ function buildPostRecord(draft, brief, lintResult) {
     blog_seo_title: draft.blog_seo_title || null,
     blog_meta_description: draft.blog_meta_description || null,
     blog_target_keyword: draft.blog_target_keyword || null,
-    blog_article: draft.blog_article || null
+    blog_article: draft.blog_article || null,
+    attribution_name: draft.attribution_name || null,
+    attribution_sub: draft.attribution_sub || null,
+    attribution_pool: draft.attribution_pool || null,
+    attribution_photo_url: draft.attribution_photo_url || null
   };
 }
 

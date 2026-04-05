@@ -168,6 +168,7 @@ function countStatuses(queue) {
   const counts = {
     pending: 0,
     needs_revision: 0,
+    publish_failed: 0,
     approved: 0,
     skipped: 0
   };
@@ -639,9 +640,10 @@ async function handleTextMessage(update, context) {
         "RAW queue status",
         `pending: ${counts.pending}`,
         `needs revision: ${counts.needs_revision}`,
+        counts.publish_failed ? `publish failed: ${counts.publish_failed}` : null,
         `approved: ${counts.approved}`,
         `skipped: ${counts.skipped}`
-      ].join("\n")
+      ].filter(Boolean).join("\n")
     );
     return;
   }
@@ -695,8 +697,12 @@ async function handleTextMessage(update, context) {
       return;
     }
 
-    const result = await processArticleSubmission(url, message, context);
-    await sendMessage(chatId, summarizeSourceResult(result));
+    try {
+      const result = await processArticleSubmission(url, message, context);
+      await sendMessage(chatId, summarizeSourceResult(result));
+    } catch (articleError) {
+      await sendMessage(chatId, `Could not process article: ${articleError.message}`);
+    }
     return;
   }
 
@@ -913,11 +919,45 @@ async function handleCallback(update, context) {
     const igErr = igResult.reason?.message || "";
     const blogErr = blogResult.reason?.message || "";
 
+    const now = new Date().toISOString();
+    const statusParts = [`Instagram: ${igOk ? "posted" : "failed — " + igErr}`];
+    if (hasBlog) statusParts.push(`Wix blog: ${blogOk ? "draft created" : "failed — " + blogErr}`);
+
+    if (!igOk) {
+      const failedPost = {
+        ...post,
+        status: "publish_failed",
+        publish_failed_at: now,
+        publish_error: igErr || "unknown error",
+        instagram_post_id: null,
+        wix_draft_id: null
+      };
+      context.queue = replacePost(context.queue, failedPost);
+      context.reviewMemory.review_log = [
+        ...(context.reviewMemory.review_log || []),
+        {
+          type: "publish_failed",
+          date: failedPost.date,
+          angle_id: failedPost.angle_id,
+          error: igErr || "unknown error",
+          recorded_at: now
+        }
+      ].slice(-200);
+      context.reviewMemory.updated_at = now;
+      await persistContext(context, ["queue", "reviewMemory"]);
+      await telegramApi("answerCallbackQuery", {
+        callback_query_id: callback.id,
+        text: "Publish failed — post kept in queue for retry."
+      });
+      await sendMessage(chatId, `Publish failed for: ${post.headline}\n${statusParts.join(" | ")}\n\nPost is still in the review queue.`);
+      return;
+    }
+
     const approvedPost = {
       ...post,
       status: "approved",
-      approved_at: new Date().toISOString(),
-      instagram_post_id: igOk ? (igResult.value?.id || null) : null,
+      approved_at: now,
+      instagram_post_id: igResult.value?.id || null,
       wix_draft_id: (hasBlog && blogOk) ? (blogResult.value?.post?.id || null) : null
     };
     context.queue = replacePost(context.queue, approvedPost);
@@ -942,16 +982,13 @@ async function handleCallback(update, context) {
         recorded_at: approvedPost.approved_at
       }
     ].slice(-200);
-    context.reviewMemory.updated_at = new Date().toISOString();
+    context.reviewMemory.updated_at = now;
     context.experiments = recordOutcome(context.experiments, post, "approved");
     await persistContext(context, ["queue", "reviewMemory", "experiments"]);
 
-    const statusParts = [`Instagram: ${igOk ? "posted" : "failed — " + igErr}`];
-    if (hasBlog) statusParts.push(`Wix blog: ${blogOk ? "draft created" : "failed — " + blogErr}`);
-
     await telegramApi("answerCallbackQuery", {
       callback_query_id: callback.id,
-      text: igOk ? "Approved and posted." : "Approve attempted — check status."
+      text: "Approved and posted."
     });
     await sendMessage(chatId, `${approvedPost.headline}\n${statusParts.join(" | ")}`);
     return;

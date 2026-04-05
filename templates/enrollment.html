@@ -4,208 +4,431 @@
     <meta charset="utf-8" />
     <title>RAW Enrollment</title>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&family=DM+Serif+Display:ital@0;1&display=swap");
 
       :root {
-        --bg: #1a1714;
+        --accent: #d4a520;
+        --dark: #0c0b09;
         --fg: #f0f0f0;
-        --muted: rgba(240, 240, 240, 0.72);
-        --accent: #c4a35a;
+        --muted: rgba(240,240,240,0.64);
       }
 
-      * {
-        box-sizing: border-box;
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { width: 1080px; height: 1080px; overflow: hidden; position: relative; }
+
+      /* ─── GRAIN ─── */
+      .grain {
+        position: absolute; inset: 0;
+        pointer-events: none; z-index: 80;
+        mix-blend-mode: soft-light; opacity: 0.40;
+      }
+      /* On the gold-bg type mode, multiply works better than soft-light */
+      body[data-mode="type"] .grain {
+        mix-blend-mode: multiply;
+        opacity: 0.28;
       }
 
-      html,
-      body {
-        margin: 0;
-        width: 1080px;
-        height: 1080px;
-        overflow: hidden;
-        background:
-          linear-gradient(140deg, rgba(196, 163, 90, 0.08), transparent 40%),
-          radial-gradient(circle at 72% 18%, rgba(196, 163, 90, 0.16), transparent 18%),
-          linear-gradient(140deg, #14110f 0%, var(--bg) 100%);
-        color: var(--fg);
+      /* ─── VIGNETTE ─── */
+      .vignette {
+        position: absolute; inset: 0;
+        pointer-events: none; z-index: 78;
+        background: radial-gradient(ellipse at 50% 50%, transparent 52%, rgba(0,0,0,0.5) 100%);
+      }
+      /* Lighter vignette on gold bg */
+      body[data-mode="type"] .vignette {
+        background: radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,0.28) 100%);
       }
 
-      body {
-        position: relative;
+      /* shared logo */
+      .logo { width: 52px; height: 52px; object-fit: contain; }
+      .brand { display: flex; align-items: center; gap: 14px; }
+      .wordmark { font-size: 34px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+
+      /* ─────────────────────────────────────
+         MODE: type — INVERTED GOLD BACKGROUND
+         Dark class name on amber canvas.
+         Most eye-catching single treatment.
+         ───────────────────────────────────── */
+      body[data-mode="type"] {
+        background: var(--accent);
+        color: #0c0a06;
         font-family: "Inter", sans-serif;
       }
 
-      .photo {
-        position: absolute;
-        right: 72px;
-        bottom: 72px;
-        width: 360px;
-        height: 420px;
-        border-radius: 30px;
-        border: 1px solid rgba(240, 240, 240, 0.12);
-        overflow: hidden;
-        opacity: 0;
-        background:
-          linear-gradient(180deg, rgba(10, 10, 10, 0.18), rgba(10, 10, 10, 0.76)),
-          linear-gradient(135deg, rgba(196, 163, 90, 0.26), rgba(255, 255, 255, 0.08));
-        background-size: cover;
-        background-position: center;
-      }
-
-      body[data-layout="photo-led"] .photo {
-        opacity: 1;
-      }
-
-      .frame {
-        position: relative;
+      body[data-mode="type"] .frame-type {
+        position: absolute; inset: 0;
         display: grid;
         grid-template-rows: auto 1fr auto;
-        height: 100%;
         padding: 72px;
       }
 
-      .top {
-        display: flex;
-        justify-content: space-between;
-        gap: 24px;
+      /* Interior dark frame on gold bg */
+      body[data-mode="type"] .frame-type::before {
+        content: "";
+        position: absolute;
+        inset: 30px;
+        border: 2px solid rgba(12,10,6,0.22);
+        pointer-events: none;
       }
 
-      .wordmark {
-        font-size: 18px;
-        font-weight: 600;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
+      body[data-mode="type"] .top-inv {
+        display: flex; justify-content: space-between; align-items: center;
       }
 
-      .urgency {
-        padding: 14px 18px;
-        border-radius: 999px;
-        background: var(--accent);
-        color: #121212;
-        font-size: 15px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
+      body[data-mode="type"] .wordmark { color: #0c0a06; }
 
-      main {
-        align-self: center;
-        max-width: 620px;
-      }
-
-      body[data-layout="photo-led"] main {
-        max-width: 540px;
-      }
-
-      .label {
-        font-size: 17px;
-        font-weight: 600;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
+      /* Urgency on gold bg — dark stamp */
+      body[data-mode="type"] .urgency-inv {
+        padding: 12px 24px;
+        background: #0c0a06;
         color: var(--accent);
-      }
-
-      .class-name {
-        margin: 20px 0 18px;
         font-family: "Bebas Neue", sans-serif;
-        font-size: 90px;
-        line-height: 0.94;
+        font-size: 32px; letter-spacing: 0.14em;
+        text-transform: uppercase;
       }
 
-      .details {
-        font-size: 27px;
-        line-height: 1.45;
-        color: var(--muted);
+      body[data-mode="type"] .main-inv {
+        align-self: center;
+      }
+
+      body[data-mode="type"] .label-inv {
+        font-size: 32px; font-weight: 600;
+        letter-spacing: 0.26em; text-transform: uppercase;
+        color: rgba(12,10,6,0.6); margin-bottom: 16px;
+      }
+
+      body[data-mode="type"] .class-name-inv {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 172px; line-height: 0.87;
+        letter-spacing: 0.01em; color: #0c0a06;
+      }
+
+      body[data-mode="type"] .details-inv {
+        margin-top: 24px; font-size: 34px;
+        line-height: 1.38; font-weight: 300;
+        color: rgba(12,10,6,0.68); max-width: 560px;
         white-space: pre-line;
       }
 
-      .bottom {
-        display: flex;
-        justify-content: space-between;
-        align-items: end;
-        gap: 24px;
+      body[data-mode="type"] .bottom-inv {
+        display: flex; align-items: flex-end; justify-content: space-between;
       }
 
-      .discount {
-        display: inline-flex;
-        padding: 12px 18px;
-        border: 1px solid rgba(196, 163, 90, 0.75);
-        border-radius: 999px;
-        color: var(--accent);
-        font-size: 18px;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
+      body[data-mode="type"] .offer-inv {
+        padding: 14px 28px;
+        border: 2px solid rgba(12,10,6,0.45);
+        font-size: 28px; font-weight: 700;
+        letter-spacing: 0.1em; text-transform: uppercase;
+        color: #0c0a06;
       }
 
-      .cta {
-        font-size: 20px;
-        font-weight: 500;
-        color: rgba(240, 240, 240, 0.82);
+      body[data-mode="type"] .url-inv {
+        font-size: 30px; font-weight: 400;
+        color: rgba(12,10,6,0.68); letter-spacing: 0.04em;
       }
+
+      /* ─────────────────────────────────────
+         MODE: photo-split
+         Bold left / right split.
+         Left: dark enrollment info.
+         Right: class photo with diagonal cut.
+         ───────────────────────────────────── */
+      body[data-mode="photo-split"] {
+        background: var(--dark); color: var(--fg); font-family: "Inter", sans-serif;
+      }
+
+      /* Photo — right side, diagonal left edge */
+      .enroll-photo-split {
+        display: none; position: absolute;
+        right: 0; top: 0; bottom: 0; width: 580px;
+        background-size: cover; background-position: center;
+        clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%);
+      }
+      .enroll-photo-split::after {
+        content: ""; position: absolute; inset: 0;
+        background:
+          linear-gradient(90deg, rgba(12,11,9,1) 0%, rgba(12,11,9,0.5) 28%, rgba(12,11,9,0.08) 100%),
+          linear-gradient(180deg, rgba(12,11,9,0.15) 0%, rgba(12,11,9,0.5) 100%);
+      }
+
+      body[data-mode="photo-split"] .enroll-photo-split { display: block; }
+
+      /* Gold accent bar on far right edge */
+      body[data-mode="photo-split"] .right-accent {
+        position: absolute; right: 0; top: 0; bottom: 0; width: 6px;
+        background: var(--accent); z-index: 10;
+      }
+
+      body[data-mode="photo-split"] .frame-split {
+        position: absolute; inset: 0; z-index: 5;
+        display: grid; grid-template-rows: auto 1fr auto;
+        padding: 72px;
+      }
+
+      body[data-mode="photo-split"] .top-sp {
+        display: flex; justify-content: space-between; align-items: center;
+      }
+
+      body[data-mode="photo-split"] .urgency-sp {
+        padding: 12px 24px;
+        background: var(--accent); color: #0c0a06;
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 32px; letter-spacing: 0.14em; text-transform: uppercase;
+        transform: rotate(1.5deg);
+      }
+
+      body[data-mode="photo-split"] .main-sp { align-self: center; max-width: 560px; }
+
+      body[data-mode="photo-split"] .label-sp {
+        font-size: 32px; font-weight: 600;
+        letter-spacing: 0.26em; text-transform: uppercase;
+        color: var(--accent); margin-bottom: 16px;
+      }
+
+      body[data-mode="photo-split"] .class-name-sp {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 148px; line-height: 0.88; letter-spacing: 0.01em;
+      }
+
+      body[data-mode="photo-split"] .details-sp {
+        margin-top: 22px; font-size: 32px; line-height: 1.38;
+        font-weight: 300; color: var(--muted); max-width: 460px;
+        white-space: pre-line;
+      }
+
+      body[data-mode="photo-split"] .bottom-sp {
+        display: flex; align-items: flex-end; justify-content: space-between;
+      }
+
+      body[data-mode="photo-split"] .offer-sp {
+        padding: 14px 28px;
+        border: 2px solid rgba(212,165,32,0.65);
+        font-size: 28px; font-weight: 700;
+        letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);
+      }
+
+      body[data-mode="photo-split"] .url-sp {
+        font-size: 30px; font-weight: 400;
+        color: rgba(240,240,240,0.68); letter-spacing: 0.04em;
+      }
+
+      /* ─────────────────────────────────────
+         MODE: photo-full
+         Photo full bleed.
+         Class name enormous over dark vignette.
+         Gold top strip for brand.
+         ───────────────────────────────────── */
+      body[data-mode="photo-full"] {
+        background: var(--dark); color: var(--fg); font-family: "Inter", sans-serif;
+      }
+
+      .enroll-photo-full {
+        display: none; position: absolute; inset: 0;
+        background-size: cover; background-position: center;
+      }
+      .enroll-photo-full::after {
+        content: ""; position: absolute; inset: 0;
+        background:
+          linear-gradient(180deg,
+            rgba(12,11,9,0.72) 0%,
+            rgba(12,11,9,0.25) 28%,
+            rgba(12,11,9,0.28) 52%,
+            rgba(12,11,9,0.88) 78%,
+            rgba(12,11,9,0.98) 100%
+          );
+      }
+
+      body[data-mode="photo-full"] .enroll-photo-full { display: block; }
+
+      /* Horizontal gold stripe at top */
+      body[data-mode="photo-full"] .top-stripe {
+        position: absolute; top: 0; left: 0; right: 0; height: 8px;
+        background: var(--accent); z-index: 10;
+      }
+
+      body[data-mode="photo-full"] .frame-full {
+        position: absolute; inset: 0; z-index: 5;
+        display: flex; flex-direction: column; justify-content: space-between;
+        padding: 80px 72px 72px;
+      }
+
+      body[data-mode="photo-full"] .top-fl {
+        display: flex; justify-content: space-between; align-items: center;
+      }
+
+      body[data-mode="photo-full"] .urgency-fl {
+        padding: 12px 24px;
+        background: var(--accent); color: #0c0a06;
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 32px; letter-spacing: 0.14em; text-transform: uppercase;
+      }
+
+      body[data-mode="photo-full"] .bottom-content { }
+
+      body[data-mode="photo-full"] .label-fl {
+        font-size: 32px; font-weight: 600;
+        letter-spacing: 0.26em; text-transform: uppercase;
+        color: var(--accent); margin-bottom: 14px;
+      }
+
+      body[data-mode="photo-full"] .class-name-fl {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 140px; line-height: 0.89; letter-spacing: 0.01em;
+      }
+
+      body[data-mode="photo-full"] .details-fl {
+        margin-top: 20px; font-size: 32px; line-height: 1.36;
+        font-weight: 300; color: rgba(240,240,240,0.8); max-width: 640px;
+        white-space: pre-line;
+      }
+
+      body[data-mode="photo-full"] .bottom-fl {
+        display: flex; align-items: flex-end; justify-content: space-between; margin-top: 28px;
+      }
+
+      body[data-mode="photo-full"] .offer-fl {
+        padding: 14px 28px; border: 2px solid rgba(212,165,32,0.65);
+        font-size: 28px; font-weight: 700; letter-spacing: 0.1em;
+        text-transform: uppercase; color: var(--accent);
+      }
+
+      body[data-mode="photo-full"] .url-fl {
+        font-size: 30px; font-weight: 400;
+        color: rgba(240,240,240,0.72); letter-spacing: 0.04em;
+      }
+
+      /* ─── hide unused frames ─── */
+      .frame-type, .frame-split, .frame-full { display: none; }
+      body[data-mode="type"] .frame-type { display: grid; }
+      body[data-mode="photo-split"] .frame-split { display: grid; }
+      body[data-mode="photo-full"] .frame-full { display: flex; }
+
+      .right-accent { display: none; }
+      body[data-mode="photo-split"] .right-accent { display: block; }
     </style>
   </head>
-  <body data-layout="text-led">
-    <div class="photo" id="photo"></div>
-    <div class="frame">
-      <div class="top">
-        <div class="wordmark">RAW ACTOR STUDIO</div>
-        <div class="urgency" id="urgency">ENROLLMENT OPEN</div>
+  <body data-mode="type">
+
+    <!-- Photo panels -->
+    <div class="enroll-photo-split" id="photo-split"></div>
+    <div class="enroll-photo-full" id="photo-full"></div>
+    <div class="right-accent"></div>
+
+    <!-- Gold top stripe (photo-full only) -->
+    <div class="top-stripe"></div>
+
+    <!-- Vignette -->
+    <div class="vignette" aria-hidden="true"></div>
+
+    <!-- Grain — two passes -->
+    <div class="grain" aria-hidden="true">
+      <svg width="1080" height="1080" xmlns="http://www.w3.org/2000/svg">
+        <filter id="g1"><feTurbulence type="fractalNoise" baseFrequency="0.74" numOctaves="4" stitchTiles="stitch"/></filter>
+        <filter id="g2"><feTurbulence type="fractalNoise" baseFrequency="0.30" numOctaves="2" stitchTiles="stitch"/></filter>
+        <rect width="1080" height="1080" filter="url(#g1)" opacity="0.60"/>
+        <rect width="1080" height="1080" filter="url(#g2)" opacity="0.22"/>
+      </svg>
+    </div>
+
+    <!-- TYPE / INVERTED frame -->
+    <div class="frame-type">
+      <div class="top-inv">
+        <div class="brand">
+          <img class="logo" id="logo-t" src="" alt="RAW" />
+          <div class="wordmark">RAW Actor Studio</div>
+        </div>
+        <div class="urgency-inv" id="urgency-t">ENROLLMENT OPEN</div>
       </div>
-      <main>
-        <div class="label" id="label">UPCOMING CLASS</div>
-        <div class="class-name" id="class-name">THE MASTER CLASS</div>
-        <div class="details" id="details">Build a clear, repeatable process for scene work.</div>
-      </main>
-      <div class="bottom">
-        <div class="discount" id="discount">BOOK A FREE AUDIT</div>
-        <div class="cta" id="cta">rawactorstudio.com</div>
+      <div class="main-inv">
+        <div class="label-inv" id="label-t">UPCOMING CLASS</div>
+        <div class="class-name-inv" id="class-name-t">THE MASTER CLASS</div>
+        <div class="details-inv" id="details-t">Build a clear, repeatable process for scene work.</div>
+      </div>
+      <div class="bottom-inv">
+        <div class="offer-inv" id="offer-t">TRAIN WITH CLARITY</div>
+        <div class="url-inv" id="url-t">rawactorstudio.com</div>
       </div>
     </div>
+
+    <!-- SPLIT frame -->
+    <div class="frame-split">
+      <div class="top-sp">
+        <div class="brand">
+          <img class="logo" id="logo-s" src="" alt="RAW" />
+          <div class="wordmark">RAW Actor Studio</div>
+        </div>
+        <div class="urgency-sp" id="urgency-s">ENROLLMENT OPEN</div>
+      </div>
+      <div class="main-sp">
+        <div class="label-sp" id="label-s">UPCOMING CLASS</div>
+        <div class="class-name-sp" id="class-name-s">THE MASTER CLASS</div>
+        <div class="details-sp" id="details-s">Build a clear, repeatable process for scene work.</div>
+      </div>
+      <div class="bottom-sp">
+        <div class="offer-sp" id="offer-s">TRAIN WITH CLARITY</div>
+        <div class="url-sp" id="url-s">rawactorstudio.com</div>
+      </div>
+    </div>
+
+    <!-- FULL frame -->
+    <div class="frame-full">
+      <div class="top-fl">
+        <div class="brand">
+          <img class="logo" id="logo-f" src="" alt="RAW" />
+          <div class="wordmark">RAW Actor Studio</div>
+        </div>
+        <div class="urgency-fl" id="urgency-f">ENROLLMENT OPEN</div>
+      </div>
+      <div class="bottom-content">
+        <div class="label-fl" id="label-f">UPCOMING CLASS</div>
+        <div class="class-name-fl" id="class-name-f">THE MASTER CLASS</div>
+        <div class="details-fl" id="details-f">Build a clear, repeatable process for scene work.</div>
+        <div class="bottom-fl">
+          <div class="offer-fl" id="offer-f">TRAIN WITH CLARITY</div>
+          <div class="url-fl" id="url-f">rawactorstudio.com</div>
+        </div>
+      </div>
+    </div>
+
     <!-- RAW_PAYLOAD -->
     <script>
       const post = window.__RAW_POST__ || {};
-      const setText = (id, value, fallback = "") => {
-        const node = document.getElementById(id);
-        if (node) {
-          node.textContent = value || fallback;
-        }
-      };
+      const assets = window.__RAW_ASSETS__ || {};
 
-      document.body.dataset.layout =
-        post.layout_variant === "photo-led" ? "photo-led" : "text-led";
+      ["t","s","f"].forEach(s => {
+        const el = document.getElementById(`logo-${s}`);
+        if (el && assets.logoSrc) el.src = assets.logoSrc;
+      });
 
-      const detailsParts = [
-        post.image_body,
-        post.cta_type === "audit" ? "Free audit available." : ""
-      ].filter(Boolean);
+      const bgPhoto = assets.photoBgSrc || assets.photoUrl || post.media?.image_url || post.photo_url || "";
+      const isPhotoLed = post.layout_variant === "photo-led";
+      const mode = !bgPhoto ? "type" : isPhotoLed ? "photo-full" : "photo-split";
+      document.body.dataset.mode = mode;
 
-      setText(
-        "urgency",
-        post.cta_type === "audit"
-          ? "FREE AUDIT"
-          : post.status === "needs_revision"
-            ? "REVIEW"
-            : "ENROLLMENT OPEN"
-      );
-      setText("label", post.label || "UPCOMING OFFER");
-      setText("class-name", post.headline, "RAW Offer");
-      setText("details", detailsParts.join("\n"), "Clear offer details here.");
-      setText(
-        "discount",
-        post.cta_type === "audit"
-          ? "BOOK A FREE AUDIT"
-          : post.offer_id === "raw-reels"
-            ? "EMAIL RAW REELS"
-            : "TRAIN WITH CLARITY"
-      );
-      setText("cta", post.cta_type === "enrollment" ? "rawactorstudio.com/book" : "rawactorstudio.com");
-
-      const photo = document.getElementById("photo");
-      const imageUrl = post.media?.image_url || post.photo_url || "";
-      if (imageUrl) {
-        photo.style.backgroundImage = `linear-gradient(180deg, rgba(10, 10, 10, 0.18), rgba(10, 10, 10, 0.76)), url("${imageUrl}")`;
+      if (bgPhoto) {
+        const ref = `url("${bgPhoto}")`;
+        document.getElementById("photo-split").style.backgroundImage = ref;
+        document.getElementById("photo-full").style.backgroundImage = ref;
       }
+
+      const urgencyText = post.cta_type === "audit" ? "FREE AUDIT" : "ENROLLMENT OPEN";
+      const labelText = post.label || "UPCOMING OFFER";
+      const classText = post.headline || "RAW Offer";
+      const detailsText = post.image_body || "";
+      const offerText = post.cta_type === "audit"
+        ? "BOOK A FREE AUDIT"
+        : post.offer_id === "raw-reels" ? "EMAIL RAW REELS" : "TRAIN WITH CLARITY";
+      const urlText = post.cta_type === "enrollment" ? "rawactorstudio.com/book" : "rawactorstudio.com";
+
+      ["t","s","f"].forEach(s => {
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+        set(`urgency-${s}`, urgencyText);
+        set(`label-${s}`, labelText);
+        set(`class-name-${s}`, classText);
+        set(`details-${s}`, detailsText);
+        set(`offer-${s}`, offerText);
+        set(`url-${s}`, urlText);
+      });
     </script>
   </body>
 </html>

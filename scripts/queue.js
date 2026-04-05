@@ -322,7 +322,7 @@ export async function saveExperiments(
 export function getCurrentPost(queue) {
   return (
     (queue.posts || []).find((post) =>
-      ["pending", "needs_revision"].includes(post.status)
+      ["pending", "needs_revision", "publish_failed"].includes(post.status)
     ) || null
   );
 }

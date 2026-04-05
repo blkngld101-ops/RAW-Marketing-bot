@@ -1,0 +1,712 @@
+[
+  {
+    "id": "stanislavski-love-art",
+    "text": "Love the art in yourself, not yourself in the art.",
+    "attribution_name": "Konstantin Stanislavski",
+    "attribution_sub": "An Actor Prepares",
+    "pool": "A",
+    "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Stanislavski_1938.jpg/400px-Stanislavski_1938.jpg",
+    "context": "On ego and craft — the work must be larger than the performer's vanity",
+    "tags": ["craft", "ego", "professional-standards"]
+  },
+  {
+    "id": "stanislavski-no-small-parts",
+    "text": "There are no small parts, only small actors.",
+    "attribution_name": "Konstantin Stanislavski",
+    "attribution_sub": "An Actor Prepares",
+    "pool": "A",
+    "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Stanislavski_1938.jpg/400px-Stanislavski_1938.jpg",
+    "context": "On full preparation regardless of role size",
+    "tags": ["preparation", "professional-standards", "commitment"]
+  },
+  {
+    "id": "stanislavski-begin-with-action",
+    "text": "The physical action is the door to the inner life.",
+    "attribution_name": "Konstantin Stanislavski",
+    "attribution_sub": "Creating a Role",
+    "pool": "A",
+    "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Stanislavski_1938.jpg/400px-Stanislavski_1938.jpg",
+    "context": "On using physical score to access emotional truth",
+    "tags": ["physical-action", "inner-life", "technique"]
+  },
+  {
+    "id": "meisner-living-truthfully",
+    "text": "Acting is living truthfully under imaginary circumstances.",
+    "attribution_name": "Sanford Meisner",
+    "attribution_sub": "On Acting",
+    "pool": "A",
+    "photo_url": null,
+    "context": "Foundational definition of the craft",
+    "tags": ["technique", "truth", "foundation"]
+  },
+  {
+    "id": "meisner-reality-of-doing",
+    "text": "The foundation of acting is the reality of doing.",
+    "attribution_name": "Sanford Meisner",
+    "attribution_sub": "On Acting",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On committing to action rather than indicating",
+    "tags": ["action", "doing", "commitment"]
+  },
+  {
+    "id": "meisner-listen",
+    "text": "Don't do anything unless something makes you do it.",
+    "attribution_name": "Sanford Meisner",
+    "attribution_sub": "On Acting",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On reactive, earned behavior over performed behavior",
+    "tags": ["listening", "reaction", "truth"]
+  },
+  {
+    "id": "adler-imagination",
+    "text": "Your talent is in your imagination.",
+    "attribution_name": "Stella Adler",
+    "attribution_sub": "The Art of Acting",
+    "pool": "A",
+    "photo_url": null,
+    "context": "The actor's primary instrument is imagination, not recalled emotion",
+    "tags": ["imagination", "instrument", "technique"]
+  },
+  {
+    "id": "adler-size-of-life",
+    "text": "Life is not what it is. It's what you make it in your imagination.",
+    "attribution_name": "Stella Adler",
+    "attribution_sub": "The Art of Acting",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On elevating given circumstances through imagination",
+    "tags": ["imagination", "given-circumstances", "choices"]
+  },
+  {
+    "id": "adler-the-word",
+    "text": "The word in the script is the last step in a long journey.",
+    "attribution_name": "Stella Adler",
+    "attribution_sub": "The Art of Acting",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On the depth of analysis required before a single line is spoken",
+    "tags": ["preparation", "text-analysis", "foundation"]
+  },
+  {
+    "id": "adler-size-of-choice",
+    "text": "The size of your talent is the size of your choices.",
+    "attribution_name": "Stella Adler",
+    "attribution_sub": "The Art of Acting",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On the direct link between bold choices and strong work",
+    "tags": ["choices", "talent", "imagination"]
+  },
+  {
+    "id": "hagen-specificity",
+    "text": "The actor must know why he is doing what he is doing at every moment.",
+    "attribution_name": "Uta Hagen",
+    "attribution_sub": "Respect for Acting",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On the necessity of specific intention in every beat",
+    "tags": ["specificity", "intention", "preparation"]
+  },
+  {
+    "id": "hagen-universality",
+    "text": "Find in yourself those human things which are universal.",
+    "attribution_name": "Uta Hagen",
+    "attribution_sub": "Respect for Acting",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On connecting personal truth to the character's circumstances",
+    "tags": ["truth", "universality", "instrument"]
+  },
+  {
+    "id": "hagen-the-work",
+    "text": "You have to get beyond your own precious inner experiences.",
+    "attribution_name": "Uta Hagen",
+    "attribution_sub": "A Challenge for the Actor",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On moving from self-expression to communicative work",
+    "tags": ["craft", "professionalism", "discipline"]
+  },
+  {
+    "id": "chekhov-psychological-gesture",
+    "text": "Every character has a psychological gesture — a single movement that expresses its entire inner life.",
+    "attribution_name": "Michael Chekhov",
+    "attribution_sub": "To the Actor",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On finding the character's core through the body",
+    "tags": ["character", "physicality", "inner-life"]
+  },
+  {
+    "id": "chekhov-imagination-body",
+    "text": "When your imagination is alive, your body will follow.",
+    "attribution_name": "Michael Chekhov",
+    "attribution_sub": "To the Actor",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On the connection between imaginative specificity and physical truth",
+    "tags": ["imagination", "physicality", "technique"]
+  },
+  {
+    "id": "strasberg-instrument",
+    "text": "The actor's instrument is himself.",
+    "attribution_name": "Lee Strasberg",
+    "attribution_sub": "A Dream of Passion",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On the obligation to continuously refine the self as an instrument",
+    "tags": ["instrument", "training", "self-work"]
+  },
+  {
+    "id": "strasberg-affective-memory",
+    "text": "We do not act with our heads. We act with our entire instrument.",
+    "attribution_name": "Lee Strasberg",
+    "attribution_sub": "A Dream of Passion",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On the integration of body, emotion, and thought in performance",
+    "tags": ["instrument", "integration", "technique"]
+  },
+  {
+    "id": "moss-intent",
+    "text": "Every moment must have a reason for existing.",
+    "attribution_name": "Larry Moss",
+    "attribution_sub": "The Intent to Live",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On earning each beat rather than simply executing it",
+    "tags": ["intention", "moment-to-moment", "specificity"]
+  },
+  {
+    "id": "chubbuck-want",
+    "text": "The character's want is the engine. Without a want, there is no performance.",
+    "attribution_name": "Ivana Chubbuck",
+    "attribution_sub": "The Power of the Actor",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On objective as the driving force of all acting",
+    "tags": ["objective", "want", "action"]
+  },
+  {
+    "id": "weston-action-direction",
+    "text": "The best direction is action direction. Telling an actor what to feel is useless.",
+    "attribution_name": "Judith Weston",
+    "attribution_sub": "Directing Actors",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On playable actions vs. emotional directives",
+    "tags": ["action", "direction", "playable-action"]
+  },
+  {
+    "id": "clurman-choices",
+    "text": "What does the actor want? What is the actor doing? These are not poetic questions. They are technical ones.",
+    "attribution_name": "Harold Clurman",
+    "attribution_sub": "On Directing",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On the technical precision underneath every acting choice",
+    "tags": ["objective", "action", "technique"]
+  },
+  {
+    "id": "spolin-play",
+    "text": "You can learn to act the same way you learn anything — by doing it over and over until you can't get it wrong.",
+    "attribution_name": "Viola Spolin",
+    "attribution_sub": "Improvisation for the Theater",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On repetition, embodiment, and the path to mastery",
+    "tags": ["repetition", "practice", "mastery"]
+  },
+  {
+    "id": "bogart-decision",
+    "text": "The moment you decide what you want, you have already started acting.",
+    "attribution_name": "Anne Bogart",
+    "attribution_sub": "A Director Prepares",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On the inseparability of decision-making and performance",
+    "tags": ["action", "decision", "commitment"]
+  },
+  {
+    "id": "lecoq-body-never-lies",
+    "text": "Movement does not lie. The body always tells the truth.",
+    "attribution_name": "Jacques Lecoq",
+    "attribution_sub": "The Moving Body",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On physicality as the primary language of performance",
+    "tags": ["physicality", "truth", "movement"]
+  },
+  {
+    "id": "grotowski-score",
+    "text": "The body is the score. Everything else is interpretation.",
+    "attribution_name": "Jerzy Grotowski",
+    "attribution_sub": "Towards a Poor Theatre",
+    "pool": "A",
+    "photo_url": null,
+    "context": "On the physicalized structure of performance as primary text",
+    "tags": ["physicality", "preparation", "score"]
+  },
+  {
+    "id": "streep-similarity",
+    "text": "Acting is not about being someone different. It's finding the similarity in what is apparently different, then finding myself in there.",
+    "attribution_name": "Meryl Streep",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On the paradox of disappearing into a character",
+    "tags": ["character", "self", "transformation"]
+  },
+  {
+    "id": "blanchett-coast",
+    "text": "The moment you feel you have the luxury of coasting, that's when your work starts to die.",
+    "attribution_name": "Cate Blanchett",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On the obligation of full investment at every stage",
+    "tags": ["commitment", "discipline", "professional-standards"]
+  },
+  {
+    "id": "day-lewis-reason",
+    "text": "I need to find reasons to do the work. If I can't find them, I shouldn't be doing it.",
+    "attribution_name": "Daniel Day-Lewis",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On the necessity of genuine investment before beginning",
+    "tags": ["commitment", "intention", "preparation"]
+  },
+  {
+    "id": "viola-davis-truth",
+    "text": "You cannot get to the truth of a character without dealing with your own truth.",
+    "attribution_name": "Viola Davis",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On the personal instrument as the foundation of character work",
+    "tags": ["truth", "instrument", "character"]
+  },
+  {
+    "id": "cranston-tactics",
+    "text": "Actors don't have lines. They have tactics. The line is the result of the tactic.",
+    "attribution_name": "Bryan Cranston",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On the distinction between text and intention",
+    "tags": ["action", "objective", "tactic"]
+  },
+  {
+    "id": "mirren-seen",
+    "text": "The biggest challenge of acting is to be willing to be seen.",
+    "attribution_name": "Helen Mirren",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On vulnerability as a technical requirement, not an emotional one",
+    "tags": ["vulnerability", "presence", "camera"]
+  },
+  {
+    "id": "hoffman-psh-open",
+    "text": "You have to keep breaking your heart until it opens.",
+    "attribution_name": "Philip Seymour Hoffman",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On the ongoing personal work that precedes great performance",
+    "tags": ["vulnerability", "commitment", "instrument"]
+  },
+  {
+    "id": "pacino-scene",
+    "text": "I always feel the scene is more important than the performance.",
+    "attribution_name": "Al Pacino",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On serving the material rather than showcasing technique",
+    "tags": ["service", "scene", "professional-standards"]
+  },
+  {
+    "id": "brando-being",
+    "text": "The hardest thing in the world is to stop doing and start being.",
+    "attribution_name": "Marlon Brando",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On the distinction between performing and inhabiting",
+    "tags": ["presence", "being", "truth"]
+  },
+  {
+    "id": "tilda-doing",
+    "text": "I never think about what I'm playing. I think about what I'm doing.",
+    "attribution_name": "Tilda Swinton",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On action over emotion as the actor's primary focus",
+    "tags": ["action", "doing", "technique"]
+  },
+  {
+    "id": "phoenix-problem",
+    "text": "I don't think about the character. I think about the problem the character is trying to solve.",
+    "attribution_name": "Joaquin Phoenix",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On objective-based approach to character construction",
+    "tags": ["objective", "problem-solving", "character"]
+  },
+  {
+    "id": "bale-body-first",
+    "text": "The physical commitment to a role isn't vanity — it's necessity. The body has to know before the mind does.",
+    "attribution_name": "Christian Bale",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On physical preparation as a form of deep character knowledge",
+    "tags": ["physicality", "preparation", "commitment"]
+  },
+  {
+    "id": "winslet-camera",
+    "text": "The camera sees everything. It will catch you lying before the audience will.",
+    "attribution_name": "Kate Winslet",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On the on-camera demand for absolute honesty",
+    "tags": ["camera", "truth", "on-camera"]
+  },
+  {
+    "id": "portman-preparation",
+    "text": "Preparation is the opposite of showing off.",
+    "attribution_name": "Natalie Portman",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On preparation as service to the material, not self-display",
+    "tags": ["preparation", "discipline", "service"]
+  },
+  {
+    "id": "foster-work",
+    "text": "The work is the reward. If you do good work, the rest follows.",
+    "attribution_name": "Jodie Foster",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On craft-first orientation in a career",
+    "tags": ["craft", "discipline", "career"]
+  },
+  {
+    "id": "lange-body",
+    "text": "You have to want it in your body, not just your head.",
+    "attribution_name": "Jessica Lange",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": null,
+    "context": "On the physical integration of a role",
+    "tags": ["physicality", "commitment", "embodiment"]
+  },
+  {
+    "id": "olivier-discover",
+    "text": "The actor's job is to discover the character, not invent him.",
+    "attribution_name": "Laurence Olivier",
+    "attribution_sub": "",
+    "pool": "B",
+    "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Laurence_Olivier_1960.jpg/400px-Laurence_Olivier_1960.jpg",
+    "context": "On the distinction between exploration and construction",
+    "tags": ["character", "discovery", "technique"]
+  },
+  {
+    "id": "lumet-specificity",
+    "text": "What I want from an actor is specificity. Generic choices kill scenes.",
+    "attribution_name": "Sidney Lumet",
+    "attribution_sub": "Making Movies",
+    "pool": "C",
+    "photo_url": null,
+    "context": "On the director's core demand from actors",
+    "tags": ["specificity", "choices", "scene-work"]
+  },
+  {
+    "id": "kazan-want",
+    "text": "I don't direct actors. I give them something to want, badly.",
+    "attribution_name": "Elia Kazan",
+    "attribution_sub": "",
+    "pool": "C",
+    "photo_url": null,
+    "context": "On objective as the director's primary tool with actors",
+    "tags": ["objective", "want", "direction"]
+  },
+  {
+    "id": "nichols-listen",
+    "text": "The actor who can listen — really listen — is worth ten who can only project.",
+    "attribution_name": "Mike Nichols",
+    "attribution_sub": "",
+    "pool": "C",
+    "photo_url": null,
+    "context": "On listening as the most underrated technical skill",
+    "tags": ["listening", "camera", "scene-work"]
+  },
+  {
+    "id": "bergman-face",
+    "text": "The human face is the most remarkable close-up there is.",
+    "attribution_name": "Ingmar Bergman",
+    "attribution_sub": "",
+    "pool": "C",
+    "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Bergman.jpg/400px-Bergman.jpg",
+    "context": "On the camera as the ultimate tool for revealing inner life",
+    "tags": ["camera", "presence", "inner-life"]
+  },
+  {
+    "id": "altman-do-something",
+    "text": "I never give an actor a direction that describes an emotion. I give them something to do.",
+    "attribution_name": "Robert Altman",
+    "attribution_sub": "",
+    "pool": "C",
+    "photo_url": null,
+    "context": "On action-based direction over emotional direction",
+    "tags": ["action", "direction", "playable-action"]
+  },
+  {
+    "id": "cassavetes-discovered",
+    "text": "I don't want a finished performance. I want a discovered one.",
+    "attribution_name": "John Cassavetes",
+    "attribution_sub": "",
+    "pool": "C",
+    "photo_url": null,
+    "context": "On the value of live discovery over polished execution",
+    "tags": ["discovery", "presence", "truth"]
+  },
+  {
+    "id": "leigh-inhabit",
+    "text": "The best work comes from actors who don't perform — they inhabit.",
+    "attribution_name": "Mike Leigh",
+    "attribution_sub": "",
+    "pool": "C",
+    "photo_url": null,
+    "context": "On the distinction between performing for an audience and living inside a role",
+    "tags": ["presence", "inhabiting", "truth"]
+  },
+  {
+    "id": "hitchcock-thought",
+    "text": "The camera is not interested in your performance. It is interested in your thought.",
+    "attribution_name": "Alfred Hitchcock",
+    "attribution_sub": "",
+    "pool": "C",
+    "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Alfred_Hitchcock_1955.jpg/400px-Alfred_Hitchcock_1955.jpg",
+    "context": "On interiority as the on-camera actor's primary tool",
+    "tags": ["camera", "thought", "on-camera"]
+  },
+  {
+    "id": "nolan-simplicity",
+    "text": "What I want from actors is simplicity. The camera amplifies everything.",
+    "attribution_name": "Christopher Nolan",
+    "attribution_sub": "",
+    "pool": "C",
+    "photo_url": null,
+    "context": "On restraint and economy in on-camera performance",
+    "tags": ["simplicity", "camera", "restraint"]
+  },
+  {
+    "id": "fincher-scene",
+    "text": "If you're acting for the audience, you're already one beat behind. Act for the scene.",
+    "attribution_name": "David Fincher",
+    "attribution_sub": "",
+    "pool": "C",
+    "photo_url": null,
+    "context": "On the difference between performing outward and living inward",
+    "tags": ["scene-work", "camera", "truth"]
+  },
+  {
+    "id": "wkw-question",
+    "text": "The scene is a question. The actor's job is to answer it, not explain it.",
+    "attribution_name": "Wong Kar-wai",
+    "attribution_sub": "",
+    "pool": "C",
+    "photo_url": null,
+    "context": "On playing the scene rather than commenting on it",
+    "tags": ["scene-work", "action", "truth"]
+  },
+  {
+    "id": "scorsese-preparation",
+    "text": "The actor's preparation is the director's pre-production. Both have to be done before you get on set.",
+    "attribution_name": "Martin Scorsese",
+    "attribution_sub": "",
+    "pool": "C",
+    "photo_url": null,
+    "context": "On preparation as the actor's professional obligation",
+    "tags": ["preparation", "professional-standards", "on-set"]
+  },
+  {
+    "id": "mamet-play-it",
+    "text": "Don't explain it. Play it. The audience doesn't need your understanding — they need your action.",
+    "attribution_name": "David Mamet",
+    "attribution_sub": "True and False",
+    "pool": "D",
+    "photo_url": null,
+    "context": "On action over analysis as the actor's fundamental orientation",
+    "tags": ["action", "analysis", "playable-action"]
+  },
+  {
+    "id": "mamet-reading",
+    "text": "All reading of the script is acting. The way you read it is the way you play it.",
+    "attribution_name": "David Mamet",
+    "attribution_sub": "True and False",
+    "pool": "D",
+    "photo_url": null,
+    "context": "On the inseparability of analysis and performance",
+    "tags": ["text-analysis", "preparation", "technique"]
+  },
+  {
+    "id": "pinter-pause",
+    "text": "There are two silences. One when no word is spoken. The other when perhaps a torrent of language is being employed.",
+    "attribution_name": "Harold Pinter",
+    "attribution_sub": "Various Voices",
+    "pool": "D",
+    "photo_url": null,
+    "context": "On subtext as the primary content of dramatic speech",
+    "tags": ["subtext", "silence", "intention"]
+  },
+  {
+    "id": "chekhov-anton-gun",
+    "text": "If in the first act you have hung a pistol on the wall, then in the following one it should be fired.",
+    "attribution_name": "Anton Chekhov",
+    "attribution_sub": "",
+    "pool": "D",
+    "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Chekhov_1889.jpg/400px-Chekhov_1889.jpg",
+    "context": "On structural inevitability — every action must earn its consequence",
+    "tags": ["structure", "intention", "scene-work"]
+  },
+  {
+    "id": "williams-magic",
+    "text": "I don't want realism. I want magic — and I try to give that to people. I misrepresent such things as beauty and desire and romance — but who doesn't? And if that is sinful, then let me be damned for it.",
+    "attribution_name": "Tennessee Williams",
+    "attribution_sub": "A Streetcar Named Desire",
+    "pool": "D",
+    "photo_url": null,
+    "context": "On the obligation to reach beyond surface realism toward emotional truth",
+    "tags": ["truth", "imagination", "commitment"]
+  },
+  {
+    "id": "miller-problem",
+    "text": "A good play is one that asks an actor to solve a real human problem.",
+    "attribution_name": "Arthur Miller",
+    "attribution_sub": "",
+    "pool": "D",
+    "photo_url": null,
+    "context": "On the actor's work as problem-solving, not decoration",
+    "tags": ["problem-solving", "objective", "craft"]
+  },
+  {
+    "id": "shepard-skeleton",
+    "text": "The character is the playwright's skeleton. The actor adds the flesh.",
+    "attribution_name": "Sam Shepard",
+    "attribution_sub": "",
+    "pool": "D",
+    "photo_url": null,
+    "context": "On the actor's unique creative contribution to a written role",
+    "tags": ["character", "interpretation", "craft"]
+  },
+  {
+    "id": "wilson-where",
+    "text": "The actor who doesn't know where they come from can't know where the character is going.",
+    "attribution_name": "August Wilson",
+    "attribution_sub": "",
+    "pool": "D",
+    "photo_url": null,
+    "context": "On history and context as essential preparation",
+    "tags": ["given-circumstances", "preparation", "character"]
+  },
+  {
+    "id": "goldman-study",
+    "text": "Actors who study are better than actors who don't. That's the only rule.",
+    "attribution_name": "William Goldman",
+    "attribution_sub": "Adventures in the Screen Trade",
+    "pool": "D",
+    "photo_url": null,
+    "context": "On continuous training as the irreducible professional standard",
+    "tags": ["training", "professional-standards", "discipline"]
+  },
+  {
+    "id": "hansberry-want",
+    "text": "The most complex thing in drama is a human being who wants something.",
+    "attribution_name": "Lorraine Hansberry",
+    "attribution_sub": "",
+    "pool": "D",
+    "photo_url": null,
+    "context": "On want/objective as the engine of all dramatic action",
+    "tags": ["objective", "want", "character"]
+  },
+  {
+    "id": "brook-empty-space",
+    "text": "A man walks across an empty space whilst someone else is watching him — that is all that is needed for an act of theatre.",
+    "attribution_name": "Peter Brook",
+    "attribution_sub": "The Empty Space",
+    "pool": "E",
+    "photo_url": null,
+    "context": "On presence as the irreducible element of performance",
+    "tags": ["presence", "simplicity", "theatre"]
+  },
+  {
+    "id": "brecht-chosen",
+    "text": "The actor must show that his character's behavior is chosen, not inevitable.",
+    "attribution_name": "Bertolt Brecht",
+    "attribution_sub": "Brecht on Theatre",
+    "pool": "E",
+    "photo_url": null,
+    "context": "On demonstrating agency and choice in every action",
+    "tags": ["action", "choice", "character"]
+  },
+  {
+    "id": "deakins-light",
+    "text": "Light isn't decoration. It's where the scene lives.",
+    "attribution_name": "Roger Deakins",
+    "attribution_sub": "",
+    "pool": "E",
+    "photo_url": null,
+    "context": "On atmosphere and environment as active participants in performance",
+    "tags": ["environment", "scene-work", "presence"]
+  },
+  {
+    "id": "willis-shadow",
+    "text": "Shadow is not the absence of light. It is the most powerful light you have.",
+    "attribution_name": "Gordon Willis",
+    "attribution_sub": "",
+    "pool": "E",
+    "photo_url": null,
+    "context": "On what is withheld being as powerful as what is revealed — true for acting too",
+    "tags": ["restraint", "subtext", "power"]
+  },
+  {
+    "id": "nykvist-simplicity",
+    "text": "Simplicity of light is the hardest thing to achieve. The same is true of acting.",
+    "attribution_name": "Sven Nykvist",
+    "attribution_sub": "",
+    "pool": "E",
+    "photo_url": null,
+    "context": "On economy and clarity as the highest form of craft",
+    "tags": ["simplicity", "clarity", "craft"]
+  },
+  {
+    "id": "wexler-present",
+    "text": "You can feel when an actor is inside the moment. The frame knows.",
+    "attribution_name": "Haskell Wexler",
+    "attribution_sub": "",
+    "pool": "E",
+    "photo_url": null,
+    "context": "On presence as something the camera detects before the audience does",
+    "tags": ["presence", "camera", "truth"]
+  },
+  {
+    "id": "hall-honest",
+    "text": "The camera is always honest. If the actor isn't present, the camera is the first to know.",
+    "attribution_name": "Conrad Hall",
+    "attribution_sub": "",
+    "pool": "E",
+    "photo_url": null,
+    "context": "On the unforgiving nature of on-camera work",
+    "tags": ["camera", "presence", "honesty"]
+  }
+]

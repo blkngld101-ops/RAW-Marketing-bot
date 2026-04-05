@@ -4,150 +4,331 @@
     <meta charset="utf-8" />
     <title>RAW Philosophy</title>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&family=DM+Serif+Display:ital@0;1&display=swap");
 
       :root {
-        --bg: #090909;
+        --accent: #d4a520;
+        --dark: #060605;
         --fg: #f0f0f0;
-        --accent: #c4a35a;
+        --muted: rgba(240,240,240,0.58);
       }
 
-      * {
-        box-sizing: border-box;
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { width: 1080px; height: 1080px; overflow: hidden; position: relative; }
+
+      /* ─── GRAIN ─── */
+      .grain {
+        position: absolute; inset: 0;
+        pointer-events: none; z-index: 80;
+        mix-blend-mode: soft-light; opacity: 0.44;
       }
 
-      html,
-      body {
-        margin: 0;
-        width: 1080px;
-        height: 1080px;
-        overflow: hidden;
+      /* ─── VIGNETTE ─── */
+      .vignette {
+        position: absolute; inset: 0;
+        pointer-events: none; z-index: 78;
+        background: radial-gradient(ellipse at 50% 50%, transparent 50%, rgba(0,0,0,0.62) 100%);
+      }
+
+      /* ─── SHARED ATTR COMPONENTS ─── */
+      .attr-rule { width: 52px; height: 3px; background: var(--accent); margin-bottom: 14px; }
+      .attr-name {
+        font-size: 34px; font-weight: 700;
+        letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);
+      }
+      .attr-sub {
+        margin-top: 8px; font-size: 26px;
+        font-weight: 300; font-style: italic;
+        color: rgba(240,240,240,0.5); letter-spacing: 0.04em;
+      }
+
+      /* ─────────────────────────────────────
+         MODE: type
+         Enormous quote fills the frame.
+         Dark BG + grain + giant open mark.
+         ───────────────────────────────────── */
+      body[data-mode="type"] {
         background:
-          radial-gradient(circle at 18% 18%, rgba(196, 163, 90, 0.18), transparent 24%),
-          linear-gradient(135deg, #090909 0%, #131313 100%);
-        color: var(--fg);
+          radial-gradient(ellipse at 15% 55%, rgba(212,165,32,0.14) 0%, transparent 42%),
+          radial-gradient(ellipse at 85% 20%, rgba(212,165,32,0.07) 0%, transparent 28%),
+          linear-gradient(150deg, #0d0c0a 0%, var(--dark) 55%, #0a0908 100%);
+        color: var(--fg); font-family: "Inter", sans-serif;
       }
 
-      body {
-        position: relative;
-        font-family: "Inter", sans-serif;
+      body[data-mode="type"] .bar-bottom {
+        position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: var(--accent);
       }
 
-      .filmstrip {
-        position: absolute;
-        top: 112px;
-        right: 82px;
-        width: 240px;
-        height: 676px;
-        border: 1px solid rgba(240, 240, 240, 0.12);
-        border-radius: 28px;
-        overflow: hidden;
-        opacity: 0;
+      body[data-mode="type"] .frame-type {
+        position: absolute; inset: 0;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        padding: 72px 80px;
+      }
+
+      body[data-mode="type"] .brand-row {
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .brand { display: flex; align-items: center; gap: 14px; }
+      .logo { width: 50px; height: 50px; object-fit: contain; }
+      .wordmark { font-size: 34px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+
+      .pool-tag {
+        font-size: 28px; font-weight: 600; letter-spacing: 0.18em;
+        text-transform: uppercase; color: rgba(212,165,32,0.55);
+      }
+
+      body[data-mode="type"] .quote-area {
+        align-self: center; max-width: 920px; position: relative;
+      }
+      body[data-mode="type"] .open-mark {
+        display: block; font-family: "DM Serif Display", serif; font-style: italic;
+        font-size: 300px; line-height: 0.5; color: var(--accent); opacity: 0.2;
+        margin-bottom: -14px; user-select: none;
+      }
+      body[data-mode="type"] .quote-text {
+        font-family: "DM Serif Display", serif; font-style: italic;
+        font-size: 78px; line-height: 1.04; letter-spacing: -0.01em; color: var(--fg);
+      }
+
+      body[data-mode="type"] .attr-block {
+        display: flex; align-items: flex-end; justify-content: space-between; gap: 40px;
+      }
+      body[data-mode="type"] .footer-phrase {
+        font-family: "DM Serif Display", serif; font-style: italic;
+        font-size: 26px; color: rgba(212,165,32,0.6); text-align: right; max-width: 260px;
+      }
+
+      /* ─────────────────────────────────────
+         MODE: photo-split
+         Portrait strips the right 42%.
+         Quote lives on left dark panel.
+         ───────────────────────────────────── */
+      body[data-mode="photo-split"] {
+        background: var(--dark); color: var(--fg); font-family: "Inter", sans-serif;
+      }
+
+      .portrait-strip {
+        display: none; position: absolute;
+        right: 0; top: 0; bottom: 0; width: 460px;
+        background-size: cover; background-position: center top;
+      }
+      .portrait-strip::before {
+        content: ""; position: absolute; inset: 0;
+        background: linear-gradient(90deg, rgba(6,6,5,1) 0%, rgba(6,6,5,0.4) 35%, rgba(6,6,5,0) 100%);
+        z-index: 1;
+      }
+      .portrait-strip::after {
+        content: ""; position: absolute; inset: 0;
+        background: linear-gradient(180deg, rgba(6,6,5,0.2) 0%, rgba(6,6,5,0.85) 88%);
+        z-index: 1;
+      }
+
+      body[data-mode="photo-split"] .portrait-strip { display: block; }
+
+      body[data-mode="photo-split"] .frame-split {
+        position: absolute; inset: 0;
+        display: grid; grid-template-rows: auto 1fr auto;
+        padding: 72px 80px;
+      }
+
+      body[data-mode="photo-split"] .brand-row {
+        display: flex; align-items: center; justify-content: space-between;
+      }
+
+      body[data-mode="photo-split"] .quote-area {
+        align-self: center; max-width: 600px; position: relative; z-index: 5;
+      }
+      body[data-mode="photo-split"] .open-mark {
+        display: block; font-family: "DM Serif Display", serif; font-style: italic;
+        font-size: 220px; line-height: 0.52; color: var(--accent); opacity: 0.25;
+        margin-bottom: -10px; user-select: none;
+      }
+      body[data-mode="photo-split"] .quote-text {
+        font-family: "DM Serif Display", serif; font-style: italic;
+        font-size: 66px; line-height: 1.06; color: var(--fg);
+      }
+
+      body[data-mode="photo-split"] .attr-block {
+        position: relative; z-index: 5;
+      }
+
+      /* ─────────────────────────────────────
+         MODE: photo-full
+         Photo fills everything.
+         Quote + attr float over a vignette.
+         ───────────────────────────────────── */
+      body[data-mode="photo-full"] {
+        background: var(--dark); color: var(--fg); font-family: "Inter", sans-serif;
+      }
+
+      .portrait-full {
+        display: none; position: absolute; inset: 0;
+        background-size: cover; background-position: center top;
+      }
+      .portrait-full::after {
+        content: ""; position: absolute; inset: 0;
         background:
-          linear-gradient(180deg, rgba(10, 10, 10, 0.08), rgba(10, 10, 10, 0.72)),
-          linear-gradient(135deg, rgba(196, 163, 90, 0.3), rgba(255, 255, 255, 0.08));
-        background-size: cover;
-        background-position: center;
+          linear-gradient(160deg, rgba(6,6,5,0.88) 0%, rgba(6,6,5,0.45) 40%, rgba(6,6,5,0.3) 65%, rgba(6,6,5,0.82) 100%),
+          linear-gradient(0deg, rgba(6,6,5,0.95) 0%, transparent 50%);
       }
 
-      body[data-layout="photo-led"] .filmstrip {
-        opacity: 1;
+      body[data-mode="photo-full"] .portrait-full { display: block; }
+
+      body[data-mode="photo-full"] .frame-full {
+        position: absolute; inset: 0;
+        display: grid; grid-template-rows: auto 1fr auto;
+        padding: 72px 80px;
       }
 
-      .frame {
-        position: relative;
-        height: 100%;
-        padding: 72px;
+      body[data-mode="photo-full"] .brand-row {
+        display: flex; align-items: center; justify-content: space-between; z-index: 5; position: relative;
       }
 
-      .wordmark {
-        font-size: 18px;
-        font-weight: 600;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
+      body[data-mode="photo-full"] .quote-area {
+        align-self: center; max-width: 760px; position: relative; z-index: 5;
+      }
+      body[data-mode="photo-full"] .open-mark {
+        display: block; font-family: "DM Serif Display", serif; font-style: italic;
+        font-size: 250px; line-height: 0.52; color: var(--accent); opacity: 0.2;
+        margin-bottom: -10px; user-select: none;
+      }
+      body[data-mode="photo-full"] .quote-text {
+        font-family: "DM Serif Display", serif; font-style: italic;
+        font-size: 72px; line-height: 1.05; color: var(--fg);
+        text-shadow: 0 2px 24px rgba(0,0,0,0.6);
       }
 
-      .quote-wrap {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        height: calc(100% - 130px);
-        max-width: 760px;
-      }
+      body[data-mode="photo-full"] .attr-block { z-index: 5; position: relative; }
 
-      body[data-layout="photo-led"] .quote-wrap {
-        max-width: 620px;
-      }
-
-      .eyebrow {
-        color: rgba(196, 163, 90, 0.88);
-        font-size: 17px;
-        font-weight: 600;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-      }
-
-      .quote {
-        margin: 28px 0 30px;
-        font-family: "DM Serif Display", serif;
-        font-style: italic;
-        font-size: 84px;
-        line-height: 0.98;
-        letter-spacing: -0.01em;
-      }
-
-      .attribution {
-        font-size: 23px;
-        font-weight: 300;
-        color: rgba(240, 240, 240, 0.7);
-      }
-
-      .bar {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 4px;
-        background: var(--accent);
-      }
+      /* ─── hide unused frames ─── */
+      .frame-type, .frame-split, .frame-full { display: none; }
+      body[data-mode="type"] .frame-type { display: grid; }
+      body[data-mode="photo-split"] .frame-split { display: grid; }
+      body[data-mode="photo-full"] .frame-full { display: grid; }
     </style>
   </head>
-  <body data-layout="text-led">
-    <div class="filmstrip" id="photo"></div>
-    <div class="frame">
-      <div class="wordmark">RAW ACTOR STUDIO</div>
-      <div class="quote-wrap">
-        <div class="eyebrow" id="label">AUTHORSHIP</div>
-        <div class="quote" id="quote">Train with clarity. Own the work.</div>
-        <div class="attribution" id="attribution">RAW Actor Studio</div>
-      </div>
-      <div class="bar"></div>
+  <body data-mode="type">
+
+    <!-- Photo panels (hidden unless mode activates) -->
+    <div class="portrait-strip" id="portrait-strip"></div>
+    <div class="portrait-full" id="portrait-full"></div>
+
+    <!-- Vignette -->
+    <div class="vignette" aria-hidden="true"></div>
+
+    <!-- Grain — two passes -->
+    <div class="grain" aria-hidden="true">
+      <svg width="1080" height="1080" xmlns="http://www.w3.org/2000/svg">
+        <filter id="g1"><feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="4" stitchTiles="stitch"/></filter>
+        <filter id="g2"><feTurbulence type="fractalNoise" baseFrequency="0.28" numOctaves="2" stitchTiles="stitch"/></filter>
+        <rect width="1080" height="1080" filter="url(#g1)" opacity="0.65"/>
+        <rect width="1080" height="1080" filter="url(#g2)" opacity="0.2"/>
+      </svg>
     </div>
+
+    <!-- TYPE frame -->
+    <div class="frame-type">
+      <div class="bar-bottom"></div>
+      <div class="brand-row">
+        <div class="brand">
+          <img class="logo" id="logo-t" src="" alt="RAW" />
+          <div class="wordmark">RAW Actor Studio</div>
+        </div>
+        <div class="pool-tag" id="pool-t"></div>
+      </div>
+      <div class="quote-area">
+        <span class="open-mark">"</span>
+        <div class="quote-text" id="quote-t">The actor's instrument is himself.</div>
+      </div>
+      <div class="attr-block">
+        <div>
+          <div class="attr-rule"></div>
+          <div class="attr-name" id="attr-name-t">RAW Actor Studio</div>
+          <div class="attr-sub" id="attr-sub-t"></div>
+        </div>
+        <div class="footer-phrase">Train with clarity.<br>Own the work.</div>
+      </div>
+    </div>
+
+    <!-- SPLIT frame -->
+    <div class="frame-split">
+      <div class="brand-row">
+        <div class="brand">
+          <img class="logo" id="logo-s" src="" alt="RAW" />
+          <div class="wordmark">RAW Actor Studio</div>
+        </div>
+        <div class="pool-tag" id="pool-s"></div>
+      </div>
+      <div class="quote-area">
+        <span class="open-mark">"</span>
+        <div class="quote-text" id="quote-s">The actor's instrument is himself.</div>
+      </div>
+      <div class="attr-block">
+        <div class="attr-rule"></div>
+        <div class="attr-name" id="attr-name-s">RAW Actor Studio</div>
+        <div class="attr-sub" id="attr-sub-s"></div>
+      </div>
+    </div>
+
+    <!-- FULL frame -->
+    <div class="frame-full">
+      <div class="brand-row">
+        <div class="brand">
+          <img class="logo" id="logo-f" src="" alt="RAW" />
+          <div class="wordmark">RAW Actor Studio</div>
+        </div>
+        <div class="pool-tag" id="pool-f"></div>
+      </div>
+      <div class="quote-area">
+        <span class="open-mark">"</span>
+        <div class="quote-text" id="quote-f">The actor's instrument is himself.</div>
+      </div>
+      <div class="attr-block">
+        <div class="attr-rule"></div>
+        <div class="attr-name" id="attr-name-f">RAW Actor Studio</div>
+        <div class="attr-sub" id="attr-sub-f"></div>
+      </div>
+    </div>
+
     <!-- RAW_PAYLOAD -->
     <script>
       const post = window.__RAW_POST__ || {};
-      const setText = (id, value, fallback = "") => {
-        const node = document.getElementById(id);
-        if (node) {
-          node.textContent = value || fallback;
-        }
-      };
+      const assets = window.__RAW_ASSETS__ || {};
 
-      document.body.dataset.layout =
-        post.layout_variant === "photo-led" ? "photo-led" : "text-led";
+      // Logos
+      ["t","s","f"].forEach(s => {
+        const el = document.getElementById(`logo-${s}`);
+        if (el && assets.logoSrc) el.src = assets.logoSrc;
+      });
 
-      setText("label", post.label || "RAW PHILOSOPHY");
-      setText("quote", post.headline || "Train with clarity.");
-      setText(
-        "attribution",
-        post.image_body || post.visual_direction || "Training That Meets Industry Reality."
-      );
+      // Mode
+      const bgPhoto = assets.photoBgSrc || assets.photoUrl || post.media?.image_url || post.photo_url || "";
+      const isPhotoLed = post.layout_variant === "photo-led";
+      const mode = !bgPhoto ? "type" : isPhotoLed ? "photo-full" : "photo-split";
+      document.body.dataset.mode = mode;
 
-      const photo = document.getElementById("photo");
-      const imageUrl = post.media?.image_url || post.photo_url || "";
-      if (imageUrl) {
-        photo.style.backgroundImage = `linear-gradient(180deg, rgba(10, 10, 10, 0.08), rgba(10, 10, 10, 0.72)), url("${imageUrl}")`;
+      // Photo panels
+      if (bgPhoto) {
+        const ref = bgPhoto.startsWith("data:") ? `url("${bgPhoto}")` : `url("${bgPhoto}")`;
+        document.getElementById("portrait-strip").style.backgroundImage = ref;
+        document.getElementById("portrait-full").style.backgroundImage = ref;
       }
+
+      // Content
+      const quoteText = post.quote_text || post.headline || "Train with clarity.";
+      const attrName = post.attribution_name || "RAW Actor Studio";
+      const attrSub = post.attribution_sub || "";
+      const poolLabels = { A: "TEACHER", B: "ACTOR", C: "DIRECTOR", D: "WRITER", E: "LENS" };
+      const poolLabel = poolLabels[post.attribution_pool] || "";
+
+      ["t","s","f"].forEach(s => {
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        set(`quote-${s}`, quoteText);
+        set(`attr-name-${s}`, attrName);
+        set(`attr-sub-${s}`, attrSub);
+        set(`pool-${s}`, poolLabel);
+      });
     </script>
   </body>
 </html>

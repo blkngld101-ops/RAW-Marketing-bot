@@ -4,158 +4,358 @@
     <meta charset="utf-8" />
     <title>RAW Behind The Scenes</title>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&family=DM+Serif+Display:ital@0;1&display=swap");
 
       :root {
-        --bg: #090909;
+        --accent: #d4a520;
+        --dark: #080706;
         --fg: #f0f0f0;
-        --muted: rgba(240, 240, 240, 0.7);
-        --accent: #c4a35a;
+        --muted: rgba(240,240,240,0.62);
       }
 
-      * {
-        box-sizing: border-box;
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { width: 1080px; height: 1080px; overflow: hidden; position: relative; }
+
+      /* ─── GRAIN ─── */
+      .grain {
+        position: absolute; inset: 0; pointer-events: none;
+        z-index: 80; mix-blend-mode: soft-light; opacity: 0.44;
       }
 
-      html,
-      body {
-        margin: 0;
-        width: 1080px;
-        height: 1080px;
-        overflow: hidden;
+      /* ─── VIGNETTE ─── */
+      .vignette {
+        position: absolute; inset: 0; pointer-events: none; z-index: 78;
+        background: radial-gradient(ellipse at 50% 50%, transparent 48%, rgba(0,0,0,0.66) 100%);
+      }
+
+      .logo { width: 52px; height: 52px; object-fit: contain; }
+      .brand { display: flex; align-items: center; gap: 14px; }
+      .wordmark { font-size: 34px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+
+      /* ─────────────────────────────────────
+         MODE: type
+         Heavy atmospheric dark.
+         Diagonal gold slash top-left.
+         Enormous Bebas headline.
+         Body right-aligned for tension.
+         ───────────────────────────────────── */
+      body[data-mode="type"] {
         background:
-          linear-gradient(160deg, rgba(196, 163, 90, 0.14), transparent 34%),
-          linear-gradient(140deg, #090909 0%, #141414 100%);
-        color: var(--fg);
+          linear-gradient(138deg, rgba(212,165,32,0.16) 0%, transparent 28%),
+          radial-gradient(ellipse at 88% 88%, rgba(212,165,32,0.09) 0%, transparent 34%),
+          linear-gradient(155deg, #0f0e0c 0%, var(--dark) 58%, #0c0b09 100%);
+        color: var(--fg); font-family: "Inter", sans-serif;
       }
 
-      body {
-        position: relative;
-        font-family: "Inter", sans-serif;
+      /* Diagonal gold sweep */
+      .diagonal-slash {
+        display: none;
+        position: absolute; top: -160px; left: -80px;
+        width: 380px; height: 1300px;
+        background: linear-gradient(90deg, rgba(212,165,32,0.18) 0%, rgba(212,165,32,0.04) 55%, transparent 100%);
+        transform: rotate(20deg);
+        transform-origin: top left;
+        pointer-events: none; z-index: 2;
       }
+      body[data-mode="type"] .diagonal-slash { display: block; }
 
-      .photo {
-        position: absolute;
-        right: 72px;
-        top: 124px;
-        width: 400px;
-        height: 540px;
-        border-radius: 34px;
-        border: 1px solid rgba(240, 240, 240, 0.1);
-        overflow: hidden;
-        opacity: 0;
-        background:
-          linear-gradient(180deg, rgba(10, 10, 10, 0.18), rgba(10, 10, 10, 0.76)),
-          linear-gradient(135deg, rgba(196, 163, 90, 0.24), rgba(255, 255, 255, 0.08));
-        background-size: cover;
-        background-position: center;
-      }
-
-      body[data-layout="photo-led"] .photo {
-        opacity: 1;
-      }
-
-      .frame {
-        position: relative;
-        height: 100%;
+      body[data-mode="type"] .frame-type {
+        position: absolute; inset: 0; z-index: 5;
+        display: grid; grid-template-rows: auto 1fr auto;
         padding: 72px;
       }
 
-      .wordmark {
-        font-size: 18px;
-        font-weight: 600;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
+      body[data-mode="type"] .top-ty {
+        display: flex; justify-content: space-between; align-items: center;
       }
 
-      .label {
-        margin-top: 74px;
-        color: var(--accent);
-        font-size: 18px;
-        font-weight: 600;
-        letter-spacing: 0.24em;
-        text-transform: uppercase;
+      body[data-mode="type"] .eyebrow-ty {
+        font-size: 32px; font-weight: 600; letter-spacing: 0.24em;
+        text-transform: uppercase; color: var(--accent); text-align: right;
       }
 
-      .headline {
-        max-width: 640px;
-        margin: 22px 0 18px;
+      body[data-mode="type"] .center-ty { align-self: center; }
+
+      body[data-mode="type"] .headline-ty {
         font-family: "Bebas Neue", sans-serif;
-        font-size: 92px;
-        line-height: 0.92;
+        font-size: 200px; line-height: 0.86; letter-spacing: 0.01em;
+        max-width: 960px;
       }
 
-      body[data-layout="photo-led"] .headline {
-        max-width: 520px;
+      body[data-mode="type"] .h-rule {
+        margin: 24px 0; display: flex; align-items: center; gap: 18px;
+      }
+      body[data-mode="type"] .h-rule-line {
+        flex: 1; height: 2px;
+        background: linear-gradient(90deg, var(--accent) 0%, rgba(212,165,32,0.1) 100%);
+      }
+      body[data-mode="type"] .h-rule-dot {
+        width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0;
       }
 
-      .body {
-        max-width: 560px;
-        font-size: 27px;
-        line-height: 1.42;
-        font-weight: 300;
-        color: var(--muted);
+      body[data-mode="type"] .body-ty {
+        font-size: 34px; line-height: 1.38; font-weight: 300; color: var(--muted);
+        max-width: 620px; text-align: right; margin-left: auto;
       }
 
-      .note {
-        position: absolute;
-        left: 72px;
-        right: 72px;
-        bottom: 112px;
-        display: flex;
-        justify-content: space-between;
-        gap: 24px;
-        color: rgba(240, 240, 240, 0.56);
-        font-size: 16px;
+      body[data-mode="type"] .footer-ty {
+        display: flex; align-items: flex-end; justify-content: space-between;
+      }
+      body[data-mode="type"] .tagline-ty {
+        font-family: "DM Serif Display", serif; font-style: italic;
+        font-size: 28px; color: rgba(212,165,32,0.65);
+      }
+      /* Gold bar bottom-right */
+      body[data-mode="type"]::after {
+        content: ""; position: absolute;
+        right: 72px; bottom: 72px; width: 180px; height: 4px; background: var(--accent);
       }
 
-      .bar {
-        position: absolute;
-        left: 72px;
-        right: 72px;
-        bottom: 72px;
-        height: 4px;
-        background: var(--accent);
+      /* ─────────────────────────────────────
+         MODE: photo-split
+         Photo right 58% — sharp left diagonal cut.
+         Text on left dark panel.
+         Cinematic side-by-side.
+         ───────────────────────────────────── */
+      body[data-mode="photo-split"] {
+        background: var(--dark); color: var(--fg); font-family: "Inter", sans-serif;
       }
+
+      .bts-photo-split {
+        display: none; position: absolute;
+        right: 0; top: 0; bottom: 0; width: 630px;
+        background-size: cover; background-position: center;
+        clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%);
+      }
+      .bts-photo-split::after {
+        content: ""; position: absolute; inset: 0;
+        background:
+          linear-gradient(90deg, rgba(8,7,6,1) 0%, rgba(8,7,6,0.45) 30%, rgba(8,7,6,0.05) 100%),
+          linear-gradient(180deg, rgba(8,7,6,0.2) 0%, rgba(8,7,6,0.6) 100%);
+      }
+
+      body[data-mode="photo-split"] .bts-photo-split { display: block; }
+
+      body[data-mode="photo-split"] .frame-split {
+        position: absolute; left: 0; top: 0; bottom: 0; width: 640px;
+        z-index: 5;
+        display: grid; grid-template-rows: auto 1fr auto;
+        padding: 72px;
+      }
+
+      body[data-mode="photo-split"] .top-sp {
+        display: flex; align-items: center; gap: 14px;
+      }
+
+      body[data-mode="photo-split"] .eyebrow-sp {
+        font-size: 32px; font-weight: 600; letter-spacing: 0.24em;
+        text-transform: uppercase; color: var(--accent); margin-bottom: 18px;
+      }
+
+      body[data-mode="photo-split"] .headline-sp {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 160px; line-height: 0.87; letter-spacing: 0.01em;
+      }
+
+      body[data-mode="photo-split"] .rule-sp {
+        margin: 22px 0; width: 60px; height: 4px; background: var(--accent);
+      }
+
+      body[data-mode="photo-split"] .body-sp {
+        font-size: 32px; line-height: 1.38; font-weight: 300; color: var(--muted);
+        max-width: 460px;
+      }
+
+      body[data-mode="photo-split"] .footer-sp {
+        display: flex; flex-direction: column; gap: 8px;
+      }
+      body[data-mode="photo-split"] .tagline-sp {
+        font-family: "DM Serif Display", serif; font-style: italic;
+        font-size: 26px; color: rgba(212,165,32,0.65);
+      }
+
+      /* ─────────────────────────────────────
+         MODE: photo-full
+         Photo FULL BLEED.
+         BLACK top bar (cinematic letterbox feel):
+           → brand/logo
+         BLACK bottom band (30%):
+           → eyebrow + headline + body
+         Very cinematic. Maximum impact.
+         ───────────────────────────────────── */
+      body[data-mode="photo-full"] {
+        background: var(--dark); color: var(--fg); font-family: "Inter", sans-serif;
+      }
+
+      .bts-photo-full {
+        display: none; position: absolute;
+        top: 90px; left: 0; right: 0; bottom: 300px;
+        background-size: cover; background-position: center;
+      }
+      .bts-photo-full::after {
+        content: ""; position: absolute; inset: 0;
+        background:
+          linear-gradient(180deg,
+            rgba(8,7,6,0.5) 0%,
+            rgba(8,7,6,0.05) 20%,
+            rgba(8,7,6,0.05) 75%,
+            rgba(8,7,6,0.8) 100%
+          );
+      }
+
+      body[data-mode="photo-full"] .bts-photo-full { display: block; }
+
+      /* Top bar */
+      .cinema-top {
+        display: none; position: absolute;
+        top: 0; left: 0; right: 0; height: 90px;
+        background: var(--dark); z-index: 10;
+        align-items: center; padding: 0 72px;
+        border-bottom: 3px solid var(--accent);
+      }
+      body[data-mode="photo-full"] .cinema-top { display: flex; }
+
+      /* Bottom band */
+      .cinema-bottom {
+        display: none; position: absolute;
+        bottom: 0; left: 0; right: 0; height: 300px;
+        background: var(--dark); z-index: 10;
+        flex-direction: column; justify-content: center;
+        padding: 0 72px;
+        border-top: 3px solid var(--accent);
+      }
+      body[data-mode="photo-full"] .cinema-bottom { display: flex; }
+
+      .eyebrow-fl {
+        font-size: 30px; font-weight: 600; letter-spacing: 0.26em;
+        text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+      }
+      .headline-fl {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 100px; line-height: 0.9; letter-spacing: 0.01em;
+      }
+      .body-fl {
+        margin-top: 14px; font-size: 30px; line-height: 1.36;
+        font-weight: 300; color: var(--muted); max-width: 760px;
+      }
+
+      /* ─── hide unused frames ─── */
+      .frame-type, .frame-split { display: none; }
+      body[data-mode="type"] .frame-type { display: grid; }
+      body[data-mode="photo-split"] .frame-split { display: grid; }
     </style>
   </head>
-  <body data-layout="text-led">
-    <div class="photo" id="photo"></div>
-    <div class="frame">
-      <div class="wordmark">RAW ACTOR STUDIO</div>
-      <div class="label" id="label">IN THE ROOM</div>
-      <div class="headline" id="headline">Show the standards, not just the promise.</div>
-      <div class="body" id="body">The room is part of the offer. The pressure, the notes, the level of specificity, and the support all matter.</div>
-      <div class="note">
-        <div id="note-left"></div>
-        <div id="note-right"></div>
+  <body data-mode="type">
+
+    <!-- Decorative elements -->
+    <div class="diagonal-slash"></div>
+
+    <!-- Photo panels -->
+    <div class="bts-photo-split" id="bts-split"></div>
+    <div class="bts-photo-full" id="bts-full"></div>
+
+    <!-- Cinematic bars (photo-full only) -->
+    <div class="cinema-top">
+      <div class="brand">
+        <img class="logo" id="logo-ct" src="" alt="RAW" />
+        <div class="wordmark">RAW Actor Studio</div>
       </div>
-      <div class="bar"></div>
     </div>
+    <div class="cinema-bottom">
+      <div class="eyebrow-fl" id="eyebrow-fl">IN THE ROOM</div>
+      <div class="headline-fl" id="headline-fl">Show the standards, not just the promise.</div>
+      <div class="body-fl" id="body-fl">The room is part of the offer.</div>
+    </div>
+
+    <!-- Vignette -->
+    <div class="vignette" aria-hidden="true"></div>
+
+    <!-- Grain — two passes -->
+    <div class="grain" aria-hidden="true">
+      <svg width="1080" height="1080" xmlns="http://www.w3.org/2000/svg">
+        <filter id="g1"><feTurbulence type="fractalNoise" baseFrequency="0.70" numOctaves="4" stitchTiles="stitch"/></filter>
+        <filter id="g2"><feTurbulence type="fractalNoise" baseFrequency="0.30" numOctaves="2" stitchTiles="stitch"/></filter>
+        <rect width="1080" height="1080" filter="url(#g1)" opacity="0.65"/>
+        <rect width="1080" height="1080" filter="url(#g2)" opacity="0.22"/>
+      </svg>
+    </div>
+
+    <!-- TYPE frame -->
+    <div class="frame-type">
+      <div class="top-ty">
+        <div class="brand">
+          <img class="logo" id="logo-t" src="" alt="RAW" />
+          <div class="wordmark">RAW Actor Studio</div>
+        </div>
+        <div class="eyebrow-ty" id="eyebrow-t">IN THE ROOM</div>
+      </div>
+      <div class="center-ty">
+        <div class="headline-ty" id="headline-t">Show the standards.</div>
+        <div class="h-rule">
+          <div class="h-rule-line"></div>
+          <div class="h-rule-dot"></div>
+        </div>
+        <div class="body-ty" id="body-t">The room is part of the offer. The pressure, the notes, the level of specificity, and the support all matter.</div>
+      </div>
+      <div class="footer-ty">
+        <div class="tagline-ty">Individualized Coaching. Industry Reality.</div>
+      </div>
+    </div>
+
+    <!-- SPLIT frame -->
+    <div class="frame-split">
+      <div class="top-sp">
+        <img class="logo" id="logo-s" src="" alt="RAW" />
+        <div class="wordmark">RAW Actor Studio</div>
+      </div>
+      <div>
+        <div class="eyebrow-sp" id="eyebrow-s">IN THE ROOM</div>
+        <div class="headline-sp" id="headline-s">Show the standards.</div>
+        <div class="rule-sp"></div>
+        <div class="body-sp" id="body-s">The room is part of the offer. The pressure, the notes, and the level of specificity all matter.</div>
+      </div>
+      <div class="footer-sp">
+        <div class="tagline-sp">Individualized Coaching.<br>Industry Reality.</div>
+      </div>
+    </div>
+
     <!-- RAW_PAYLOAD -->
     <script>
       const post = window.__RAW_POST__ || {};
-      const setText = (id, value, fallback = "") => {
-        const node = document.getElementById(id);
-        if (node) {
-          node.textContent = value || fallback;
-        }
-      };
+      const assets = window.__RAW_ASSETS__ || {};
 
-      document.body.dataset.layout =
-        post.layout_variant === "photo-led" ? "photo-led" : "text-led";
+      ["t","s","ct"].forEach(s => {
+        const el = document.getElementById(`logo-${s}`);
+        if (el && assets.logoSrc) el.src = assets.logoSrc;
+      });
 
-      setText("label", post.label || "IN THE ROOM");
-      setText("headline", post.headline, "RAW class moment");
-      setText("body", post.image_body, "Specific work. Serious support. Useful notes.");
-      setText("note-left", post.visual_direction || "");
-      setText("note-right", post.cta_type ? `CTA: ${post.cta_type}` : "");
+      const bgPhoto = assets.photoBgSrc || assets.photoUrl || post.media?.image_url || post.photo_url || "";
+      const isPhotoLed = post.layout_variant === "photo-led";
+      const mode = !bgPhoto ? "type" : isPhotoLed ? "photo-full" : "photo-split";
+      document.body.dataset.mode = mode;
 
-      const photo = document.getElementById("photo");
-      const imageUrl = post.media?.image_url || post.photo_url || "";
-      if (imageUrl) {
-        photo.style.backgroundImage = `linear-gradient(180deg, rgba(10, 10, 10, 0.18), rgba(10, 10, 10, 0.76)), url("${imageUrl}")`;
+      if (bgPhoto) {
+        const ref = `url("${bgPhoto}")`;
+        document.getElementById("bts-split").style.backgroundImage = ref;
+        document.getElementById("bts-full").style.backgroundImage = ref;
       }
+
+      const label = post.label || "IN THE ROOM";
+      const headline = post.headline || "Show the standards, not just the promise.";
+      const body = post.image_body || "The room is part of the offer.";
+
+      ["t","s"].forEach(s => {
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+        set(`eyebrow-${s}`, label);
+        set(`headline-${s}`, headline);
+        set(`body-${s}`, body);
+      });
+
+      // Cinematic bars
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      set("eyebrow-fl", label);
+      set("headline-fl", headline);
+      set("body-fl", body);
     </script>
   </body>
 </html>

@@ -1,4 +1,275 @@
 {
-  "generated_at": null,
-  "posts": []
+  "generated_at": "2026-04-04T22:31:23.735Z",
+  "posts": [
+    {
+      "type": "enrollment",
+      "date": "2026-04-04",
+      "headline": "Build A Repeatable Process",
+      "label": "THE MASTER CLASS",
+      "image_body": "The Master Class turns process into something you can actually repeat with new material. The Master Class is built for that.",
+      "caption": "Actors need a room where process can be practiced until it holds up repeatedly. That is usually where actors start performing effort instead of solving the scene.\n\nThe Master Class turns process into something you can actually repeat with new material. RAW's standard is clarity you can repeat when the camera is on and the pressure is real.\n\nThe Master Class is framed as repeatable training actors take again to fine-tune preparation and execution with new material. If you want that process in a room that expects precision, look at The Master Class.",
+      "hashtags": [
+        "#RAWActorStudio",
+        "#ActingToronto",
+        "#OnCameraActing",
+        "#ActorTraining",
+        "#TorontoActors",
+        "#AuditionPrep"
+      ],
+      "status": "pending",
+      "cta_type": "enrollment",
+      "cta_url": "https://www.rawactorstudio.com/service-page/the-master-aug-sept",
+      "audience_stage": "hot",
+      "proof_sources": [
+        "master-repeat-taking",
+        "repeatable-system"
+      ],
+      "source_notes": [
+        "The Master Class is framed as repeatable training actors take again to fine-tune preparation and execution with new material.",
+        "RAW teaches a structured process for script analysis, preparation, and execution."
+      ],
+      "angle_id": "master-class-system",
+      "review_notes": [],
+      "acting_concept": "scene prep",
+      "offer_id": "master-class",
+      "layout_variant": "text-led",
+      "visual_direction": "Use a text-led frame with strong hierarchy and restrained cinematic texture.",
+      "content_origin": "system",
+      "source_document_id": null,
+      "supplemental": false,
+      "freshness_window": null,
+      "generated_at": "2026-04-04T22:31:23.733Z",
+      "image_path": "approved-posts/2026-04-04-build-a-repeatable-process.png",
+      "blog_seo_title": null,
+      "blog_meta_description": null,
+      "blog_target_keyword": null,
+      "blog_article": null,
+      "rendered_at": "2026-04-05T02:16:24.384Z"
+    },
+    {
+      "type": "craft-tip",
+      "date": "2026-04-07",
+      "headline": "Make The First Pass Count",
+      "label": "FIRST PASS",
+      "image_body": "Actors often burn time trying to feel everything before making a first pass. Make one playable choice before you chase emotional polish.",
+      "caption": "Actors often burn time trying to feel everything before making a first pass. That is usually where actors start performing effort instead of solving the scene.\n\nMake one playable choice before you chase emotional polish. RAW's standard is clarity you can repeat when the camera is on and the pressure is real.\n\nRAW teaches a structured process for script analysis, preparation, and execution. If you need a room that sharpens the work, start by learning how RAW trains.",
+      "hashtags": [
+        "#RAWActorStudio",
+        "#ActingToronto",
+        "#OnCameraActing",
+        "#ActingTechnique",
+        "#TorontoActors",
+        "#AuditionPrep"
+      ],
+      "status": "pending",
+      "cta_type": "soft",
+      "cta_url": null,
+      "audience_stage": "cold",
+      "proof_sources": [
+        "repeatable-system",
+        "audition-practical-system"
+      ],
+      "source_notes": [
+        "RAW teaches a structured process for script analysis, preparation, and execution.",
+        "On-Camera Audition is positioned as practical training in script analysis, preparation, connection, focus, and truth for real audition pressure."
+      ],
+      "angle_id": "cold-read-first-pass",
+      "review_notes": [],
+      "acting_concept": "cold reads",
+      "offer_id": null,
+      "layout_variant": "text-led",
+      "visual_direction": "Use a text-led frame with strong hierarchy and restrained cinematic texture.",
+      "content_origin": "system",
+      "source_document_id": null,
+      "supplemental": false,
+      "freshness_window": null,
+      "generated_at": "2026-04-04T22:31:23.733Z",
+      "image_path": "approved-posts/2026-04-07-make-the-first-pass-count.png",
+      "blog_seo_title": "Make The First Pass Count — RAW Actor Studio Toronto",
+      "blog_meta_description": "Learn how to work with cold reads in on-camera auditions. RAW Actor Studio's approach to craft training in Toronto.",
+      "blog_target_keyword": "cold reads",
+      "blog_article": "Actors often burn time trying to feel everything before making a first pass. That is usually where actors start performing effort instead of solving the scene.\n\nMake one playable choice before you chase emotional polish. RAW's standard is clarity you can repeat when the camera is on and the pressure is real.\n\nRAW teaches a structured process for script analysis, preparation, and execution. If you need a room that sharpens the work, start by learning how RAW trains.\n\nThis is the standard RAW trains to. Not confidence — clarity. Not inspiration — process.\n\nIf you want to find out where your own work holds and where it breaks, book a free audit at rawactorstudio.com.",
+      "rendered_at": "2026-04-05T02:16:26.154Z"
+    },
+    {
+      "type": "philosophy",
+      "date": "2026-04-09",
+      "headline": "Stop Guessing. Start Owning.",
+      "label": "AUTHORSHIP",
+      "image_body": "Actors often mistake activity for ownership. RAW pushes actors to understand why they are doing something and be able to repeat it.",
+      "caption": "Actors often mistake activity for ownership. That is usually where actors start performing effort instead of solving the scene.\n\nRAW pushes actors to understand why they are doing something and be able to repeat it. RAW's standard is clarity you can repeat when the camera is on and the pressure is real.\n\nRAW teaches a structured process for script analysis, preparation, and execution. If you need a room that sharpens the work, start by learning how RAW trains.",
+      "hashtags": [
+        "#RAWActorStudio",
+        "#ActingToronto",
+        "#OnCameraActing",
+        "#ActorTraining",
+        "#TorontoActors",
+        "#AuditionPrep"
+      ],
+      "status": "pending",
+      "cta_type": "soft",
+      "cta_url": null,
+      "audience_stage": "warm",
+      "proof_sources": [
+        "repeatable-system",
+        "action-intention-purpose"
+      ],
+      "source_notes": [
+        "RAW teaches a structured process for script analysis, preparation, and execution.",
+        "RAW frames the work around purposeful choices rather than vague emotional performance."
+      ],
+      "angle_id": "authorship-over-guessing",
+      "review_notes": [],
+      "acting_concept": "authorship",
+      "offer_id": null,
+      "layout_variant": "text-led",
+      "visual_direction": "Use a text-led frame with strong hierarchy and restrained cinematic texture.",
+      "content_origin": "system",
+      "source_document_id": null,
+      "supplemental": false,
+      "freshness_window": null,
+      "generated_at": "2026-04-04T22:31:23.733Z",
+      "image_path": "approved-posts/2026-04-09-stop-guessing-start-owning.png",
+      "blog_seo_title": null,
+      "blog_meta_description": null,
+      "blog_target_keyword": null,
+      "blog_article": null,
+      "rendered_at": "2026-04-05T02:16:28.095Z"
+    },
+    {
+      "type": "enrollment",
+      "date": "2026-04-11",
+      "headline": "See Where The Work Breaks",
+      "label": "FREE AUDIT",
+      "image_body": "Use the free audit as a clear snapshot of what is working and what is not. Free Audit is built for that.",
+      "caption": "Many actors do not know where their process breaks down until someone tests it in real conditions. That is usually where actors start performing effort instead of solving the scene.\n\nUse the free audit as a clear snapshot of what is working and what is not. RAW's standard is clarity you can repeat when the camera is on and the pressure is real.\n\nThe audit is positioned as a functional skills snapshot built around what casting responds to under pressure. If you want a clear read on where your process holds and where it breaks, book the free audit.",
+      "hashtags": [
+        "#RAWActorStudio",
+        "#ActingToronto",
+        "#OnCameraActing",
+        "#ActorTraining",
+        "#ActingAudit",
+        "#AuditionPrep"
+      ],
+      "status": "pending",
+      "cta_type": "audit",
+      "cta_url": "https://www.rawactorstudio.com/adult-classes",
+      "audience_stage": "hot",
+      "proof_sources": [
+        "audit-functional-snapshot",
+        "testimonial-tools-practical"
+      ],
+      "source_notes": [
+        "The audit is positioned as a functional skills snapshot built around what casting responds to under pressure.",
+        "Student feedback says the classes provide practical tools that can be applied immediately."
+      ],
+      "angle_id": "audit-gap-check",
+      "review_notes": [],
+      "acting_concept": "audit",
+      "offer_id": "free-audit",
+      "layout_variant": "text-led",
+      "visual_direction": "Use a text-led frame with strong hierarchy and restrained cinematic texture.",
+      "content_origin": "system",
+      "source_document_id": null,
+      "supplemental": false,
+      "freshness_window": null,
+      "generated_at": "2026-04-04T22:31:23.734Z",
+      "image_path": "approved-posts/2026-04-11-see-where-the-work-breaks.png",
+      "blog_seo_title": null,
+      "blog_meta_description": null,
+      "blog_target_keyword": null,
+      "blog_article": null,
+      "rendered_at": "2026-04-05T02:16:29.956Z"
+    },
+    {
+      "type": "craft-tip",
+      "date": "2026-04-14",
+      "headline": "Feelings Are Not Actions",
+      "label": "PLAYABLE ACTION",
+      "image_body": "Vague emotional goals flatten work on camera. Swap feelings language for an action you can actually do to the other person.",
+      "caption": "Vague emotional goals flatten work on camera. That is usually where actors start performing effort instead of solving the scene.\n\nSwap feelings language for an action you can actually do to the other person. RAW's standard is clarity you can repeat when the camera is on and the pressure is real.\n\nRAW frames the work around purposeful choices rather than vague emotional performance. If you need a room that sharpens the work, start by learning how RAW trains.",
+      "hashtags": [
+        "#RAWActorStudio",
+        "#ActingToronto",
+        "#OnCameraActing",
+        "#ActingTechnique",
+        "#TorontoActors",
+        "#AuditionPrep"
+      ],
+      "status": "pending",
+      "cta_type": "soft",
+      "cta_url": null,
+      "audience_stage": "cold",
+      "proof_sources": [
+        "action-intention-purpose",
+        "industry-reality"
+      ],
+      "source_notes": [
+        "RAW frames the work around purposeful choices rather than vague emotional performance.",
+        "The studio explicitly connects craft to audition standards, on-set expectations, and working efficiency under pressure."
+      ],
+      "angle_id": "playable-actions",
+      "review_notes": [],
+      "acting_concept": "playable actions",
+      "offer_id": null,
+      "layout_variant": "text-led",
+      "visual_direction": "Use a text-led frame with strong hierarchy and restrained cinematic texture.",
+      "content_origin": "system",
+      "source_document_id": null,
+      "supplemental": false,
+      "freshness_window": null,
+      "generated_at": "2026-04-04T22:31:23.734Z",
+      "image_path": "approved-posts/2026-04-14-feelings-are-not-actions.png",
+      "blog_seo_title": "Feelings Are Not Actions — RAW Actor Studio Toronto",
+      "blog_meta_description": "Learn how to work with playable actions in on-camera auditions. RAW Actor Studio's approach to craft training in Toronto.",
+      "blog_target_keyword": "playable actions",
+      "blog_article": "Vague emotional goals flatten work on camera. That is usually where actors start performing effort instead of solving the scene.\n\nSwap feelings language for an action you can actually do to the other person. RAW's standard is clarity you can repeat when the camera is on and the pressure is real.\n\nRAW frames the work around purposeful choices rather than vague emotional performance. If you need a room that sharpens the work, start by learning how RAW trains.\n\nThis is the standard RAW trains to. Not confidence — clarity. Not inspiration — process.\n\nIf you want to find out where your own work holds and where it breaks, book a free audit at rawactorstudio.com.",
+      "rendered_at": "2026-04-05T02:16:31.747Z"
+    },
+    {
+      "type": "philosophy",
+      "date": "2026-04-16",
+      "headline": "Clarity Is A Better Coach",
+      "label": "CLARITY",
+      "image_body": "Vague feedback wastes time and keeps actors guessing. Specific language gives actors something they can use again.",
+      "caption": "Vague feedback wastes time and keeps actors guessing. That is usually where actors start performing effort instead of solving the scene.\n\nSpecific language gives actors something they can use again. RAW's standard is clarity you can repeat when the camera is on and the pressure is real.\n\nRAW teaches a structured process for script analysis, preparation, and execution. If you need a room that sharpens the work, start by learning how RAW trains.",
+      "hashtags": [
+        "#RAWActorStudio",
+        "#ActingToronto",
+        "#OnCameraActing",
+        "#ActorTraining",
+        "#TorontoActors",
+        "#AuditionPrep"
+      ],
+      "status": "pending",
+      "cta_type": "soft",
+      "cta_url": null,
+      "audience_stage": "warm",
+      "proof_sources": [
+        "repeatable-system",
+        "serious-supportive"
+      ],
+      "source_notes": [
+        "RAW teaches a structured process for script analysis, preparation, and execution.",
+        "The room is positioned as focused and respectful, with challenge but not teardown teaching."
+      ],
+      "angle_id": "clarity-is-kindness",
+      "review_notes": [],
+      "acting_concept": "clarity",
+      "offer_id": null,
+      "layout_variant": "text-led",
+      "visual_direction": "Use a text-led frame with strong hierarchy and restrained cinematic texture.",
+      "content_origin": "system",
+      "source_document_id": null,
+      "supplemental": false,
+      "freshness_window": null,
+      "generated_at": "2026-04-04T22:31:23.734Z",
+      "image_path": "approved-posts/2026-04-16-clarity-is-a-better-coach.png",
+      "blog_seo_title": null,
+      "blog_meta_description": null,
+      "blog_target_keyword": null,
+      "blog_article": null,
+      "rendered_at": "2026-04-05T02:16:33.672Z"
+    }
+  ]
 }

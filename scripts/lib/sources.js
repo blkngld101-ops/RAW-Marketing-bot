@@ -781,23 +781,16 @@ export async function processArticleSource({
   queue,
   mock = false
 }) {
-  const article = await fetchArticleSource(sourceUrl);
-  const ageDays = ageInDays(article.publishedAt);
-
-  if (ageDays !== null && ageDays > DEFAULT_ARTICLE_MAX_AGE_DAYS) {
-    throw new Error(
-      `Article is too old for trend content (${ageDays} days).`
-    );
-  }
-
+  // Create a stub document before the fetch so every submission lands in the
+  // audit trail, even if the article is unreachable, paywalled, or too old.
   let sourceDocument = buildSourceDocument({
     sourceType: "industry_article",
-    title: article.title,
-    rawText: article.text,
+    title: sourceUrl,
+    rawText: "",
     sourceUrl,
-    submittedBy
+    submittedBy,
+    processingStatus: "pending"
   });
-  sourceDocument.published_at = article.publishedAt || null;
 
   const duplicate = findDuplicateDocument(sourceDocuments, sourceDocument);
   if (duplicate) {
@@ -805,6 +798,55 @@ export async function processArticleSource({
   }
 
   let nextSourceDocuments = addSourceDocument(sourceDocuments, sourceDocument);
+
+  let article;
+  try {
+    article = await fetchArticleSource(sourceUrl);
+  } catch (fetchError) {
+    sourceDocument = {
+      ...sourceDocument,
+      processing_status: "fetch_failed",
+      processing_notes: [fetchError.message]
+    };
+    nextSourceDocuments = updateSourceDocument(nextSourceDocuments, sourceDocument);
+    return {
+      sourceDocument,
+      sourceDocuments: nextSourceDocuments,
+      supplementalBank,
+      queue,
+      createdAngles: 0,
+      promotedPosts: []
+    };
+  }
+
+  const ageDays = ageInDays(article.publishedAt);
+  if (ageDays !== null && ageDays > DEFAULT_ARTICLE_MAX_AGE_DAYS) {
+    sourceDocument = {
+      ...sourceDocument,
+      title: article.title || sourceUrl,
+      processing_status: "rejected",
+      processing_notes: [`Article is too old for trend content (${ageDays} days).`]
+    };
+    nextSourceDocuments = updateSourceDocument(nextSourceDocuments, sourceDocument);
+    return {
+      sourceDocument,
+      sourceDocuments: nextSourceDocuments,
+      supplementalBank,
+      queue,
+      createdAngles: 0,
+      promotedPosts: []
+    };
+  }
+
+  // Fetch succeeded — update the stub with real content.
+  sourceDocument = {
+    ...sourceDocument,
+    title: article.title,
+    raw_text: article.text,
+    published_at: article.publishedAt || null
+  };
+
+  nextSourceDocuments = updateSourceDocument(nextSourceDocuments, sourceDocument);
   const analysis = await analyzeArticle(
     sourceDocument,
     data,
