@@ -202,11 +202,20 @@ async function sendReviewPost(chatId, post) {
 
   if (imageUrl) {
     try {
-      await telegramApi("sendPhoto", {
-        chat_id: chatId,
-        photo: imageUrl,
-        caption: `${post.headline}\n${post.date} | ${post.type}`.slice(0, 1024)
-      });
+      // Fetch image ourselves and upload as bytes — Telegram rejects raw.githubusercontent.com URLs directly
+      const imgResponse = await fetch(imageUrl);
+      if (imgResponse.ok) {
+        const buffer = await imgResponse.arrayBuffer();
+        const token = process.env.RAW_TELEGRAM_BOT_TOKEN;
+        const form = new FormData();
+        form.append("chat_id", String(chatId));
+        form.append("photo", new Blob([buffer], { type: "image/png" }), "post.png");
+        form.append("caption", `${post.headline}\n${post.date} | ${post.type}`.slice(0, 1024));
+        await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+          method: "POST",
+          body: form
+        });
+      }
     } catch {
       // Photo failed — continue to text review message regardless
     }
