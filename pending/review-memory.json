@@ -1,6 +1,22 @@
 {
-  "updated_at": null,
+  "updated_at": "2026-04-05T03:46:29.790Z",
   "approved_exemplars": [],
-  "rejected_patterns": [],
-  "review_log": []
+  "rejected_patterns": [
+    {
+      "date": "2026-04-04",
+      "angle_id": "master-class-system",
+      "reason": "visual feels templated",
+      "headline": "Build A Repeatable Process",
+      "recorded_at": "2026-04-05T03:46:29.790Z"
+    }
+  ],
+  "review_log": [
+    {
+      "type": "revision_request",
+      "date": "2026-04-04",
+      "angle_id": "master-class-system",
+      "reason": "visual feels templated",
+      "recorded_at": "2026-04-05T03:46:29.790Z"
+    }
+  ]
 }
