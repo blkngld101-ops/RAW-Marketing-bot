@@ -987,27 +987,33 @@ async function handleMediaMessage(update, context) {
 async function handlePhotoMessage(update, context) {
   const message = update.message;
   const chatId = message.chat.id;
-  const awaiting = context.reviewMemory.awaiting_input;
 
+  // Resolve which post this photo is for.
+  // Prefer awaiting_input (set by "New Creative" button), fall back to current pending post.
+  const awaiting = context.reviewMemory.awaiting_input;
+  let post = null;
   if (
     awaiting?.mode === "edit_field" &&
     awaiting.field === "img" &&
     String(awaiting.chat_id) === String(chatId)
   ) {
-    const { date, angle_id } = awaiting;
-    const post = findPost(context.queue, date, angle_id);
+    post = findPost(context.queue, awaiting.date, awaiting.angle_id);
+  }
+  if (!post) {
+    post = getCurrentPost(context.queue);
+  }
 
-    if (!post) {
-      delete context.reviewMemory.awaiting_input;
-      await sendMessage(chatId, "Could not find that post.");
-      return;
-    }
+  if (!post) {
+    await sendMessage(chatId, "No post is currently under review. Use /review to load one.");
+    return;
+  }
 
+  try {
     const photos = message.photo;
     const largest = photos[photos.length - 1];
     const buffer = await downloadTelegramFile(largest.file_id);
 
-    const photoPath = `photos/creative-${date}-${angle_id}-${Date.now()}.jpg`;
+    const photoPath = `photos/creative-${post.date}-${post.angle_id}-${Date.now()}.jpg`;
     await uploadBinaryToGitHub(
       process.env.GITHUB_TOKEN,
       process.env.GITHUB_REPO,
@@ -1026,38 +1032,11 @@ async function handlePhotoMessage(update, context) {
       await triggerWorkflow();
       await sendMessage(chatId, `Creative updated for "${post.headline}". Re-render triggered — send /review in a minute to see the new image.`);
     } catch {
-      await sendMessage(chatId, `Creative photo saved. Trigger a manual re-render with /regenerate to get the new image.`);
+      await sendMessage(chatId, `Creative photo saved for "${post.headline}". Trigger a manual re-render with /regenerate.`);
     }
-    return;
+  } catch (err) {
+    await sendMessage(chatId, `Failed to save photo: ${err.message}`);
   }
-
-  // awaiting_input may not have persisted yet (GitHub read/write race) — fall back to current post
-  const post = getCurrentPost(context.queue);
-  if (!post) {
-    await sendMessage(chatId, "No post is currently under review. Use /review to load one.");
-    return;
-  }
-
-  const photos = message.photo;
-  const largest = photos[photos.length - 1];
-  const buffer = await downloadTelegramFile(largest.file_id);
-
-  const photoPath = `photos/creative-${post.date}-${post.angle_id}-${Date.now()}.jpg`;
-  await uploadBinaryToGitHub(
-    process.env.GITHUB_TOKEN,
-    process.env.GITHUB_REPO,
-    photoPath,
-    buffer
-  );
-
-  const rawUrl = `https://raw.githubusercontent.com/${process.env.GITHUB_REPO}/main/${photoPath}`;
-  const updatedPost = { ...post, photo_url: rawUrl, image_path: null };
-  context.queue = replacePost(context.queue, updatedPost);
-  if (context.reviewMemory.awaiting_input) {
-    delete context.reviewMemory.awaiting_input;
-  }
-  context.reviewMemory.updated_at = new Date().toISOString();
-  await persistContext(context, ["queue", "reviewMemory"]);
 
   try {
     await triggerWorkflow();
