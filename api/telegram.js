@@ -1038,9 +1038,10 @@ async function handleCallback(update, context) {
   const callback = update.callback_query;
   const parts = String(callback.data || "").split(":");
   const action = parts[0];
-  const detail = action === "rsn" ? parts[1] : null;
-  const date = action === "rsn" ? parts[2] : parts[1];
-  const angleId = action === "rsn" ? parts[3] : parts[2];
+  const hasDetail = action === "rsn" || action === "edt";
+  const detail = hasDetail ? parts[1] : null;
+  const date = hasDetail ? parts[2] : parts[1];
+  const angleId = hasDetail ? parts[3] : parts[2];
   const chatId = callback.message.chat.id;
   const post = findPost(context.queue, date, angleId);
 
