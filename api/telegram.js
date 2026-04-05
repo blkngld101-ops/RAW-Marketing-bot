@@ -89,10 +89,12 @@ async function sendMessage(chatId, text, extra = {}) {
 }
 
 function buildPublicImageUrl(post) {
+  if (post.photo_url) {
+    return post.photo_url;
+  }
   if (!post.image_path || !process.env.GITHUB_REPO) {
     return null;
   }
-
   return `https://raw.githubusercontent.com/${process.env.GITHUB_REPO}/main/${post.image_path}`;
 }
 
