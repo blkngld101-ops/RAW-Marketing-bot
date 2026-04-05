@@ -107,6 +107,10 @@ function summarizePost(post) {
     post.caption
   ];
 
+  if (post.hashtags?.length) {
+    lines.push("", post.hashtags.join(" "));
+  }
+
   if (post.proof_sources?.length) {
     lines.push("", `Proof: ${post.proof_sources.join(", ")}`);
   }
@@ -131,9 +135,18 @@ function buildReviewKeyboard(post) {
   return {
     inline_keyboard: [
       [
-        { text: "Approve", callback_data: `apr:${key}` },
-        { text: "Skip", callback_data: `skp:${key}` }
+        { text: "✅ Approve", callback_data: `apr:${key}` },
+        { text: "⏭ Skip", callback_data: `skp:${key}` }
       ],
+      [
+        { text: "✏️ Caption", callback_data: `edt:cap:${key}` },
+        { text: "# Hashtags", callback_data: `edt:htg:${key}` }
+      ],
+      [
+        { text: "📝 Headline", callback_data: `edt:hdl:${key}` },
+        { text: "🖼 Image Text", callback_data: `edt:bod:${key}` }
+      ],
+      [{ text: "🎨 New Creative", callback_data: `edt:img:${key}` }],
       [
         { text: "Too Generic", callback_data: `rsn:tg:${key}` },
         { text: "Not RAW Voice", callback_data: `rsn:nrv:${key}` }
@@ -510,6 +523,31 @@ async function downloadTelegramFile(fileId) {
   return Buffer.from(await response.arrayBuffer());
 }
 
+async function uploadBinaryToGitHub(token, repo, targetPath, buffer) {
+  const [owner, name] = String(repo || "").split("/");
+  const content = Buffer.from(buffer).toString("base64");
+  const response = await fetch(
+    `https://api.github.com/repos/${owner}/${name}/contents/${targetPath}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: `chore(raw): add creative photo ${targetPath}`,
+        content
+      })
+    }
+  );
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`GitHub photo upload failed: ${response.status} ${text}`);
+  }
+  return response.json();
+}
+
 async function persistContext(context, fields = ["queue", "reviewMemory", "sourceDocuments", "supplementalBank"]) {
   const tasks = [];
 
@@ -851,6 +889,50 @@ async function handleTextMessage(update, context) {
     return;
   }
 
+  if (
+    context.reviewMemory.awaiting_input?.mode === "edit_field" &&
+    String(context.reviewMemory.awaiting_input.chat_id) === String(chatId)
+  ) {
+    const { field, date, angle_id } = context.reviewMemory.awaiting_input;
+
+    if (field === "img") {
+      await sendMessage(chatId, "Please send a photo, not text, to change the creative.");
+      return;
+    }
+
+    const post = findPost(context.queue, date, angle_id);
+    if (!post) {
+      delete context.reviewMemory.awaiting_input;
+      await sendMessage(chatId, "Could not find that post.");
+      return;
+    }
+
+    let updatedPost;
+    if (field === "cap") {
+      updatedPost = { ...post, caption: text };
+    } else if (field === "hdl") {
+      updatedPost = { ...post, headline: text };
+    } else if (field === "bod") {
+      updatedPost = { ...post, image_body: text };
+    } else if (field === "htg") {
+      const hashtags = text
+        .split(/[\s,\n]+/)
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+        .map((tag) => (tag.startsWith("#") ? tag : `#${tag}`));
+      updatedPost = { ...post, hashtags };
+    } else {
+      updatedPost = post;
+    }
+
+    context.queue = replacePost(context.queue, updatedPost);
+    delete context.reviewMemory.awaiting_input;
+    context.reviewMemory.updated_at = new Date().toISOString();
+    await persistContext(context, ["queue", "reviewMemory"]);
+    await sendMessage(chatId, `Updated.\n\n${summarizePost(updatedPost)}`);
+    return;
+  }
+
   const current = getCurrentPost(context.queue);
   if (!current) {
     await sendMessage(chatId, "No current review post to revise.");
@@ -900,6 +982,56 @@ async function handleMediaMessage(update, context) {
   }
 
   await sendMessage(chatId, "Use /class first, then send the voice note or audio file.");
+}
+
+async function handlePhotoMessage(update, context) {
+  const message = update.message;
+  const chatId = message.chat.id;
+  const awaiting = context.reviewMemory.awaiting_input;
+
+  if (
+    awaiting?.mode === "edit_field" &&
+    awaiting.field === "img" &&
+    String(awaiting.chat_id) === String(chatId)
+  ) {
+    const { date, angle_id } = awaiting;
+    const post = findPost(context.queue, date, angle_id);
+
+    if (!post) {
+      delete context.reviewMemory.awaiting_input;
+      await sendMessage(chatId, "Could not find that post.");
+      return;
+    }
+
+    const photos = message.photo;
+    const largest = photos[photos.length - 1];
+    const buffer = await downloadTelegramFile(largest.file_id);
+
+    const photoPath = `photos/creative-${date}-${angle_id}-${Date.now()}.jpg`;
+    await uploadBinaryToGitHub(
+      process.env.GITHUB_TOKEN,
+      process.env.GITHUB_REPO,
+      photoPath,
+      buffer
+    );
+
+    const rawUrl = `https://raw.githubusercontent.com/${process.env.GITHUB_REPO}/main/${photoPath}`;
+    const updatedPost = { ...post, photo_url: rawUrl, image_path: null };
+    context.queue = replacePost(context.queue, updatedPost);
+    delete context.reviewMemory.awaiting_input;
+    context.reviewMemory.updated_at = new Date().toISOString();
+    await persistContext(context, ["queue", "reviewMemory"]);
+
+    try {
+      await triggerWorkflow();
+      await sendMessage(chatId, `Creative updated for "${post.headline}". Re-render triggered — send /review in a minute to see the new image.`);
+    } catch {
+      await sendMessage(chatId, `Creative photo saved. Trigger a manual re-render with /regenerate to get the new image.`);
+    }
+    return;
+  }
+
+  await sendMessage(chatId, "Tap 'New Creative' on a post first, then send a photo.");
 }
 
 async function handleCallback(update, context) {
@@ -1022,6 +1154,37 @@ async function handleCallback(update, context) {
     return;
   }
 
+  if (action === "edt") {
+    const field = detail;
+    const fieldLabels = { cap: "caption", htg: "hashtags", hdl: "headline", bod: "image text", img: "creative photo" };
+    const fieldLabel = fieldLabels[field] || field;
+
+    context.reviewMemory.awaiting_input = {
+      mode: "edit_field",
+      field,
+      date: post.date,
+      angle_id: post.angle_id,
+      chat_id: chatId,
+      created_at: new Date().toISOString()
+    };
+    context.reviewMemory.updated_at = new Date().toISOString();
+    await persistContext(context, ["reviewMemory"]);
+
+    await telegramApi("answerCallbackQuery", {
+      callback_query_id: callback.id,
+      text: `Send the new ${fieldLabel}.`
+    });
+
+    const prompt = field === "img"
+      ? "Send a photo to use as the new background creative."
+      : field === "htg"
+      ? "Send the new hashtags (space or newline separated, with or without #):"
+      : `Send the new ${fieldLabel}:`;
+
+    await sendMessage(chatId, prompt);
+    return;
+  }
+
   if (action === "rsn") {
     const reason = REASON_CODES[detail] || detail;
     if (!REVIEW_REASONS.includes(reason)) {
@@ -1110,6 +1273,8 @@ export default async function handler(req, res) {
       await handleTextMessage(update, context);
     } else if (update.message && messageHasClassAudio(update.message)) {
       await handleMediaMessage(update, context);
+    } else if (update.message?.photo) {
+      await handlePhotoMessage(update, context);
     } else if (update.callback_query?.data) {
       await handleCallback(update, context);
     }
