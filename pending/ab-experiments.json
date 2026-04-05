@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-05T03:46:43.426Z",
+  "updated_at": "2026-04-05T03:47:00.660Z",
   "outcomes": [
     {
       "date": "2026-04-04",
@@ -24,6 +24,18 @@
       "outcome": "rejected",
       "reason": "visual feels templated",
       "recorded_at": "2026-04-05T03:46:43.426Z"
+    },
+    {
+      "date": "2026-04-04",
+      "post_date": "2026-04-04",
+      "angle_id": "master-class-system",
+      "type": "enrollment",
+      "pillar": "conversion",
+      "content_origin": "system",
+      "panel_score": null,
+      "outcome": "rejected",
+      "reason": "visual feels templated",
+      "recorded_at": "2026-04-05T03:47:00.660Z"
     }
   ]
 }
