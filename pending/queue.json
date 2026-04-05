@@ -16,7 +16,7 @@
         "#TorontoActors",
         "#AuditionPrep"
       ],
-      "status": "pending",
+      "status": "needs_revision",
       "cta_type": "enrollment",
       "cta_url": "https://www.rawactorstudio.com/service-page/the-master-aug-sept",
       "audience_stage": "hot",
@@ -29,7 +29,13 @@
         "RAW teaches a structured process for script analysis, preparation, and execution."
       ],
       "angle_id": "master-class-system",
-      "review_notes": [],
+      "review_notes": [
+        {
+          "source": "telegram",
+          "note": "visual feels templated",
+          "recorded_at": "2026-04-05T03:46:27.285Z"
+        }
+      ],
       "acting_concept": "scene prep",
       "offer_id": "master-class",
       "layout_variant": "text-led",
