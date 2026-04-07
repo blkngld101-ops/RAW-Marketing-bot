@@ -148,7 +148,10 @@ function buildReviewKeyboard(post) {
         { text: "📝 Headline", callback_data: `edt:hdl:${key}` },
         { text: "🖼 Image Text", callback_data: `edt:bod:${key}` }
       ],
-      [{ text: "🎨 New Creative", callback_data: `edt:img:${key}` }],
+      [
+        { text: "🎨 New Creative", callback_data: `edt:img:${key}` },
+        { text: "🔀 Shuffle Design", callback_data: `shf:${key}` }
+      ],
       [
         { text: "Too Generic", callback_data: `rsn:tg:${key}` },
         { text: "Not RAW Voice", callback_data: `rsn:nrv:${key}` }
@@ -1197,6 +1200,28 @@ async function handleCallback(update, context) {
       : `Send the new ${fieldLabel}:`;
 
     await sendMessage(chatId, prompt);
+    return;
+  }
+
+  if (action === "shf") {
+    const DESIGN_VARIANTS = ["type-only", "text-led", "photo-led"];
+    const VARIANT_LABELS = { "type-only": "typography", "text-led": "photo split", "photo-led": "photo full" };
+    const current = post.layout_variant || "text-led";
+    const options = DESIGN_VARIANTS.filter((v) => v !== current);
+    const next = options[Math.floor(Math.random() * options.length)];
+    const shuffled = { ...post, layout_variant: next, image_path: null, rendered_at: null };
+    context.queue = replacePost(context.queue, shuffled);
+    await persistContext(context, ["queue"]);
+    await telegramApi("answerCallbackQuery", {
+      callback_query_id: callback.id,
+      text: `Design shuffled → ${VARIANT_LABELS[next]}.`
+    });
+    try {
+      await triggerWorkflow();
+      await sendMessage(chatId, `Design shuffled to ${VARIANT_LABELS[next]} for "${post.headline}". Re-rendering — send /review in a minute.`);
+    } catch {
+      await sendMessage(chatId, `Design set to ${VARIANT_LABELS[next]} for "${post.headline}". Trigger /regenerate to re-render.`);
+    }
     return;
   }
 
