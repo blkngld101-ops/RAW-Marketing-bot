@@ -711,6 +711,47 @@ async function handleTextMessage(update, context) {
   const chatId = message.chat.id;
   const lower = text.toLowerCase();
 
+  if (lower.startsWith("/cancel")) {
+    if (context.reviewMemory.awaiting_input) {
+      delete context.reviewMemory.awaiting_input;
+      context.reviewMemory.updated_at = new Date().toISOString();
+      await persistContext(context, ["reviewMemory"]);
+      await sendMessage(chatId, "Cancelled.");
+    } else {
+      await sendMessage(chatId, "Nothing to cancel.");
+    }
+    return;
+  }
+
+  if (lower.startsWith("/help") || lower === "/commands") {
+    await sendMessage(chatId, [
+      "RAW Marketing Bot — commands",
+      "",
+      "REVIEW",
+      "/review — show current post for review",
+      "/status — queue counts",
+      "/variants — list design variants (send /variants <id> to toggle on/off)",
+      "",
+      "GENERATE",
+      "/regenerate — trigger content + render workflow",
+      "/enrollment — generate an enrollment post now",
+      "/spotlight <name> — start student spotlight flow",
+      "",
+      "CONTENT SOURCES",
+      "/class — ingest a class transcript or audio",
+      "/article <url> — ingest an article",
+      "/podcast <rss_url> [index] — ingest a podcast episode",
+      "/source-status — source pipeline status",
+      "",
+      "OTHER",
+      "/sessions — list active sessions",
+      "/scorecard — A/B design scorecard",
+      "/cancel — cancel any pending input",
+      "/help — this list"
+    ].join("\n"));
+    return;
+  }
+
   if (lower.startsWith("/review")) {
     const current = getCurrentPost(context.queue);
     if (!current) {
@@ -812,7 +853,8 @@ async function handleTextMessage(update, context) {
     await persistContext(context, ["reviewMemory"]);
     await sendMessage(
       chatId,
-      "Class intake started. Send a transcript as text or send a voice note/audio file next."
+      "Class intake started. Send a transcript as text or send a voice note/audio file next.",
+      { reply_markup: { inline_keyboard: [[{ text: "❌ Cancel", callback_data: "cnl:" }]] } }
     );
     return;
   }
@@ -837,7 +879,8 @@ async function handleTextMessage(update, context) {
     await persistContext(context, ["reviewMemory"]);
     await sendMessage(
       chatId,
-      `Saved spotlight target for ${name}. Send one concrete quote or achievement line next.`
+      `Saved spotlight target for ${name}. Send one concrete quote or achievement line next.`,
+      { reply_markup: { inline_keyboard: [[{ text: "❌ Cancel", callback_data: "cnl:" }]] } }
     );
     return;
   }
@@ -1199,6 +1242,19 @@ async function handleCallback(update, context) {
   const date = parts[dateOffset];
   const angleId = parts[angleOffset];
   const chatId = callback.message.chat.id;
+
+  // Cancel — clears awaiting_input regardless of post state
+  if (action === "cnl") {
+    if (context.reviewMemory.awaiting_input) {
+      delete context.reviewMemory.awaiting_input;
+      context.reviewMemory.updated_at = new Date().toISOString();
+      await persistContext(context, ["reviewMemory"]);
+    }
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Cancelled." });
+    await sendMessage(chatId, "Cancelled. Send /review to continue.");
+    return;
+  }
+
   const post = findPost(context.queue, date, angleId);
 
   if (!post) {
@@ -1338,28 +1394,39 @@ async function handleCallback(update, context) {
       ? "Send the new hashtags (space or newline separated, with or without #):"
       : `Send the new ${fieldLabel}:`;
 
-    await sendMessage(chatId, prompt);
+    await sendMessage(chatId, prompt, {
+      reply_markup: { inline_keyboard: [[{ text: "❌ Cancel", callback_data: `cnl:${key}` }]] }
+    });
     return;
   }
 
   if (action === "shf") {
-    const DESIGN_VARIANTS = ["type-only", "text-led", "photo-led"];
-    const VARIANT_LABELS = { "type-only": "typography", "text-led": "photo split", "photo-led": "photo full" };
-    const current = post.layout_variant || "text-led";
-    const options = DESIGN_VARIANTS.filter((v) => v !== current);
-    const next = options[Math.floor(Math.random() * options.length)];
-    const shuffled = { ...post, layout_variant: next, image_path: null, rendered_at: null };
+    const enabledVariants = getAllVariants(true);
+    if (!enabledVariants.length) {
+      await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "No enabled variants found." });
+      return;
+    }
+    const current = post.design_variant || null;
+    const options = enabledVariants.filter((v) => v.id !== current);
+    const pick = options.length ? options[Math.floor(Math.random() * options.length)] : enabledVariants[0];
+    const shuffled = {
+      ...post,
+      design_variant: pick.id,
+      layout_variant: pick.layout_variant,
+      image_path: null,
+      rendered_at: null
+    };
     context.queue = replacePost(context.queue, shuffled);
     await persistContext(context, ["queue"]);
     await telegramApi("answerCallbackQuery", {
       callback_query_id: callback.id,
-      text: `Design shuffled → ${VARIANT_LABELS[next]}.`
+      text: `Shuffled → ${pick.groupEmoji} ${pick.label}`
     });
     try {
       await triggerWorkflow();
-      await sendMessage(chatId, `Design shuffled to ${VARIANT_LABELS[next]} for "${post.headline}". Re-rendering — send /review in a minute.`);
+      await sendMessage(chatId, `Design shuffled to ${pick.groupEmoji} ${pick.label} for "${post.headline}". Re-rendering — /review in a minute.`);
     } catch {
-      await sendMessage(chatId, `Design set to ${VARIANT_LABELS[next]} for "${post.headline}". Trigger /regenerate to re-render.`);
+      await sendMessage(chatId, `Design set to ${pick.groupEmoji} ${pick.label} for "${post.headline}". Use /regenerate to re-render.`);
     }
     return;
   }
