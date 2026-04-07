@@ -95,19 +95,19 @@
       "review_notes": [],
       "acting_concept": "cold reads",
       "offer_id": null,
-      "layout_variant": "text-led",
+      "layout_variant": "type-only",
       "visual_direction": "Use a text-led frame with strong hierarchy and restrained cinematic texture.",
       "content_origin": "system",
       "source_document_id": null,
       "supplemental": false,
       "freshness_window": null,
       "generated_at": "2026-04-04T22:31:23.733Z",
-      "image_path": "approved-posts/2026-04-07-make-the-first-pass-count.png",
+      "image_path": null,
       "blog_seo_title": "Make The First Pass Count — RAW Actor Studio Toronto",
       "blog_meta_description": "Learn how to work with cold reads in on-camera auditions. RAW Actor Studio's approach to craft training in Toronto.",
       "blog_target_keyword": "cold reads",
       "blog_article": "Actors often burn time trying to feel everything before making a first pass. That is usually where actors start performing effort instead of solving the scene.\n\nMake one playable choice before you chase emotional polish. RAW's standard is clarity you can repeat when the camera is on and the pressure is real.\n\nRAW teaches a structured process for script analysis, preparation, and execution. If you need a room that sharpens the work, start by learning how RAW trains.\n\nThis is the standard RAW trains to. Not confidence — clarity. Not inspiration — process.\n\nIf you want to find out where your own work holds and where it breaks, book a free audit at rawactorstudio.com.",
-      "rendered_at": "2026-04-05T02:16:26.154Z"
+      "rendered_at": null
     },
     {
       "type": "philosophy",
