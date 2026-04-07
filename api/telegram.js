@@ -1464,7 +1464,7 @@ async function handleCallback(update, context) {
     // AI compose — show style group picker filtered to relevant groups
     const relevantGroups = mode === "cutout"
       ? ["cutout-poster", "bold-editorial", "experimental"]
-      : ["scene-portrait", "dark-cinema", "bold-editorial"];
+      : ["scene-portrait", "bold-editorial", "experimental"];
 
     const config = loadDesignVariants();
     const groups = config.groups.filter((g) => relevantGroups.includes(g.id) && g.variants.some((v) => v.enabled));
