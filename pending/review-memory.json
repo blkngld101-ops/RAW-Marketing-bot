@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-07T03:40:36.679Z",
+  "updated_at": "2026-04-07T03:41:15.459Z",
   "approved_exemplars": [],
   "rejected_patterns": [
     {
@@ -20,7 +20,7 @@
     }
   ],
   "awaiting_input": {
-    "mode": "compose_prompt_before",
+    "mode": "compose_prompt_after",
     "post_date": "2026-04-07",
     "post_angle_id": "cold-read-first-pass",
     "temp_photo_url": "https://raw.githubusercontent.com/blkngld101-ops/RAW-Marketing-bot/main/photos/tmp-1775533222573.jpg",
@@ -36,6 +36,7 @@
       "has_action": false,
       "suggested_style": "cutout",
       "lighting": "warm"
-    }
+    },
+    "composed_url": "https://raw.githubusercontent.com/blkngld101-ops/RAW-Marketing-bot/main/photos/composed-2026-04-07-cold-read-first-pass-1775533274541.png"
   }
 }
