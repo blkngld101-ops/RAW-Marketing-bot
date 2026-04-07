@@ -224,6 +224,12 @@ export function buildCompositionPrompt({ variantId, analysis, userNotes = "" }) 
     `- Film grain texture is part of the aesthetic`,
     `- NO text, NO logos, NO overlays — clean background image only`,
     `- Output must be square 1:1 unless told otherwise`,
+    ``,
+    `CRITICAL — face preservation:`,
+    `- Every face in the photo must be reproduced EXACTLY as it appears in the original`,
+    `- Do NOT reinterpret, retouch, smooth, alter, or AI-generate any face`,
+    `- Facial features, expressions, skin tone, and likeness must be pixel-faithful to the source`,
+    `- If you cannot preserve a face exactly, keep the original face unchanged and apply all other treatments around it`,
     userNotes ? `\nAdditional notes: ${userNotes}` : ""
   ].filter((l) => l !== undefined).join("\n").trim();
 
