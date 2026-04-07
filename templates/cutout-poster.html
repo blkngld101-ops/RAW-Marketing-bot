@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>RAW Cutout Poster</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&family=DM+Serif+Display:ital@0;1&display=swap");
+
+      /* ─── THEME TOKENS ─── */
+      :root {
+        --bg:      #f5c01a;
+        --fg:      #0a0a0a;
+        --fg-muted: rgba(10,10,10,0.62);
+        --border:  rgba(10,10,10,0.22);
+        --btn-border: #0a0a0a;
+        --grain-blend: multiply;
+        --grain-opacity: 0.18;
+      }
+      body[data-theme="navy"] {
+        --bg:      #0d1c2e;
+        --fg:      #f0f0f0;
+        --fg-muted: rgba(240,240,240,0.60);
+        --border:  rgba(240,240,240,0.18);
+        --btn-border: #f0f0f0;
+        --grain-blend: soft-light;
+        --grain-opacity: 0.28;
+      }
+      body[data-theme="kraft"] {
+        --bg:      #c49540;
+        --fg:      #f5f0e8;
+        --fg-muted: rgba(245,240,232,0.65);
+        --border:  rgba(245,240,232,0.22);
+        --btn-border: #f5f0e8;
+        --grain-blend: soft-light;
+        --grain-opacity: 0.32;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body {
+        width: 1080px; height: 1080px;
+        overflow: hidden; position: relative;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+
+      /* ─── INSET BORDER ─── */
+      .inset-border {
+        position: absolute;
+        inset: 18px;
+        border: 2px solid var(--border);
+        z-index: 30;
+        pointer-events: none;
+      }
+
+      /* ─── GRAIN ─── */
+      .grain {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 40;
+        mix-blend-mode: var(--grain-blend);
+        opacity: var(--grain-opacity);
+      }
+
+      /* ─── LAYOUT ─── */
+      .frame {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        padding: 52px 60px 52px 60px;
+        z-index: 10;
+      }
+
+      /* ─── TOP ROW ─── */
+      .top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 28px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logo { width: 42px; height: 42px; object-fit: contain; }
+      .wordmark {
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--fg);
+      }
+      .badge {
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--fg);
+        border: 2px solid var(--btn-border);
+        padding: 8px 18px;
+      }
+
+      /* ─── MAIN CONTENT ─── */
+      .main {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding-bottom: 16px;
+        max-width: 620px;
+      }
+      .label {
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--fg);
+        margin-bottom: 12px;
+      }
+      .headline {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 196px;
+        line-height: 0.87;
+        letter-spacing: 0.01em;
+        color: var(--fg);
+        z-index: 15;
+        position: relative;
+      }
+      .body-text {
+        font-size: 28px;
+        line-height: 1.4;
+        font-weight: 300;
+        color: var(--fg-muted);
+        max-width: 480px;
+        margin-top: 24px;
+      }
+
+      /* ─── BOTTOM ROW ─── */
+      .bottom-row {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        padding-top: 28px;
+      }
+      .cta-btn {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0.20em;
+        text-transform: uppercase;
+        color: var(--fg);
+        border: 2.5px solid var(--btn-border);
+        padding: 14px 28px;
+      }
+      .url {
+        font-size: 22px;
+        font-weight: 400;
+        letter-spacing: 0.06em;
+        color: var(--fg-muted);
+      }
+
+      /* ─── CUTOUT FIGURE ─── */
+      .cutout-wrap {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 520px;
+        height: 780px;
+        z-index: 20;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      .cutout-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: bottom right;
+        filter: grayscale(1) contrast(1.12) brightness(0.96);
+        display: block;
+      }
+      /* Subtle fade at bottom so figure bleeds naturally */
+      .cutout-wrap::after {
+        content: "";
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 60px;
+        background: linear-gradient(to top, var(--bg), transparent);
+        z-index: 5;
+      }
+    </style>
+  </head>
+  <body data-theme="yellow">
+
+    <!-- Inset decorative border -->
+    <div class="inset-border" aria-hidden="true"></div>
+
+    <!-- Cutout figure — sits behind text via z-index -->
+    <div class="cutout-wrap">
+      <img class="cutout-img" id="cutout-img" src="" alt="" />
+    </div>
+
+    <!-- Grain overlay -->
+    <div class="grain" aria-hidden="true">
+      <svg width="1080" height="1080" xmlns="http://www.w3.org/2000/svg">
+        <filter id="g1"><feTurbulence type="fractalNoise" baseFrequency="0.70" numOctaves="4" stitchTiles="stitch"/></filter>
+        <filter id="g2"><feTurbulence type="fractalNoise" baseFrequency="0.28" numOctaves="2" stitchTiles="stitch"/></filter>
+        <rect width="1080" height="1080" filter="url(#g1)" opacity="0.55"/>
+        <rect width="1080" height="1080" filter="url(#g2)" opacity="0.20"/>
+      </svg>
+    </div>
+
+    <!-- Content frame -->
+    <div class="frame">
+      <div class="top-row">
+        <div class="brand">
+          <img class="logo" id="logo" src="" alt="RAW" />
+          <div class="wordmark">RAW Actor Studio</div>
+        </div>
+        <div class="badge" id="badge">ENROLLMENT OPEN</div>
+      </div>
+
+      <div class="main">
+        <div class="label" id="label">THE MASTER CLASS</div>
+        <div class="headline" id="headline">Build A Repeatable Process</div>
+        <div class="body-text" id="body-text">The Master Class turns process into something you can actually repeat with new material.</div>
+      </div>
+
+      <div class="bottom-row">
+        <div class="cta-btn" id="cta-btn">TRAIN WITH CLARITY</div>
+        <div class="url" id="url">rawactorstudio.com/book</div>
+      </div>
+    </div>
+
+    <!-- RAW_PAYLOAD -->
+    <script>
+      const post = window.__RAW_POST__ || {};
+      const assets = window.__RAW_ASSETS__ || {};
+
+      // Apply theme
+      if (assets.theme) document.body.dataset.theme = assets.theme;
+
+      // Logo
+      const logoEl = document.getElementById("logo");
+      if (logoEl && assets.logoSrc) logoEl.src = assets.logoSrc;
+
+      // Cutout photo
+      const cutoutEl = document.getElementById("cutout-img");
+      const photoSrc = assets.photoBgSrc || assets.photoUrl || post.photo_url || "";
+      if (cutoutEl && photoSrc) {
+        cutoutEl.src = photoSrc;
+      } else if (cutoutEl) {
+        // No photo — hide the figure so layout still works
+        cutoutEl.parentElement.style.display = "none";
+      }
+
+      // Text content
+      const headline = post.headline || "Build A Repeatable Process";
+      const label = post.label || "THE MASTER CLASS";
+      const bodyText = post.image_body || "";
+      const badgeText = post.cta_type === "audit" ? "FREE AUDIT AVAILABLE"
+        : post.cta_type === "enrollment" ? "ENROLLMENT OPEN"
+        : "REGISTER NOW";
+      const ctaText = post.cta_type === "audit" ? "BOOK A FREE AUDIT"
+        : post.offer_id === "raw-reels" ? "EMAIL RAW REELS"
+        : "TRAIN WITH CLARITY";
+      const urlText = post.cta_url
+        ? post.cta_url.replace(/^https?:\/\//, "")
+        : "rawactorstudio.com";
+
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      set("headline", headline);
+      set("label", label);
+      set("body-text", bodyText);
+      set("badge", badgeText);
+      set("cta-btn", ctaText);
+      set("url", urlText);
+
+      // Scale headline down if it overflows the left column
+      const headlineEl = document.getElementById("headline");
+      if (headlineEl) {
+        let size = 196;
+        while (headlineEl.scrollHeight > 480 && size > 80) {
+          size -= 8;
+          headlineEl.style.fontSize = size + "px";
+        }
+      }
+    </script>
+  </body>
+</html>

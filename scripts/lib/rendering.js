@@ -17,6 +17,38 @@ const TEMPLATE_MAP = {
   "behind-the-scenes": "behind-the-scenes.html"
 };
 
+// design_variant → { template, theme, format }
+const DESIGN_VARIANT_MAP = {
+  // Group A — Dark Cinema (use existing templates, handled via layout_variant)
+  "dark-type":  { template: null, theme: null, format: "square" },
+  "dark-split": { template: null, theme: null, format: "square" },
+  "dark-full":  { template: null, theme: null, format: "square" },
+  // Group B — Cutout Poster
+  "poster-yellow": { template: "cutout-poster.html", theme: "yellow", format: "square" },
+  "poster-navy":   { template: "cutout-poster.html", theme: "navy",   format: "square" },
+  "poster-kraft":  { template: "cutout-poster.html", theme: "kraft",  format: "square" },
+  // Group C — Scene Portrait
+  "scene-bw-dark": { template: "scene-portrait.html", theme: "bw-dark",  format: "portrait" },
+  "scene-color":   { template: "scene-portrait.html", theme: "color",    format: "portrait" },
+  "scene-duotone": { template: "scene-portrait.html", theme: "duotone",  format: "portrait" },
+  "scene-grain":   { template: "scene-portrait.html", theme: "grain",    format: "portrait" },
+  // Group D — Bold Editorial
+  "editorial-dark":    { template: "bold-editorial.html", theme: "dark",    format: "square" },
+  "editorial-yellow":  { template: "bold-editorial.html", theme: "yellow",  format: "square" },
+  "editorial-split":   { template: "bold-editorial.html", theme: "split",   format: "square" },
+  "editorial-minimal": { template: "bold-editorial.html", theme: "minimal", format: "square" },
+  // Group E — Experimental
+  "exp-ruled":    { template: "experimental.html", theme: "ruled",    format: "square" },
+  "exp-grain":    { template: "experimental.html", theme: "grain",    format: "square" },
+  "exp-contrast": { template: "experimental.html", theme: "contrast", format: "square" },
+  "exp-geo":      { template: "experimental.html", theme: "geo",      format: "square" }
+};
+
+const VIEWPORTS = {
+  square:   { width: 1080, height: 1080 },
+  portrait: { width: 1080, height: 1350 }
+};
+
 const IMAGE_EXTS = new Set([".jpg", ".jpeg", ".png", ".webp"]);
 
 function injectPayload(html, post, assets = {}) {
@@ -81,16 +113,24 @@ async function resolvePostPhoto(post, sharedAssets) {
 }
 
 export async function renderSinglePost(browser, post, options = {}, sharedAssets = {}) {
-  const templateName = TEMPLATE_MAP[post.type];
+  // Resolve template: design_variant overrides post.type
+  const variantConfig = post.design_variant
+    ? DESIGN_VARIANT_MAP[post.design_variant]
+    : null;
+
+  const templateName = (variantConfig?.template) || TEMPLATE_MAP[post.type];
   if (!templateName) {
-    throw new Error(`No template defined for post type "${post.type}".`);
+    throw new Error(`No template defined for post type "${post.type}" / variant "${post.design_variant}".`);
   }
+
+  const format = variantConfig?.format || "square";
+  const viewport = VIEWPORTS[format] || VIEWPORTS.square;
 
   const templatePath = path.join(DATA_PATHS.templates, templateName);
   const html = await fs.readFile(templatePath, "utf8");
 
   const page = await browser.newPage({
-    viewport: { width: 1080, height: 1080 },
+    viewport,
     deviceScaleFactor: 1
   });
 
@@ -99,7 +139,8 @@ export async function renderSinglePost(browser, post, options = {}, sharedAssets
   const browserAssets = {
     logoSrc: sharedAssets.logoSrc || "",
     photoBgSrc,     // base64 class photo from local pool
-    photoUrl        // external URL if applicable (templates load directly)
+    photoUrl,       // external URL if applicable (templates load directly)
+    theme: variantConfig?.theme || null
   };
 
   await page.setContent(injectPayload(html, post, browserAssets), {

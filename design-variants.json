@@ -1,0 +1,206 @@
+{
+  "groups": [
+    {
+      "id": "dark-cinema",
+      "label": "Dark Cinema",
+      "emoji": "🌑",
+      "description": "Current cinematic dark system",
+      "variants": [
+        {
+          "id": "dark-type",
+          "label": "Typography",
+          "template": "craft-tip",
+          "layout_variant": "type-only",
+          "theme": null,
+          "format": "square",
+          "enabled": true
+        },
+        {
+          "id": "dark-split",
+          "label": "Photo Split",
+          "template": "craft-tip",
+          "layout_variant": "text-led",
+          "theme": null,
+          "format": "square",
+          "enabled": true
+        },
+        {
+          "id": "dark-full",
+          "label": "Photo Full",
+          "template": "craft-tip",
+          "layout_variant": "photo-led",
+          "theme": null,
+          "format": "square",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": "cutout-poster",
+      "label": "Cutout Poster",
+      "emoji": "🟡",
+      "description": "Bold graphic poster — B&W cutout photo on colour field",
+      "variants": [
+        {
+          "id": "poster-yellow",
+          "label": "Yellow / Black",
+          "template": "cutout-poster",
+          "layout_variant": "poster",
+          "theme": "yellow",
+          "format": "square",
+          "enabled": true
+        },
+        {
+          "id": "poster-navy",
+          "label": "Navy / White",
+          "template": "cutout-poster",
+          "layout_variant": "poster",
+          "theme": "navy",
+          "format": "square",
+          "enabled": true
+        },
+        {
+          "id": "poster-kraft",
+          "label": "Kraft / Gold",
+          "template": "cutout-poster",
+          "layout_variant": "poster",
+          "theme": "kraft",
+          "format": "square",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": "scene-portrait",
+      "label": "Scene Portrait",
+      "emoji": "🎞",
+      "description": "Full scene photo, portrait format, atmospheric treatment",
+      "variants": [
+        {
+          "id": "scene-bw-dark",
+          "label": "B&W Dark",
+          "template": "scene-portrait",
+          "layout_variant": "scene",
+          "theme": "bw-dark",
+          "format": "portrait",
+          "enabled": true
+        },
+        {
+          "id": "scene-color",
+          "label": "Color Cinematic",
+          "template": "scene-portrait",
+          "layout_variant": "scene",
+          "theme": "color",
+          "format": "portrait",
+          "enabled": true
+        },
+        {
+          "id": "scene-duotone",
+          "label": "Duotone Gold",
+          "template": "scene-portrait",
+          "layout_variant": "scene",
+          "theme": "duotone",
+          "format": "portrait",
+          "enabled": true
+        },
+        {
+          "id": "scene-grain",
+          "label": "Heavy Grain",
+          "template": "scene-portrait",
+          "layout_variant": "scene",
+          "theme": "grain",
+          "format": "portrait",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": "bold-editorial",
+      "label": "Bold Editorial",
+      "emoji": "📐",
+      "description": "Type as hero — stark, graphic, high contrast",
+      "variants": [
+        {
+          "id": "editorial-dark",
+          "label": "Full Bleed Dark",
+          "template": "bold-editorial",
+          "layout_variant": "editorial",
+          "theme": "dark",
+          "format": "square",
+          "enabled": true
+        },
+        {
+          "id": "editorial-yellow",
+          "label": "Full Bleed Yellow",
+          "template": "bold-editorial",
+          "layout_variant": "editorial",
+          "theme": "yellow",
+          "format": "square",
+          "enabled": true
+        },
+        {
+          "id": "editorial-split",
+          "label": "Diagonal Split",
+          "template": "bold-editorial",
+          "layout_variant": "editorial",
+          "theme": "split",
+          "format": "square",
+          "enabled": true
+        },
+        {
+          "id": "editorial-minimal",
+          "label": "Centered Minimal",
+          "template": "bold-editorial",
+          "layout_variant": "editorial",
+          "theme": "minimal",
+          "format": "square",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": "experimental",
+      "label": "Experimental",
+      "emoji": "⚡",
+      "description": "High contrast, textured, geometric — pushes the brand edge",
+      "variants": [
+        {
+          "id": "exp-ruled",
+          "label": "Ruled Dividers",
+          "template": "experimental",
+          "layout_variant": "experimental",
+          "theme": "ruled",
+          "format": "square",
+          "enabled": true
+        },
+        {
+          "id": "exp-grain",
+          "label": "Grain Washed",
+          "template": "experimental",
+          "layout_variant": "experimental",
+          "theme": "grain",
+          "format": "square",
+          "enabled": true
+        },
+        {
+          "id": "exp-contrast",
+          "label": "High Contrast B&W",
+          "template": "experimental",
+          "layout_variant": "experimental",
+          "theme": "contrast",
+          "format": "square",
+          "enabled": true
+        },
+        {
+          "id": "exp-geo",
+          "label": "Geometric Accent",
+          "template": "experimental",
+          "layout_variant": "experimental",
+          "theme": "geo",
+          "format": "square",
+          "enabled": true
+        }
+      ]
+    }
+  ]
+}

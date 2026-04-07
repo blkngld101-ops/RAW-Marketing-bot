@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>RAW Experimental</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&family=DM+Serif+Display:ital@0;1&display=swap");
+
+      /*
+        Themes:
+          ruled    — horizontal rule dividers, dark, structured grid
+          grain    — heavy grain washed, faded cinematic
+          contrast — extreme B&W contrast, graphic
+          geo      — geometric gold accent shapes, dark
+      */
+
+      :root {
+        --bg: #090909;
+        --fg: #f0f0f0;
+        --fg-muted: rgba(240,240,240,0.55);
+        --accent: #d4a520;
+        --rule-color: rgba(212,165,32,0.40);
+        --grain-opacity: 0.35;
+        --grain-blend: soft-light;
+      }
+      body[data-theme="grain"] {
+        --bg: #0e0b08;
+        --grain-opacity: 0.75;
+        --grain-blend: overlay;
+      }
+      body[data-theme="contrast"] {
+        --bg: #000000;
+        --fg: #ffffff;
+        --fg-muted: rgba(255,255,255,0.50);
+        --accent: #ffffff;
+        --rule-color: rgba(255,255,255,0.25);
+        --grain-opacity: 0.20;
+        --grain-blend: screen;
+      }
+      body[data-theme="geo"] {
+        --bg: #060606;
+        --rule-color: transparent;
+        --grain-opacity: 0.28;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body {
+        width: 1080px; height: 1080px;
+        overflow: hidden; position: relative;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+
+      /* ─── PHOTO UNDERLAYER ─── */
+      .photo-under {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+        z-index: 0;
+        transition: opacity 0.1s;
+      }
+      body[data-theme="grain"] .photo-under {
+        opacity: 1;
+        filter: grayscale(1) contrast(1.4) brightness(0.45);
+      }
+      body[data-theme="contrast"] .photo-under {
+        opacity: 1;
+        filter: grayscale(1) contrast(2.0) brightness(0.55);
+        mix-blend-mode: screen;
+      }
+
+      /* ─── GEO SHAPES ─── */
+      .geo-shapes {
+        display: none;
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        pointer-events: none;
+      }
+      body[data-theme="geo"] .geo-shapes { display: block; }
+
+      /* ─── HORIZONTAL RULES (ruled theme) ─── */
+      .rules-layer {
+        display: none;
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        pointer-events: none;
+      }
+      body[data-theme="ruled"] .rules-layer { display: block; }
+      .h-rule {
+        position: absolute;
+        left: 60px; right: 60px;
+        height: 1px;
+        background: var(--rule-color);
+      }
+
+      /* ─── GRAIN ─── */
+      .grain {
+        position: absolute;
+        inset: 0;
+        z-index: 50;
+        pointer-events: none;
+        mix-blend-mode: var(--grain-blend);
+        opacity: var(--grain-opacity);
+      }
+
+      /* ─── LAYOUT ─── */
+      .frame {
+        position: absolute;
+        inset: 0;
+        padding: 60px 64px 60px 64px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        z-index: 10;
+      }
+
+      /* ─── TOP ─── */
+      .top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .brand { display: flex; align-items: center; gap: 12px; }
+      .logo { width: 40px; height: 40px; object-fit: contain; }
+      .wordmark {
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--fg);
+      }
+      .badge {
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        padding: 6px 14px;
+      }
+      body[data-theme="contrast"] .badge {
+        border-color: rgba(255,255,255,0.40);
+        color: var(--fg);
+      }
+
+      /* ─── MID ─── */
+      .mid { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+      .label {
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 16px;
+      }
+      body[data-theme="contrast"] .label { color: var(--fg); opacity: 0.5; }
+
+      .headline {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 214px;
+        line-height: 0.84;
+        color: var(--fg);
+        letter-spacing: 0.01em;
+      }
+      body[data-theme="contrast"] .headline {
+        font-size: 230px;
+        mix-blend-mode: screen;
+      }
+
+      /* Ruled theme: headline sits between rules */
+      body[data-theme="ruled"] .headline { font-size: 196px; }
+
+      .accent-rule {
+        width: 72px; height: 3px;
+        background: var(--accent);
+        margin: 18px 0;
+      }
+      body[data-theme="contrast"] .accent-rule { background: rgba(255,255,255,0.35); }
+
+      .body-text {
+        font-size: 28px;
+        line-height: 1.40;
+        font-weight: 300;
+        color: var(--fg-muted);
+        max-width: 600px;
+      }
+
+      /* ─── BOTTOM ─── */
+      .bottom-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+      .cta {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--bg);
+        background: var(--accent);
+        padding: 13px 26px;
+      }
+      body[data-theme="contrast"] .cta {
+        background: var(--fg);
+        color: var(--bg);
+      }
+      .url {
+        font-size: 19px;
+        letter-spacing: 0.07em;
+        color: var(--fg-muted);
+      }
+    </style>
+  </head>
+  <body data-theme="ruled">
+
+    <div class="photo-under" id="photo-under"></div>
+
+    <!-- Geo shapes (SVG) -->
+    <div class="geo-shapes" aria-hidden="true">
+      <svg width="1080" height="1080" xmlns="http://www.w3.org/2000/svg">
+        <!-- Large hollow circle, top-right -->
+        <circle cx="900" cy="180" r="220" fill="none" stroke="#d4a520" stroke-width="2" opacity="0.22"/>
+        <!-- Small solid accent corner -->
+        <rect x="52" y="52" width="48" height="48" fill="#d4a520" opacity="0.80"/>
+        <!-- Bottom right accent line cluster -->
+        <line x1="760" y1="1020" x2="1080" y2="1020" stroke="#d4a520" stroke-width="1.5" opacity="0.30"/>
+        <line x1="800" y1="1030" x2="1080" y2="1030" stroke="#d4a520" stroke-width="1" opacity="0.20"/>
+        <!-- Diagonal rule -->
+        <line x1="0" y1="1080" x2="1080" y2="0" stroke="#d4a520" stroke-width="0.5" opacity="0.06"/>
+      </svg>
+    </div>
+
+    <!-- Ruled lines -->
+    <div class="rules-layer" aria-hidden="true">
+      <div class="h-rule" style="top: 130px;"></div>
+      <div class="h-rule" style="top: 695px;"></div>
+      <div class="h-rule" style="bottom: 112px;"></div>
+    </div>
+
+    <!-- Grain -->
+    <div class="grain" aria-hidden="true">
+      <svg width="1080" height="1080" xmlns="http://www.w3.org/2000/svg">
+        <filter id="g1"><feTurbulence type="fractalNoise" baseFrequency="0.74" numOctaves="5" stitchTiles="stitch"/></filter>
+        <filter id="g2"><feTurbulence type="fractalNoise" baseFrequency="0.28" numOctaves="2" stitchTiles="stitch"/></filter>
+        <rect width="1080" height="1080" filter="url(#g1)" opacity="0.68"/>
+        <rect width="1080" height="1080" filter="url(#g2)" opacity="0.26"/>
+      </svg>
+    </div>
+
+    <div class="frame">
+      <div class="top-row">
+        <div class="brand">
+          <img class="logo" id="logo" src="" alt="RAW" />
+          <div class="wordmark">RAW Actor Studio</div>
+        </div>
+        <div class="badge" id="badge">ENROLLMENT OPEN</div>
+      </div>
+
+      <div class="mid">
+        <div class="label" id="label">THE MASTER CLASS</div>
+        <div class="headline" id="headline">Build A Repeatable Process</div>
+        <div class="accent-rule"></div>
+        <div class="body-text" id="body-text">Turn preparation into a repeatable process.</div>
+      </div>
+
+      <div class="bottom-row">
+        <div class="cta" id="cta">TRAIN WITH CLARITY</div>
+        <div class="url" id="url">rawactorstudio.com</div>
+      </div>
+    </div>
+
+    <!-- RAW_PAYLOAD -->
+    <script>
+      const post = window.__RAW_POST__ || {};
+      const assets = window.__RAW_ASSETS__ || {};
+
+      if (assets.theme) document.body.dataset.theme = assets.theme;
+
+      const logoEl = document.getElementById("logo");
+      if (logoEl && assets.logoSrc) logoEl.src = assets.logoSrc;
+
+      const photoSrc = assets.photoBgSrc || assets.photoUrl || post.photo_url || "";
+      if (photoSrc) {
+        const pu = document.getElementById("photo-under");
+        if (pu) pu.style.backgroundImage = `url("${photoSrc}")`;
+      }
+
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      set("label", post.label || "THE MASTER CLASS");
+      set("headline", post.headline || "Build A Repeatable Process");
+      set("body-text", post.image_body || "");
+      set("badge", post.cta_type === "audit" ? "FREE AUDIT" : "ENROLLMENT OPEN");
+      set("cta", post.cta_type === "audit" ? "BOOK A FREE AUDIT"
+        : post.offer_id === "raw-reels" ? "EMAIL RAW REELS"
+        : "TRAIN WITH CLARITY");
+      set("url", post.cta_url
+        ? post.cta_url.replace(/^https?:\/\//, "")
+        : "rawactorstudio.com");
+
+      const hl = document.getElementById("headline");
+      if (hl) {
+        let size = parseInt(getComputedStyle(hl).fontSize);
+        while (hl.scrollHeight > 520 && size > 80) {
+          size -= 8;
+          hl.style.fontSize = size + "px";
+        }
+      }
+    </script>
+  </body>
+</html>

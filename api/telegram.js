@@ -28,6 +28,38 @@ import {
 } from "../scripts/queue.js";
 import { processPodcastEpisode, fetchRssFeed, formatEpisodeList } from "../scripts/lib/podcast.js";
 import { recordOutcome, buildScorecard } from "../scripts/lib/growth.js";
+import { analyzePhoto, buildCompositionPrompt, runCompositionPipeline } from "../scripts/lib/image-compose.js";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const DESIGN_VARIANTS_PATH = join(__dirname, "../design-variants.json");
+
+function loadDesignVariants() {
+  try {
+    return JSON.parse(readFileSync(DESIGN_VARIANTS_PATH, "utf8"));
+  } catch {
+    return { groups: [] };
+  }
+}
+
+function getAllVariants(enabledOnly = true) {
+  const config = loadDesignVariants();
+  return config.groups.flatMap((g) =>
+    g.variants
+      .filter((v) => !enabledOnly || v.enabled)
+      .map((v) => ({ ...v, groupId: g.id, groupLabel: g.label, groupEmoji: g.emoji }))
+  );
+}
+
+function getVariantById(id) {
+  return getAllVariants(false).find((v) => v.id === id) || null;
+}
+
+function getGroupById(id) {
+  return loadDesignVariants().groups.find((g) => g.id === id) || null;
+}
 
 const REASON_CODES = {
   tg: "too generic",
@@ -150,7 +182,8 @@ function buildReviewKeyboard(post) {
       ],
       [
         { text: "🎨 New Creative", callback_data: `edt:img:${key}` },
-        { text: "🔀 Shuffle Design", callback_data: `shf:${key}` }
+        { text: "🔀 Shuffle", callback_data: `shf:${key}` },
+        { text: "🖼 Pick Design", callback_data: `dpk:${key}` }
       ],
       [
         { text: "Too Generic", callback_data: `rsn:tg:${key}` },
@@ -809,6 +842,60 @@ async function handleTextMessage(update, context) {
     return;
   }
 
+  if (lower.startsWith("/variants")) {
+    const toggle = text.replace(/^\/variants\s*/i, "").trim();
+    if (toggle) {
+      // Toggle a specific variant on/off
+      const config = loadDesignVariants();
+      let found = false;
+      for (const group of config.groups) {
+        for (const variant of group.variants) {
+          if (variant.id === toggle) {
+            variant.enabled = !variant.enabled;
+            found = true;
+          }
+        }
+      }
+      if (!found) {
+        await sendMessage(chatId, `Variant "${toggle}" not found. Send /variants to see all IDs.`);
+        return;
+      }
+      const { saveDesignVariants } = await import("../scripts/queue.js").catch(() => ({}));
+      // Persist via GitHub
+      const { GITHUB_TOKEN, GITHUB_REPO } = process.env;
+      if (GITHUB_TOKEN && GITHUB_REPO) {
+        const [owner, repo] = GITHUB_REPO.split("/");
+        const current = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/design-variants.json`, {
+          headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: "application/vnd.github+json" }
+        }).then((r) => r.json());
+        await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/design-variants.json`, {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: "chore(variants): toggle " + toggle,
+            content: Buffer.from(JSON.stringify(config, null, 2) + "\n").toString("base64"),
+            sha: current.sha
+          })
+        });
+      }
+      const state = config.groups.flatMap((g) => g.variants).find((v) => v.id === toggle);
+      await sendMessage(chatId, `${toggle} is now ${state?.enabled ? "✅ enabled" : "❌ disabled"}.`);
+      return;
+    }
+
+    // List all variants
+    const config = loadDesignVariants();
+    const lines = ["Design variants (send /variants <id> to toggle):"];
+    for (const group of config.groups) {
+      lines.push(`\n${group.emoji} ${group.label}`);
+      for (const v of group.variants) {
+        lines.push(`  ${v.enabled ? "✅" : "❌"} ${v.id} — ${v.label}`);
+      }
+    }
+    await sendMessage(chatId, lines.join("\n"));
+    return;
+  }
+
   if (lower.startsWith("/scorecard")) {
     const scorecard = buildScorecard(context.experiments);
     await sendMessage(chatId, scorecard);
@@ -891,6 +978,33 @@ async function handleTextMessage(update, context) {
     context.reviewMemory.updated_at = new Date().toISOString();
     await persistContext(context, ["queue", "reviewMemory"]);
     await sendMessage(chatId, `Spotlight draft created.\n\n${summarizePost(post)}`);
+    return;
+  }
+
+  if (
+    context.reviewMemory.awaiting_input?.mode === "compose_prompt_edit" &&
+    String(context.reviewMemory.awaiting_input.chat_id) === String(chatId)
+  ) {
+    // User sent their edited prompt — update and show before-generate keyboard
+    context.reviewMemory.awaiting_input = {
+      ...context.reviewMemory.awaiting_input,
+      mode: "compose_prompt_before",
+      draft_prompt: text
+    };
+    context.reviewMemory.updated_at = new Date().toISOString();
+    await persistContext(context, ["reviewMemory"]);
+
+    const variantId = context.reviewMemory.awaiting_input.variant_id;
+    const variant = getVariantById(variantId);
+    const keyboard = {
+      inline_keyboard: [
+        [
+          { text: "✅ Generate", callback_data: `cpx:gen:${context.reviewMemory.awaiting_input.post_date}:${context.reviewMemory.awaiting_input.post_angle_id}` },
+          { text: "✏️ Edit again", callback_data: `cpx:edt:${context.reviewMemory.awaiting_input.post_date}:${context.reviewMemory.awaiting_input.post_angle_id}` }
+        ]
+      ]
+    };
+    await sendMessage(chatId, `Style: ${variant?.label || variantId}\n\nUpdated prompt:\n${text}`, { reply_markup: keyboard });
     return;
   }
 
@@ -992,62 +1106,82 @@ async function handleMediaMessage(update, context) {
 async function handlePhotoMessage(update, context) {
   const message = update.message;
   const chatId = message.chat.id;
-
-  // Resolve which post this photo is for.
-  // Prefer awaiting_input (set by "New Creative" button), fall back to current pending post.
   const awaiting = context.reviewMemory.awaiting_input;
-  let post = null;
+
+  // ── CASE 1: awaiting a composed image re-roll (user sent a photo mid-flow) ──
+  // This shouldn't normally happen but handle gracefully by treating as new upload.
+
+  // ── CASE 2: edit_field img (New Creative button) — save directly ──
   if (
     awaiting?.mode === "edit_field" &&
     awaiting.field === "img" &&
     String(awaiting.chat_id) === String(chatId)
   ) {
-    post = findPost(context.queue, awaiting.date, awaiting.angle_id);
-  }
-  if (!post) {
-    post = getCurrentPost(context.queue);
+    const post = findPost(context.queue, awaiting.date, awaiting.angle_id) || getCurrentPost(context.queue);
+    if (!post) {
+      await sendMessage(chatId, "No post found. Use /review to load one.");
+      return;
+    }
+    try {
+      const buffer = await downloadTelegramFile(message.photo[message.photo.length - 1].file_id);
+      const photoPath = `photos/creative-${post.date}-${post.angle_id}-${Date.now()}.jpg`;
+      await uploadBinaryToGitHub(process.env.GITHUB_TOKEN, process.env.GITHUB_REPO, photoPath, buffer);
+      const rawUrl = `https://raw.githubusercontent.com/${process.env.GITHUB_REPO}/main/${photoPath}`;
+      const updated = { ...post, photo_url: rawUrl, image_path: null };
+      context.queue = replacePost(context.queue, updated);
+      delete context.reviewMemory.awaiting_input;
+      context.reviewMemory.updated_at = new Date().toISOString();
+      await persistContext(context, ["queue", "reviewMemory"]);
+      try {
+        await triggerWorkflow();
+        await sendMessage(chatId, `Creative updated for "${post.headline}". Re-rendering — send /review in a minute.`);
+      } catch {
+        await sendMessage(chatId, `Creative saved for "${post.headline}". Use /regenerate to re-render.`);
+      }
+    } catch (err) {
+      await sendMessage(chatId, `Failed to save photo: ${err.message}`);
+    }
+    return;
   }
 
+  // ── CASE 3: new actor/class photo upload — show options ──
+  const post = getCurrentPost(context.queue);
   if (!post) {
-    await sendMessage(chatId, "No post is currently under review. Use /review to load one.");
+    await sendMessage(chatId, "No post is currently under review. Use /review first.");
     return;
   }
 
   try {
-    const photos = message.photo;
-    const largest = photos[photos.length - 1];
-    const buffer = await downloadTelegramFile(largest.file_id);
+    const buffer = await downloadTelegramFile(message.photo[message.photo.length - 1].file_id);
 
-    const photoPath = `photos/creative-${post.date}-${post.angle_id}-${Date.now()}.jpg`;
-    await uploadBinaryToGitHub(
-      process.env.GITHUB_TOKEN,
-      process.env.GITHUB_REPO,
-      photoPath,
-      buffer
-    );
+    // Stash the raw photo buffer as a temp GitHub upload so we can reference it later
+    const tempPath = `photos/tmp-${Date.now()}.jpg`;
+    await uploadBinaryToGitHub(process.env.GITHUB_TOKEN, process.env.GITHUB_REPO, tempPath, buffer);
+    const tempUrl = `https://raw.githubusercontent.com/${process.env.GITHUB_REPO}/main/${tempPath}`;
 
-    const rawUrl = `https://raw.githubusercontent.com/${process.env.GITHUB_REPO}/main/${photoPath}`;
-    const updatedPost = { ...post, photo_url: rawUrl, image_path: null };
-    context.queue = replacePost(context.queue, updatedPost);
-    delete context.reviewMemory.awaiting_input;
+    // Save state so we can retrieve the photo in follow-up callbacks
+    context.reviewMemory.awaiting_input = {
+      mode: "photo_options",
+      post_date: post.date,
+      post_angle_id: post.angle_id,
+      temp_photo_url: tempUrl,
+      chat_id: chatId,
+      created_at: new Date().toISOString()
+    };
     context.reviewMemory.updated_at = new Date().toISOString();
-    await persistContext(context, ["queue", "reviewMemory"]);
+    await persistContext(context, ["reviewMemory"]);
 
-    try {
-      await triggerWorkflow();
-      await sendMessage(chatId, `Creative updated for "${post.headline}". Re-render triggered — send /review in a minute to see the new image.`);
-    } catch {
-      await sendMessage(chatId, `Creative photo saved for "${post.headline}". Trigger a manual re-render with /regenerate.`);
-    }
+    const key = `${post.date}:${post.angle_id}`;
+    const keyboard = {
+      inline_keyboard: [
+        [{ text: "✅ Use as background (current behaviour)", callback_data: `cph:bg:${key}` }],
+        [{ text: "🤖 AI Compose — Cutout style", callback_data: `cph:cutout:${key}` }],
+        [{ text: "🎞 AI Compose — Scene style", callback_data: `cph:scene:${key}` }]
+      ]
+    };
+    await sendMessage(chatId, `Got it. What would you like to do with this photo for "${post.headline}"?`, { reply_markup: keyboard });
   } catch (err) {
-    await sendMessage(chatId, `Failed to save photo: ${err.message}`);
-  }
-
-  try {
-    await triggerWorkflow();
-    await sendMessage(chatId, `Creative updated for "${post.headline}". Re-render triggered — send /review in a minute to see the new image.`);
-  } catch {
-    await sendMessage(chatId, `Creative photo saved. Trigger a manual re-render with /regenerate to get the new image.`);
+    await sendMessage(chatId, `Failed to process photo: ${err.message}`);
   }
 }
 
@@ -1055,10 +1189,15 @@ async function handleCallback(update, context) {
   const callback = update.callback_query;
   const parts = String(callback.data || "").split(":");
   const action = parts[0];
-  const hasDetail = action === "rsn" || action === "edt";
+  // Actions where parts[1] is a detail code and parts[2..3] are date:angleId
+  const DETAIL_ACTIONS = new Set(["rsn", "edt", "dpg", "dps", "cph", "cpg", "cpv", "cpx"]);
+  const hasDetail = DETAIL_ACTIONS.has(action);
   const detail = hasDetail ? parts[1] : null;
-  const date = hasDetail ? parts[2] : parts[1];
-  const angleId = hasDetail ? parts[3] : parts[2];
+  // cpg has an extra segment: cpg:mode:groupId:date:angleId
+  const dateOffset = action === "cpg" ? 3 : (hasDetail ? 2 : 1);
+  const angleOffset = action === "cpg" ? 4 : (hasDetail ? 3 : 2);
+  const date = parts[dateOffset];
+  const angleId = parts[angleOffset];
   const chatId = callback.message.chat.id;
   const post = findPost(context.queue, date, angleId);
 
@@ -1221,6 +1360,321 @@ async function handleCallback(update, context) {
       await sendMessage(chatId, `Design shuffled to ${VARIANT_LABELS[next]} for "${post.headline}". Re-rendering — send /review in a minute.`);
     } catch {
       await sendMessage(chatId, `Design set to ${VARIANT_LABELS[next]} for "${post.headline}". Trigger /regenerate to re-render.`);
+    }
+    return;
+  }
+
+  // ── COMPOSE PHOTO FLOW ──────────────────────────────────────────────────────
+
+  if (action === "cph") {
+    // cph : mode(bg|cutout|scene) : date : angleId
+    const mode = detail;
+    const awaiting = context.reviewMemory.awaiting_input;
+    if (awaiting?.mode !== "photo_options" || String(awaiting.chat_id) !== String(chatId)) {
+      await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Session expired. Please upload the photo again." });
+      return;
+    }
+
+    const tempUrl = awaiting.temp_photo_url;
+
+    if (mode === "bg") {
+      // Use as background directly — same as old behaviour
+      const updated = { ...post, photo_url: tempUrl, image_path: null };
+      context.queue = replacePost(context.queue, updated);
+      delete context.reviewMemory.awaiting_input;
+      context.reviewMemory.updated_at = new Date().toISOString();
+      await persistContext(context, ["queue", "reviewMemory"]);
+      await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Saved as background." });
+      try {
+        await triggerWorkflow();
+        await sendMessage(chatId, `Photo set as background for "${post.headline}". Re-rendering — /review in a minute.`);
+      } catch {
+        await sendMessage(chatId, `Photo saved. Use /regenerate to re-render.`);
+      }
+      return;
+    }
+
+    // AI compose — show style group picker filtered to relevant groups
+    const relevantGroups = mode === "cutout"
+      ? ["cutout-poster", "bold-editorial", "experimental"]
+      : ["scene-portrait", "dark-cinema", "bold-editorial"];
+
+    const config = loadDesignVariants();
+    const groups = config.groups.filter((g) => relevantGroups.includes(g.id) && g.variants.some((v) => v.enabled));
+    const keyboard = {
+      inline_keyboard: [
+        ...groups.map((g) => [
+          { text: `${g.emoji} ${g.label}`, callback_data: `cpg:${mode}:${g.id}:${date}:${angleId}` }
+        ])
+      ]
+    };
+    context.reviewMemory.awaiting_input = { ...awaiting, compose_mode: mode };
+    context.reviewMemory.updated_at = new Date().toISOString();
+    await persistContext(context, ["reviewMemory"]);
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Pick a style group." });
+    await sendMessage(chatId, "Choose a style direction:", { reply_markup: keyboard });
+    return;
+  }
+
+  if (action === "cpg") {
+    // cpg : mode : groupId : date : angleId
+    const mode = detail;    // parts[1]
+    const groupId = parts[2]; // parts[2]
+    const group = getGroupById(groupId);
+    const awaiting = context.reviewMemory.awaiting_input;
+
+    if (!group || awaiting?.mode !== "photo_options") {
+      await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Session expired." });
+      return;
+    }
+
+    const enabled = group.variants.filter((v) => v.enabled);
+    const rows = [];
+    for (let i = 0; i < enabled.length; i += 2) {
+      rows.push(
+        enabled.slice(i, i + 2).map((v) => ({
+          text: v.label,
+          callback_data: `cpv:${v.id}:${date}:${angleId}`
+        }))
+      );
+    }
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: group.label });
+    await sendMessage(chatId, `${group.emoji} ${group.label} — pick a theme:`, { reply_markup: { inline_keyboard: rows } });
+    return;
+  }
+
+  if (action === "cpv") {
+    // cpv : variantId : date : angleId — build prompt and show BEFORE generation
+    const variantId = detail;
+    const awaiting = context.reviewMemory.awaiting_input;
+    if (awaiting?.mode !== "photo_options" || String(awaiting.chat_id) !== String(chatId)) {
+      await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Session expired." });
+      return;
+    }
+
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Analysing photo…" });
+    await sendMessage(chatId, "Analysing your photo…");
+
+    try {
+      const imgRes = await fetch(awaiting.temp_photo_url);
+      const buffer = Buffer.from(await imgRes.arrayBuffer());
+      const analysis = await analyzePhoto(buffer);
+      const prompt = buildCompositionPrompt({ variantId, analysis });
+
+      const variant = getVariantById(variantId);
+      // Save state for before-prompt editing
+      context.reviewMemory.awaiting_input = {
+        ...awaiting,
+        mode: "compose_prompt_before",
+        variant_id: variantId,
+        draft_prompt: prompt,
+        analysis
+      };
+      context.reviewMemory.updated_at = new Date().toISOString();
+      await persistContext(context, ["reviewMemory"]);
+
+      const keyboard = {
+        inline_keyboard: [
+          [
+            { text: "✅ Generate", callback_data: `cpx:gen:${date}:${angleId}` },
+            { text: "✏️ Edit prompt", callback_data: `cpx:edt:${date}:${angleId}` }
+          ],
+          [{ text: "🎨 Change style", callback_data: `cph:${awaiting.compose_mode || "scene"}:${date}:${angleId}` }]
+        ]
+      };
+
+      await sendMessage(
+        chatId,
+        `Style: ${variant?.label || variantId}\n\nDraft prompt:\n${prompt}`,
+        { reply_markup: keyboard }
+      );
+    } catch (err) {
+      await sendMessage(chatId, `Could not analyse photo: ${err.message}`);
+    }
+    return;
+  }
+
+  if (action === "cpx") {
+    // cpx : gen|edt : date : angleId
+    const subAction = detail;
+    const awaiting = context.reviewMemory.awaiting_input;
+    if (!["compose_prompt_before", "compose_prompt_after"].includes(awaiting?.mode) ||
+        String(awaiting.chat_id) !== String(chatId)) {
+      await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Session expired." });
+      return;
+    }
+
+    if (subAction === "edt") {
+      // Ask user to send their edited prompt
+      context.reviewMemory.awaiting_input = { ...awaiting, mode: "compose_prompt_edit" };
+      context.reviewMemory.updated_at = new Date().toISOString();
+      await persistContext(context, ["reviewMemory"]);
+      await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Send your edited prompt." });
+      await sendMessage(chatId, `Current prompt:\n\n${awaiting.draft_prompt}\n\nReply with your edited version:`);
+      return;
+    }
+
+    // Generate
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Composing image…" });
+    await sendMessage(chatId, "Composing image with AI — this takes about 15 seconds…");
+
+    try {
+      const imgRes = await fetch(awaiting.temp_photo_url);
+      const buffer = Buffer.from(await imgRes.arrayBuffer());
+      const { composedBuffer } = await runCompositionPipeline({
+        imageBuffer: buffer,
+        variantId: awaiting.variant_id,
+        userPromptOverride: awaiting.draft_prompt
+      });
+
+      // Upload composed image to GitHub
+      const composedPath = `photos/composed-${post.date}-${post.angle_id}-${Date.now()}.png`;
+      await uploadBinaryToGitHub(process.env.GITHUB_TOKEN, process.env.GITHUB_REPO, composedPath, composedBuffer);
+      const composedUrl = `https://raw.githubusercontent.com/${process.env.GITHUB_REPO}/main/${composedPath}`;
+
+      // Save state for after-prompt review
+      context.reviewMemory.awaiting_input = {
+        ...awaiting,
+        mode: "compose_prompt_after",
+        composed_url: composedUrl
+      };
+      context.reviewMemory.updated_at = new Date().toISOString();
+      await persistContext(context, ["reviewMemory"]);
+
+      // Send the composed image
+      const token = process.env.RAW_TELEGRAM_BOT_TOKEN;
+      const imgFetch = await fetch(composedUrl);
+      if (imgFetch.ok) {
+        const imgBuf = await imgFetch.arrayBuffer();
+        const form = new FormData();
+        form.append("chat_id", String(chatId));
+        form.append("photo", new Blob([imgBuf], { type: "image/png" }), "composed.png");
+        form.append("caption", `Composed: ${getVariantById(awaiting.variant_id)?.label || awaiting.variant_id}`);
+        await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: "POST", body: form });
+      }
+
+      const keyboard = {
+        inline_keyboard: [
+          [
+            { text: "✅ Use this", callback_data: `cpu:${date}:${angleId}` },
+            { text: "🔄 Re-roll", callback_data: `cpx:gen:${date}:${angleId}` }
+          ],
+          [
+            { text: "✏️ Tweak prompt", callback_data: `cpx:edt:${date}:${angleId}` },
+            { text: "🎨 New style", callback_data: `cph:${awaiting.compose_mode || "scene"}:${date}:${angleId}` }
+          ]
+        ]
+      };
+
+      await sendMessage(
+        chatId,
+        `Prompt used:\n${awaiting.draft_prompt}`,
+        { reply_markup: keyboard }
+      );
+    } catch (err) {
+      await sendMessage(chatId, `Composition failed: ${err.message}`);
+    }
+    return;
+  }
+
+  if (action === "cpu") {
+    // cpu : date : angleId — use the composed image
+    const awaiting = context.reviewMemory.awaiting_input;
+    if (awaiting?.mode !== "compose_prompt_after" || String(awaiting.chat_id) !== String(chatId)) {
+      await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Session expired." });
+      return;
+    }
+
+    const variant = getVariantById(awaiting.variant_id);
+    const updated = {
+      ...post,
+      photo_url: awaiting.composed_url,
+      design_variant: awaiting.variant_id,
+      layout_variant: variant?.layout_variant || post.layout_variant,
+      composition_prompt: awaiting.draft_prompt,
+      image_path: null,
+      rendered_at: null
+    };
+    context.queue = replacePost(context.queue, updated);
+    delete context.reviewMemory.awaiting_input;
+    context.reviewMemory.updated_at = new Date().toISOString();
+    await persistContext(context, ["queue", "reviewMemory"]);
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Saved. Re-rendering…" });
+    try {
+      await triggerWorkflow();
+      await sendMessage(chatId, `Composition saved for "${post.headline}". Re-rendering with brand layer — /review in a minute.`);
+    } catch {
+      await sendMessage(chatId, `Composition saved. Use /regenerate to add the brand layer.`);
+    }
+    return;
+  }
+
+  if (action === "dpk") {
+    // Design pick — show group selector
+    const groups = loadDesignVariants().groups.filter((g) =>
+      g.variants.some((v) => v.enabled)
+    );
+    const keyboard = {
+      inline_keyboard: [
+        ...groups.map((g) => [
+          { text: `${g.emoji} ${g.label}`, callback_data: `dpg:${g.id}:${date}:${angleId}` }
+        ]),
+        [{ text: "🔀 Surprise me", callback_data: `shf:${date}:${angleId}` }]
+      ]
+    };
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Choose a style group." });
+    await sendMessage(chatId, "Pick a design style:", { reply_markup: keyboard });
+    return;
+  }
+
+  if (action === "dpg") {
+    // Design pick group — show variants within group
+    // parts: dpg : groupId : date : angleId
+    const groupId = detail;
+    const group = getGroupById(groupId);
+    if (!group) {
+      await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Group not found." });
+      return;
+    }
+    const enabled = group.variants.filter((v) => v.enabled);
+    const rows = [];
+    for (let i = 0; i < enabled.length; i += 2) {
+      rows.push(
+        enabled.slice(i, i + 2).map((v) => ({
+          text: v.label,
+          callback_data: `dps:${v.id}:${date}:${angleId}`
+        }))
+      );
+    }
+    rows.push([{ text: "← Back", callback_data: `dpk:${date}:${angleId}` }]);
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: group.label });
+    await sendMessage(chatId, `${group.emoji} ${group.label} — pick a theme:`, { reply_markup: { inline_keyboard: rows } });
+    return;
+  }
+
+  if (action === "dps") {
+    // Design pick specific variant — apply it
+    const variantId = detail;
+    const variant = getVariantById(variantId);
+    if (!variant) {
+      await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: "Variant not found." });
+      return;
+    }
+    const updated = {
+      ...post,
+      design_variant: variantId,
+      layout_variant: variant.layout_variant,
+      image_path: null,
+      rendered_at: null
+    };
+    context.queue = replacePost(context.queue, updated);
+    await persistContext(context, ["queue"]);
+    await telegramApi("answerCallbackQuery", { callback_query_id: callback.id, text: `Design set: ${variant.label}` });
+    try {
+      await triggerWorkflow();
+      await sendMessage(chatId, `Design set to "${variant.label}" for "${post.headline}". Re-rendering — send /review in a minute.`);
+    } catch {
+      await sendMessage(chatId, `Design set to "${variant.label}". Use /regenerate to re-render.`);
     }
     return;
   }

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>RAW Bold Editorial</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&family=DM+Serif+Display:ital@0;1&display=swap");
+
+      /*
+        Themes:
+          dark     — near-black bg, white type, gold accent bar
+          yellow   — bold yellow bg, black type
+          split    — diagonal black/yellow split, type spans both
+          minimal  — off-white bg, centred composition, restrained
+      */
+
+      :root {
+        --bg: #080808;
+        --fg: #f0f0f0;
+        --fg-muted: rgba(240,240,240,0.55);
+        --accent: #d4a520;
+        --bar-bg: #d4a520;
+        --bar-fg: #080808;
+        --border: rgba(240,240,240,0.15);
+        --grain-blend: soft-light;
+        --grain-opacity: 0.30;
+      }
+      body[data-theme="yellow"] {
+        --bg: #f5c01a;
+        --fg: #080808;
+        --fg-muted: rgba(8,8,8,0.58);
+        --accent: #080808;
+        --bar-bg: #080808;
+        --bar-fg: #f5c01a;
+        --border: rgba(8,8,8,0.18);
+        --grain-blend: multiply;
+        --grain-opacity: 0.14;
+      }
+      body[data-theme="minimal"] {
+        --bg: #f2ede6;
+        --fg: #0c0c0c;
+        --fg-muted: rgba(12,12,12,0.50);
+        --accent: #9a7b28;
+        --bar-bg: #9a7b28;
+        --bar-fg: #f2ede6;
+        --border: rgba(12,12,12,0.12);
+        --grain-blend: multiply;
+        --grain-opacity: 0.10;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body {
+        width: 1080px; height: 1080px;
+        overflow: hidden; position: relative;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+
+      /* ─── SPLIT THEME DIAGONAL ─── */
+      .split-bg {
+        display: none;
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+      }
+      body[data-theme="split"] { background: #f5c01a; }
+      body[data-theme="split"] .split-bg { display: block; }
+      body[data-theme="split"] {
+        --fg: #f0f0f0;
+        --fg-muted: rgba(240,240,240,0.65);
+        --accent: #f5c01a;
+        --bar-bg: #f5c01a;
+        --bar-fg: #080808;
+        --border: rgba(240,240,240,0.20);
+        --grain-blend: soft-light;
+        --grain-opacity: 0.26;
+      }
+      .split-bg-dark {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: #080808;
+        clip-path: polygon(0 0, 58% 0, 40% 100%, 0 100%);
+      }
+
+      /* ─── PHOTO LAYER (optional) ─── */
+      .photo-layer {
+        display: none;
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        opacity: 0.08;
+        filter: grayscale(1);
+        z-index: 1;
+        mix-blend-mode: luminosity;
+      }
+
+      /* ─── GOLD ACCENT BAR ─── */
+      .accent-bar {
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 14px;
+        background: var(--bar-bg);
+        z-index: 20;
+      }
+      body[data-theme="split"] .accent-bar { background: #d4a520; }
+      body[data-theme="minimal"] .accent-bar { width: 10px; }
+
+      /* ─── GRAIN ─── */
+      .grain {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 50;
+        mix-blend-mode: var(--grain-blend);
+        opacity: var(--grain-opacity);
+      }
+
+      /* ─── LAYOUT ─── */
+      .frame {
+        position: absolute;
+        inset: 0;
+        padding: 56px 64px 56px 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        z-index: 10;
+      }
+
+      /* ─── TOP ROW ─── */
+      .top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .brand { display: flex; align-items: center; gap: 12px; }
+      .logo { width: 40px; height: 40px; object-fit: contain; }
+      .wordmark {
+        font-size: 25px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--fg);
+      }
+      .badge {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--fg);
+        border: 1.5px solid var(--border);
+        padding: 7px 15px;
+      }
+
+      /* ─── MINIMAL THEME: centred layout ─── */
+      body[data-theme="minimal"] .frame {
+        align-items: flex-start;
+        justify-content: space-between;
+      }
+      body[data-theme="minimal"] .mid { align-self: center; text-align: left; }
+
+      /* ─── MID: big type block ─── */
+      .mid { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+      .eyebrow {
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: 0.30em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 14px;
+      }
+      .headline {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 228px;
+        line-height: 0.84;
+        letter-spacing: 0.01em;
+        color: var(--fg);
+      }
+      body[data-theme="minimal"] .headline { font-size: 180px; }
+
+      .rule {
+        width: 60px; height: 4px;
+        background: var(--accent);
+        margin: 20px 0;
+      }
+      .body-text {
+        font-size: 30px;
+        font-weight: 300;
+        line-height: 1.38;
+        color: var(--fg-muted);
+        max-width: 620px;
+      }
+
+      /* ─── BOTTOM ROW ─── */
+      .bottom-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+      .cta-btn {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.20em;
+        text-transform: uppercase;
+        color: var(--bar-fg);
+        background: var(--bar-bg);
+        padding: 14px 28px;
+      }
+      body[data-theme="minimal"] .cta-btn {
+        background: transparent;
+        color: var(--fg);
+        border: 2px solid var(--border);
+      }
+      .url {
+        font-size: 20px;
+        letter-spacing: 0.06em;
+        color: var(--fg-muted);
+      }
+    </style>
+  </head>
+  <body data-theme="dark">
+
+    <div class="split-bg">
+      <div class="split-bg-dark"></div>
+    </div>
+
+    <div class="photo-layer" id="photo-layer"></div>
+    <div class="accent-bar" aria-hidden="true"></div>
+
+    <div class="grain" aria-hidden="true">
+      <svg width="1080" height="1080" xmlns="http://www.w3.org/2000/svg">
+        <filter id="g1"><feTurbulence type="fractalNoise" baseFrequency="0.73" numOctaves="4" stitchTiles="stitch"/></filter>
+        <filter id="g2"><feTurbulence type="fractalNoise" baseFrequency="0.29" numOctaves="2" stitchTiles="stitch"/></filter>
+        <rect width="1080" height="1080" filter="url(#g1)" opacity="0.60"/>
+        <rect width="1080" height="1080" filter="url(#g2)" opacity="0.22"/>
+      </svg>
+    </div>
+
+    <div class="frame">
+      <div class="top-row">
+        <div class="brand">
+          <img class="logo" id="logo" src="" alt="RAW" />
+          <div class="wordmark">RAW Actor Studio</div>
+        </div>
+        <div class="badge" id="badge">ENROLLMENT OPEN</div>
+      </div>
+
+      <div class="mid">
+        <div class="eyebrow" id="eyebrow">THE MASTER CLASS</div>
+        <div class="headline" id="headline">Build A Repeatable Process</div>
+        <div class="rule"></div>
+        <div class="body-text" id="body-text">The Master Class turns process into something you can actually repeat with new material.</div>
+      </div>
+
+      <div class="bottom-row">
+        <div class="cta-btn" id="cta-btn">TRAIN WITH CLARITY</div>
+        <div class="url" id="url">rawactorstudio.com</div>
+      </div>
+    </div>
+
+    <!-- RAW_PAYLOAD -->
+    <script>
+      const post = window.__RAW_POST__ || {};
+      const assets = window.__RAW_ASSETS__ || {};
+
+      if (assets.theme) document.body.dataset.theme = assets.theme;
+
+      const logoEl = document.getElementById("logo");
+      if (logoEl && assets.logoSrc) logoEl.src = assets.logoSrc;
+
+      const photoSrc = assets.photoBgSrc || assets.photoUrl || post.photo_url || "";
+      if (photoSrc) {
+        const pl = document.getElementById("photo-layer");
+        if (pl) { pl.style.backgroundImage = `url("${photoSrc}")`; pl.style.display = "block"; }
+      }
+
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      set("eyebrow", post.label || "THE MASTER CLASS");
+      set("headline", post.headline || "Build A Repeatable Process");
+      set("body-text", post.image_body || "");
+      set("badge", post.cta_type === "audit" ? "FREE AUDIT" : "ENROLLMENT OPEN");
+      set("cta-btn", post.cta_type === "audit" ? "BOOK A FREE AUDIT"
+        : post.offer_id === "raw-reels" ? "EMAIL RAW REELS"
+        : "TRAIN WITH CLARITY");
+      set("url", post.cta_url
+        ? post.cta_url.replace(/^https?:\/\//, "")
+        : "rawactorstudio.com");
+
+      const hl = document.getElementById("headline");
+      if (hl) {
+        let size = parseInt(getComputedStyle(hl).fontSize);
+        while (hl.scrollHeight > 500 && size > 80) {
+          size -= 8;
+          hl.style.fontSize = size + "px";
+        }
+      }
+    </script>
+  </body>
+</html>
