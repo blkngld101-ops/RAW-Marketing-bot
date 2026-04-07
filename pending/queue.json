@@ -16,7 +16,7 @@
         "#TorontoActors",
         "#AuditionPrep"
       ],
-      "status": "needs_revision",
+      "status": "skipped",
       "cta_type": "enrollment",
       "cta_url": "https://www.rawactorstudio.com/service-page/the-master-aug-sept",
       "audience_stage": "hot",
@@ -61,7 +61,8 @@
       "blog_target_keyword": null,
       "blog_article": null,
       "rendered_at": "2026-04-05T02:16:24.384Z",
-      "photo_url": "https://raw.githubusercontent.com/blkngld101-ops/RAW-Marketing-bot/main/photos/creative-2026-04-04-master-class-system-1775363853456.jpg"
+      "photo_url": "https://raw.githubusercontent.com/blkngld101-ops/RAW-Marketing-bot/main/photos/creative-2026-04-04-master-class-system-1775363853456.jpg",
+      "skipped_at": "2026-04-07T02:00:28.905Z"
     },
     {
       "type": "craft-tip",
