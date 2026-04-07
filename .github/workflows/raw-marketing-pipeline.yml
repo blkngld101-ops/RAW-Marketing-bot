@@ -5,6 +5,9 @@ on:
     - cron: "0 13 * * 1"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   generate-and-render:
     runs-on: ubuntu-latest
@@ -43,6 +46,7 @@ jobs:
           git config user.email "bot@rawactorstudio.com"
           git add pending/queue.json approved-posts/
           git diff --staged --quiet || git commit -m "chore(raw): refresh content queue $(date +%Y-%m-%d)"
+          git pull --rebase origin main
           git push
 
       - name: Notify Telegram
