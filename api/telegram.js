@@ -1535,7 +1535,9 @@ async function handleCallback(update, context) {
         mode: "compose_prompt_before",
         variant_id: variantId,
         draft_prompt: prompt,
-        analysis
+        analysis,
+        post_date: date,
+        post_angle_id: angleId
       };
       context.reviewMemory.updated_at = new Date().toISOString();
       await persistContext(context, ["reviewMemory"]);
