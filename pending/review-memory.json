@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-07T03:51:14.462Z",
+  "updated_at": "2026-04-08T03:45:16.365Z",
   "approved_exemplars": [],
   "rejected_patterns": [
     {
@@ -20,23 +20,11 @@
     }
   ],
   "awaiting_input": {
-    "mode": "compose_prompt_after",
+    "mode": "photo_options",
     "post_date": "2026-04-07",
     "post_angle_id": "cold-read-first-pass",
-    "temp_photo_url": "https://raw.githubusercontent.com/blkngld101-ops/RAW-Marketing-bot/main/photos/tmp-1775533222573.jpg",
+    "temp_photo_url": "https://raw.githubusercontent.com/blkngld101-ops/RAW-Marketing-bot/main/photos/tmp-1775619915928.jpg",
     "chat_id": 6356855902,
-    "created_at": "2026-04-07T03:40:22.974Z",
-    "compose_mode": "cutout",
-    "variant_id": "exp-grain",
-    "draft_prompt": "Current prompt:\n\nTransform this photo into a RAW Actor Studio editorial Instagram post background. Keep faces exactly the same\n\nScene: A person is kneeling indoors in front of a sofa, looking upwards thoughtfully.\nStyle: Experimental — Grain Washed\n\nBackground: very dark brown-black\nPhoto treatment: heavily grain-washed, B&W high contrast, underexposed, raw film look\nMood: lo-fi, underground, intense\nComposition: full frame, slightly darker in bottom third\nThe original photo has warm lighting — lean into that.\n\n\nBrand rules:\n- RAW Actor Studio uses gold (#d4a520), black, and white as core brand colours\n- Cinematic, professional, not generic or cheerful\n- Film grain texture is part of the aesthetic\n- NO text, NO logos, NO overlays — clean background image only\n- Output must be square 1:1 unless told otherwise\n- Keep faces exactly the same, change nothing",
-    "analysis": {
-      "scene": "A person is kneeling indoors in front of a sofa, looking upwards thoughtfully.",
-      "subject_count": 1,
-      "is_single_portrait": true,
-      "has_action": false,
-      "suggested_style": "cutout",
-      "lighting": "warm"
-    },
-    "composed_url": "https://raw.githubusercontent.com/blkngld101-ops/RAW-Marketing-bot/main/photos/composed-2026-04-07-cold-read-first-pass-1775533873516.png"
+    "created_at": "2026-04-08T03:45:16.365Z"
   }
 }
