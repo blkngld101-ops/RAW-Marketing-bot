@@ -375,7 +375,7 @@ async function requestAnthropicDraft({ brief, data, recentContent }) {
   const { Anthropic } = await import("@anthropic-ai/sdk");
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const response = await client.messages.create({
-    model: process.env.ANTHROPIC_MODEL || "claude-3-7-sonnet-20250219",
+    model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6",
     max_tokens: 1200,
     system: buildSystemPrompt(data),
     messages: [
@@ -406,7 +406,7 @@ async function requestAnthropicRevision({ post, feedback, data, recentContent })
   const { Anthropic } = await import("@anthropic-ai/sdk");
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const response = await client.messages.create({
-    model: process.env.ANTHROPIC_MODEL || "claude-3-7-sonnet-20250219",
+    model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6",
     max_tokens: 1200,
     system: buildSystemPrompt(data),
     messages: [
