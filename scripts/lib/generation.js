@@ -90,7 +90,8 @@ function extractJson(text) {
     return text.slice(first, last + 1);
   }
 
-  throw new Error("Model response did not contain valid JSON.");
+  const preview = (text || "").slice(0, 500).replace(/\s+/g, " ").trim();
+  throw new Error(`Model response did not contain valid JSON. Response preview: ${preview || "(empty)"}`);
 }
 
 function getProofSummary(brief, data) {
@@ -386,6 +387,10 @@ async function requestAnthropicDraft({ brief, data, recentContent }) {
           data,
           recentContent
         })
+      },
+      {
+        role: "assistant",
+        content: "{"
       }
     ]
   });
@@ -395,7 +400,7 @@ async function requestAnthropicDraft({ brief, data, recentContent }) {
     .map((item) => item.text)
     .join("\n");
 
-  return JSON.parse(extractJson(text));
+  return JSON.parse(extractJson("{" + text));
 }
 
 async function requestAnthropicRevision({ post, feedback, data, recentContent }) {
@@ -418,6 +423,10 @@ async function requestAnthropicRevision({ post, feedback, data, recentContent })
           data,
           recentContent
         })
+      },
+      {
+        role: "assistant",
+        content: "{"
       }
     ]
   });
@@ -427,7 +436,7 @@ async function requestAnthropicRevision({ post, feedback, data, recentContent })
     .map((item) => item.text)
     .join("\n");
 
-  return JSON.parse(extractJson(text));
+  return JSON.parse(extractJson("{" + text));
 }
 
 function sanitizeDraft(draft, brief) {
