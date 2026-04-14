@@ -280,7 +280,8 @@ export async function composeImage({ imageBuffer, prompt }) {
  * Returns { composedBuffer, prompt, analysis }.
  */
 export async function runCompositionPipeline({ imageBuffer, variantId, userPromptOverride = null }) {
-  const analysis = await analyzePhoto(imageBuffer);
+  // Skip analyzePhoto if we already have a prompt — saves 3-5s of GPT-4o latency
+  const analysis = userPromptOverride ? null : await analyzePhoto(imageBuffer);
   const prompt = userPromptOverride || buildCompositionPrompt({ variantId, analysis });
   const composedBuffer = await composeImage({ imageBuffer, prompt });
   return { composedBuffer, prompt, analysis };

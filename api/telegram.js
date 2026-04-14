@@ -1558,6 +1558,7 @@ async function handleCallback(update, context) {
         { reply_markup: keyboard }
       );
     } catch (err) {
+      console.error("[cpv] analyse failed:", err);
       await sendMessage(chatId, `Could not analyse photo: ${err.message}`);
     }
     return;
@@ -1641,6 +1642,7 @@ async function handleCallback(update, context) {
         { reply_markup: keyboard }
       );
     } catch (err) {
+      console.error("[cpx:gen] composition failed:", err);
       await sendMessage(chatId, `Composition failed: ${err.message}`);
     }
     return;
