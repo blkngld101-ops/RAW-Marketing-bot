@@ -34,6 +34,7 @@ export const DATA_PATHS = {
   sourceDocuments: path.join(ROOT_DIR, "pending", "source-documents.json"),
   supplementalBank: path.join(ROOT_DIR, "pending", "supplemental-bank.json"),
   experiments: path.join(ROOT_DIR, "pending", "ab-experiments.json"),
+  photoBank: path.join(ROOT_DIR, "pending", "photo-bank.json"),
   quoteBank: path.join(ROOT_DIR, "quote-bank.json"),
   approvedPosts: path.join(ROOT_DIR, "approved-posts"),
   templates: path.join(ROOT_DIR, "templates")
