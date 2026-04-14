@@ -92,7 +92,7 @@ async function resolvePostPhoto(post, sharedAssets) {
   }
 
   // Explicit photo from post data (external URL) — template loads it directly
-  const explicitUrl = post.media?.image_url || post.photo_url || "";
+  const explicitUrl = post.media?.image_url || post.photo_url || post.attribution_photo_url || "";
   if (explicitUrl) return { photoUrl: explicitUrl, photoBgSrc: "" };
 
   // Pick a random local class photo and encode it as base64
