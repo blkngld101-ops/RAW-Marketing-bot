@@ -79,7 +79,7 @@
         "#TorontoActors",
         "#AuditionPrep"
       ],
-      "status": "pending",
+      "status": "needs_revision",
       "cta_type": "soft",
       "cta_url": null,
       "audience_stage": "cold",
@@ -92,7 +92,13 @@
         "On-Camera Audition is positioned as practical training in script analysis, preparation, connection, focus, and truth for real audition pressure."
       ],
       "angle_id": "cold-read-first-pass",
-      "review_notes": [],
+      "review_notes": [
+        {
+          "source": "telegram",
+          "note": "visual feels templated",
+          "recorded_at": "2026-04-14T18:38:16.354Z"
+        }
+      ],
       "acting_concept": "cold reads",
       "offer_id": null,
       "layout_variant": "photo-led",
