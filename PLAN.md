@@ -245,3 +245,287 @@ Secrets needed:
 8. Create Telegram bot (@BotFather), write api/telegram.js webhook
 9. Create GitHub Actions workflow
 10. End-to-end test: trigger → generate → render → Telegram → approve → Buffer
+
+---
+
+## Phase 2 Expansion: Live Class Photos + Deadline Commentary
+
+### Summary
+
+Add two supplemental intake lanes without changing the main architecture:
+
+1. Telegram class photo intake during live classes
+2. Deadline article intake that creates actor-specific, thought-provoking commentary posts
+
+These should sit on top of the existing system, not replace it. The scheduled RAW pipeline remains the baseline engine. These new lanes create better inventory, more real proof, and more visual variance.
+
+### Goals
+
+- Let Grisha send class photos to Telegram as classes happen
+- Store those photos in a structured asset bank, not a random folder dump
+- Link photos to sessions, source documents, and future posts
+- Let Grisha send a Deadline URL and create a sharp actor-facing commentary post
+- Keep commentary specific, useful, and provocative without turning into entertainment-news recap
+- Improve design variance by giving the renderer real, tagged RAW imagery to use
+
+---
+
+## Live Class Photo Intake Plan
+
+### Why This Matters
+
+Right now the templates support photo-led layouts, but the usable photo pool is effectively empty. That forces the system toward text-led posts. Live class photo intake fixes that by feeding the design system real studio proof.
+
+### User Flow
+
+1. Grisha starts a class intake with `/class` or `/session start`
+2. Grisha sends:
+   - transcript text
+   - voice notes
+   - class photos
+3. Telegram saves each photo and links it to the active class intake
+4. The system stores photo metadata in a photo bank
+5. Future posts can use those photos intentionally based on tags and context
+
+### Telegram Commands / Behaviors
+
+- `/session start`
+  Starts a live class capture session
+- `/class`
+  Keeps existing transcript/audio flow
+- `/classphoto`
+  Optional explicit photo intake command if Grisha wants to send images outside a session
+- `/session end`
+  Closes the live capture session and summarizes what was saved
+- `/asset-status`
+  Shows recent stored photos and their review state
+
+Recommended v1 behavior:
+
+- If a class session is active, any incoming Telegram photo should be treated as class-photo intake automatically
+- If no session is active, the bot should ask whether the photo is:
+  - class room
+  - event / open house
+  - student spotlight
+  - other
+
+### Storage
+
+Files:
+
+- `photos/class-live/YYYY-MM-DD/`
+- `photos/events/`
+- `photos/headshots/`
+
+Metadata:
+
+- `pending/photo-bank.json`
+
+### Photo Record Schema
+
+```json
+{
+  "id": "photo-2026-04-05-001",
+  "file_path": "photos/class-live/2026-04-05/photo-001.jpg",
+  "telegram_file_id": "abc123",
+  "submitted_at": "2026-04-05T20:13:00.000Z",
+  "submitted_by": "grisha",
+  "session_id": "master-2026-05",
+  "source_document_id": "src-2026-04-05-class-a",
+  "asset_type": "class_photo",
+  "tags": ["class-wide", "teacher", "pair-work"],
+  "consent_status": "internal_only",
+  "quality_status": "usable",
+  "notes": "Good room-wide image during notes section"
+}
+```
+
+### Processing Rules
+
+- Save original Telegram image locally
+- Generate a stable file name and date-based folder
+- Write a metadata record to `photo-bank.json`
+- Link the photo to:
+  - the active session if available
+  - the active source document if a transcript/audio intake is in progress
+- Optionally store a lightweight thumbnail later if performance becomes an issue
+
+### Quality / Consent Rules
+
+- Default new photos to `consent_status: internal_only` until reviewed
+- Allow only `usable` photos to be picked automatically by the renderer
+- Reject or downgrade:
+  - blurry images
+  - duplicate angles
+  - images with awkward closed-eye / mid-speech framing
+  - photos not cleared for marketing use
+
+### Rendering Integration
+
+Do not keep random photo selection as the long-term behavior.
+
+Replace it with tagged asset selection:
+
+- `craft-tip`
+  prefers `teacher`, `whiteboard`, `pair-work`, `script-in-hand`
+- `behind-the-scenes`
+  prefers `class-wide`, `room-energy`, `monitor`, `coaching-moment`
+- `spotlight`
+  prefers `headshot`, `portrait`, `student`
+- `enrollment`
+  prefers `event`, `full-room`, `proof-of-community`
+- `philosophy`
+  should stay mostly text-led unless a strong portrait or room image supports it
+
+### Scheduling / Feed Rules
+
+- No more than 2 text-led posts in a row if usable photos exist
+- Do not reuse the same photo within a 21-day window unless manually approved
+- Prefer fresh class photos for Saturday proof / conversion posts
+- Allow transcript-derived posts to request a linked class photo first before searching the wider photo bank
+
+### Test Plan
+
+- Start session -> send 3 photos -> verify files are stored and metadata is written
+- Send transcript + photos in one session -> verify photo records link to the same source document
+- Generate a photo-led post -> verify renderer uses tagged photo, not random photo
+- Mark one image unusable -> verify it is excluded from automatic selection
+
+---
+
+## Deadline Commentary Intake Plan
+
+### Why This Matters
+
+Deadline content can help RAW look plugged into industry reality, but only if the post is transformed into actor-specific commentary. RAW should not sound like an entertainment-news account. The point is not "here is the news." The point is "here is what this shift means for actors and how to think about it."
+
+### User Flow
+
+1. Grisha sends `/deadline <url>`
+2. The system fetches the article
+3. It checks freshness, readability, and actor relevance
+4. It generates 3-5 commentary angles
+5. It promotes the strongest one or two into draft posts
+6. Grisha reviews in Telegram like any other post
+
+### Telegram Commands / Behaviors
+
+- `/deadline <url>`
+  Explicitly creates commentary-mode processing for Deadline links
+- `/article <url>`
+  Stays available for general industry article intake
+
+Recommended rule:
+
+- Deadline links should default to `thought-provoking commentary` mode
+- Generic article links should keep the current educational / trend mode unless explicitly promoted into commentary
+
+### Commentary Rules
+
+Each Deadline-derived post must answer:
+
+1. What changed?
+2. Why should actors care?
+3. What pressure, opportunity, or misconception does this reveal?
+4. What should an actor do differently because of this?
+
+The post should feel like an informed RAW take, not a recap.
+
+### Commentary Angle Types
+
+- `industry-implication`
+- `career-pressure-point`
+- `craft-meets-market`
+- `myth-exposed`
+- `actor-decision-frame`
+
+### Draft Rules
+
+- Lead with tension, not summary
+- Avoid celebrity-gossip framing
+- Avoid close paraphrase of the article
+- Always translate the article into actor consequences
+- Prefer one strong claim over five weak observations
+- End with one of:
+  - a reflective question
+  - a practical actor takeaway
+  - a soft CTA to audit / train / rethink process
+
+### Deadline Commentary Record Additions
+
+Add to article-derived source documents:
+
+- `publication`
+- `commentary_mode`
+- `actor_relevance_score`
+- `provocation_question`
+- `market_signal`
+
+Add to supplemental angle items:
+
+- `discussion_frame`
+- `actor_takeaway`
+- `thought_tension`
+
+### Example Commentary Shapes
+
+- "This casting shift does not just change who gets seen. It changes how prepared actors need to be before they are seen."
+- "If the industry is rewarding faster turnaround, actors who still rely on inspiration are going to feel the gap."
+- "The article is not really about one show or one deal. It is about what the market is quietly demanding from actors now."
+
+### Design Direction
+
+Deadline commentary should not look like the normal quote cards.
+
+Preferred treatments:
+
+- editorial headline frame
+- article-fragment + RAW response frame
+- dark newsroom-style layout with one strong tension line
+- optional class photo background only if it supports the actor implication visually
+
+Avoid:
+
+- screenshotting the article as the post
+- generic "industry news" banners
+- loud tabloid treatment
+
+### Scheduling Rules
+
+- Keep commentary supplemental, not mandatory
+- No more than 1 commentary post per 7 days unless manually approved
+- Freshness window should be tighter than normal article posts
+- Strong Deadline commentary can replace a Thursday philosophy slot if the angle is brand-aligned
+
+### Rejection Rules
+
+Reject a Deadline article if:
+
+- it is mostly gossip with no actor implication
+- it is too old to create timely commentary
+- it does not create a real decision, lesson, or pressure point for actors
+- the generated take sounds generic or preachy
+
+### Test Plan
+
+- Submit strong Deadline article -> generate 3-5 commentary angles -> promote top 1-2 drafts
+- Submit weak Deadline article -> source saved as rejected with a clear reason
+- Submit older Deadline article -> freshness rejection recorded in source docs
+- Review draft -> confirm it asks a real actor-facing question rather than summarizing the article
+
+---
+
+## Implementation Order For This Expansion
+
+1. Add `photo-bank.json` and local class-photo folders
+2. Extend Telegram intake to accept and store `message.photo`
+3. Link stored photos to active sessions and source documents
+4. Update renderer to use tagged assets instead of random image selection
+5. Add `/deadline <url>` command and commentary-mode processing
+6. Extend source document + supplemental angle schemas for commentary metadata
+7. Add prompt rules for thought-provoking actor-facing commentary
+8. Add queue diversity rules so fresh class photos are actually used
+9. Test full live flow:
+   - class transcript + class photos
+   - Deadline link -> commentary draft
+   - Telegram review -> render -> approval

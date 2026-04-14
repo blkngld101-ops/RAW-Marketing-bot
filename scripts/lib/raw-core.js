@@ -34,6 +34,7 @@ export const DATA_PATHS = {
   sourceDocuments: path.join(ROOT_DIR, "pending", "source-documents.json"),
   supplementalBank: path.join(ROOT_DIR, "pending", "supplemental-bank.json"),
   experiments: path.join(ROOT_DIR, "pending", "ab-experiments.json"),
+  quoteBank: path.join(ROOT_DIR, "quote-bank.json"),
   approvedPosts: path.join(ROOT_DIR, "approved-posts"),
   templates: path.join(ROOT_DIR, "templates")
 };
@@ -382,7 +383,8 @@ export async function loadProjectData() {
     queue,
     reviewMemory,
     sourceDocuments,
-    supplementalBank
+    supplementalBank,
+    quoteBank
   ] = await Promise.all([
     readTextFile(DATA_PATHS.brandCore),
     readTextFile(DATA_PATHS.contentStrategy),
@@ -404,7 +406,8 @@ export async function loadProjectData() {
     readJsonFile(DATA_PATHS.supplementalBank, {
       updated_at: null,
       items: []
-    })
+    }),
+    readJsonFile(DATA_PATHS.quoteBank, [])
   ]);
 
   return {
@@ -418,6 +421,7 @@ export async function loadProjectData() {
     reviewMemory,
     sourceDocuments,
     supplementalBank,
+    quoteBank,
     offersById: mapOffersById(offers),
     proofById: flattenProofBank(proofBank)
   };
