@@ -20,6 +20,22 @@ const DEFAULT_TRANSCRIPT_PROMOTE = Number(
 const DEFAULT_ARTICLE_PROMOTE = Number(process.env.RAW_ARTICLE_PROMOTE_COUNT || 2);
 const DEFAULT_ARTICLE_MAX_AGE_DAYS = Number(process.env.RAW_ARTICLE_MAX_AGE_DAYS || 10);
 
+const DEADLINE_COMMENTARY_MAX_AGE_DAYS = 7;
+
+function isDeadlineUrl(url) {
+  return /deadline\.com/i.test(String(url || ""));
+}
+
+function hasRecentCommentaryPost(sourceDocuments) {
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  return (sourceDocuments.documents || []).some(
+    (doc) =>
+      doc.commentary_mode === true &&
+      doc.processing_status !== "rejected" &&
+      new Date(doc.submitted_at || 0).getTime() > sevenDaysAgo
+  );
+}
+
 const TEMPLATE_BY_PILLAR = {
   craft: "craft-tip",
   philosophy: "philosophy",
@@ -427,6 +443,78 @@ ${data.contentStrategy}
 `;
 }
 
+function buildDeadlineSystemPrompt(data) {
+  return `
+You are RAW Actor Studio's industry commentary engine.
+
+You do NOT recap entertainment news. You translate industry signals into actor-facing insight.
+
+Every angle you produce must answer:
+1. What changed or is happening in the industry?
+2. Why should actors care — what pressure, opportunity, or misconception does this reveal?
+3. What should an actor do differently, think about, or watch out for?
+
+Rules:
+- Lead with tension, not summary
+- Reject gossip with no real actor implication
+- Prefer one strong claim over five weak observations
+- Do not closely paraphrase the article
+- Every angle must feel like informed RAW commentary, not entertainment reporting
+
+BRAND CORE
+${data.brandCore}
+
+CONTENT STRATEGY
+${data.contentStrategy}
+`;
+}
+
+function buildDeadlinePrompt(sourceDocument, targetCount) {
+  return `
+Analyze this Deadline article for RAW Actor Studio. Return JSON only.
+
+Target angle count: ${targetCount}
+If the article has no real actor implication, return relevant=false and no angles.
+
+Article title: ${sourceDocument.title}
+URL: ${sourceDocument.source_url}
+Published at: ${sourceDocument.published_at || "unknown"}
+Body:
+${clipText(sourceDocument.raw_text, 18000)}
+
+Return:
+{
+  "relevant": true,
+  "rejection_reason": "",
+  "extracted_summary": "brief actor-facing summary",
+  "market_signal": "one sentence on what this reveals about the industry right now",
+  "tags": ["tag"],
+  "angles": [
+    {
+      "hook": "tension-first hook, max 12 words",
+      "pillar": "craft|philosophy|conversion",
+      "angle_type": "industry-implication|career-pressure-point|craft-meets-market|myth-exposed|actor-decision-frame",
+      "actor_relevance": "specific consequence for working actors",
+      "thought_tension": "the uncomfortable truth this angle surfaces",
+      "actor_takeaway": "one concrete thing an actor should do or think differently",
+      "discussion_frame": "how RAW would frame this in a class context",
+      "proof_notes": ["proof note"],
+      "suggested_template_family": "craft-tip|philosophy|behind-the-scenes",
+      "score": 0,
+      "acting_concept": "short concept",
+      "problem": "specific actor problem",
+      "tool": "specific action or lens",
+      "cta_type": "soft|audit|proof",
+      "audience_stage": "cold|warm|hot",
+      "keywords": ["keyword"],
+      "source_excerpt": "paraphrased signal from article",
+      "freshness_window": "7d"
+    }
+  ]
+}
+`;
+}
+
 function buildArticlePrompt(sourceDocument, targetCount) {
   return `
 Analyze this article for RAW Actor Studio and return JSON only.
@@ -493,7 +581,7 @@ async function analyzeTranscript(sourceDocument, data, targetCount, mock) {
   };
 }
 
-async function analyzeArticle(sourceDocument, data, targetCount, mock) {
+async function analyzeArticle(sourceDocument, data, targetCount, mock, commentary = false) {
   if (mock || !process.env.ANTHROPIC_API_KEY) {
     return {
       relevant: true,
@@ -505,8 +593,8 @@ async function analyzeArticle(sourceDocument, data, targetCount, mock) {
   }
 
   const result = await callAnthropicJson({
-    system: buildArticleSystemPrompt(data),
-    prompt: buildArticlePrompt(sourceDocument, targetCount),
+    system: commentary ? buildDeadlineSystemPrompt(data) : buildArticleSystemPrompt(data),
+    prompt: commentary ? buildDeadlinePrompt(sourceDocument, targetCount) : buildArticlePrompt(sourceDocument, targetCount),
     maxTokens: 2600
   });
 
@@ -781,6 +869,13 @@ export async function processArticleSource({
   queue,
   mock = false
 }) {
+  const commentary = isDeadlineUrl(sourceUrl);
+
+  // Cap check: one commentary post per 7 days.
+  if (commentary && hasRecentCommentaryPost(sourceDocuments)) {
+    throw new Error("Commentary cap: one Deadline post per 7 days. Try again next week.");
+  }
+
   // Create a stub document before the fetch so every submission lands in the
   // audit trail, even if the article is unreachable, paywalled, or too old.
   let sourceDocument = buildSourceDocument({
@@ -820,12 +915,13 @@ export async function processArticleSource({
   }
 
   const ageDays = ageInDays(article.publishedAt);
-  if (ageDays !== null && ageDays > DEFAULT_ARTICLE_MAX_AGE_DAYS) {
+  const maxAgeDays = commentary ? DEADLINE_COMMENTARY_MAX_AGE_DAYS : DEFAULT_ARTICLE_MAX_AGE_DAYS;
+  if (ageDays !== null && ageDays > maxAgeDays) {
     sourceDocument = {
       ...sourceDocument,
       title: article.title || sourceUrl,
       processing_status: "rejected",
-      processing_notes: [`Article is too old for trend content (${ageDays} days).`]
+      processing_notes: [`Article is too old (${ageDays} days, max ${maxAgeDays}).`]
     };
     nextSourceDocuments = updateSourceDocument(nextSourceDocuments, sourceDocument);
     return {
@@ -843,7 +939,8 @@ export async function processArticleSource({
     ...sourceDocument,
     title: article.title,
     raw_text: article.text,
-    published_at: article.publishedAt || null
+    published_at: article.publishedAt || null,
+    ...(commentary ? { commentary_mode: true, publication: "Deadline" } : {})
   };
 
   nextSourceDocuments = updateSourceDocument(nextSourceDocuments, sourceDocument);
@@ -851,7 +948,8 @@ export async function processArticleSource({
     sourceDocument,
     data,
     DEFAULT_ARTICLE_TARGET,
-    mock
+    mock,
+    commentary
   );
 
   if (!analysis.relevant || !(analysis.angles || []).length) {
