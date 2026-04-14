@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-05T03:48:38.767Z",
+  "updated_at": "2026-04-14T18:38:08.791Z",
   "outcomes": [
     {
       "date": "2026-04-04",
@@ -48,6 +48,18 @@
       "outcome": "rejected",
       "reason": "visual feels templated",
       "recorded_at": "2026-04-05T03:48:38.767Z"
+    },
+    {
+      "date": "2026-04-14",
+      "post_date": "2026-04-07",
+      "angle_id": "cold-read-first-pass",
+      "type": "craft-tip",
+      "pillar": "craft",
+      "content_origin": "system",
+      "panel_score": null,
+      "outcome": "rejected",
+      "reason": "visual feels templated",
+      "recorded_at": "2026-04-14T18:38:08.791Z"
     }
   ]
 }
