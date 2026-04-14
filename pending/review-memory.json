@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-14T18:38:07.567Z",
+  "updated_at": "2026-04-14T18:38:46.730Z",
   "approved_exemplars": [],
   "rejected_patterns": [
     {
@@ -15,6 +15,13 @@
       "reason": "visual feels templated",
       "headline": "Make The First Pass Count",
       "recorded_at": "2026-04-14T18:38:07.567Z"
+    },
+    {
+      "date": "2026-04-07",
+      "angle_id": "cold-read-first-pass",
+      "reason": "visual feels templated",
+      "headline": "Make The First Pass Count",
+      "recorded_at": "2026-04-14T18:38:46.730Z"
     }
   ],
   "review_log": [
@@ -31,6 +38,13 @@
       "angle_id": "cold-read-first-pass",
       "reason": "visual feels templated",
       "recorded_at": "2026-04-14T18:38:07.567Z"
+    },
+    {
+      "type": "revision_request",
+      "date": "2026-04-07",
+      "angle_id": "cold-read-first-pass",
+      "reason": "visual feels templated",
+      "recorded_at": "2026-04-14T18:38:46.730Z"
     }
   ],
   "awaiting_input": {
