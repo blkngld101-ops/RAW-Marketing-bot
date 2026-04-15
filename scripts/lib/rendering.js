@@ -61,7 +61,7 @@ function injectPayload(html, post, assets = {}) {
 }
 
 async function loadAssets() {
-  const assets = { logoSrc: "", photoPaths: [] };
+  const assets = { logoSrc: "", photoPaths: [], bankPhotoUrls: [] };
 
   // Logo
   try {
@@ -71,7 +71,7 @@ async function loadAssets() {
     assets.logoSrc = "";
   }
 
-  // Scan photos/ directory for class photos
+  // Scan photos/ directory for local class photos
   try {
     const photosDir = path.join(ROOT_DIR, "photos");
     const entries = await fs.readdir(photosDir);
@@ -80,6 +80,20 @@ async function loadAssets() {
       .map((f) => path.join(photosDir, f));
   } catch {
     assets.photoPaths = [];
+  }
+
+  // Load banked class photos from photo-bank.json as GitHub raw URLs
+  try {
+    const bankPath = path.join(ROOT_DIR, "pending", "photo-bank.json");
+    const bankData = JSON.parse(await fs.readFile(bankPath, "utf8"));
+    const repo = process.env.GITHUB_REPO;
+    if (repo) {
+      assets.bankPhotoUrls = (bankData.photos || [])
+        .filter((p) => p.quality_status === "usable")
+        .map((p) => `https://raw.githubusercontent.com/${repo}/main/${p.file_path}`);
+    }
+  } catch {
+    assets.bankPhotoUrls = [];
   }
 
   return assets;
@@ -91,9 +105,15 @@ async function resolvePostPhoto(post, sharedAssets) {
     return { photoUrl: "", photoBgSrc: "" };
   }
 
-  // Explicit photo from post data (external URL) — template loads it directly
+  // Explicit photo from post data (external URL or attribution portrait)
   const explicitUrl = post.media?.image_url || post.photo_url || post.attribution_photo_url || "";
   if (explicitUrl) return { photoUrl: explicitUrl, photoBgSrc: "" };
+
+  // Prefer a banked class photo (GitHub raw URL) over random local file
+  if (sharedAssets.bankPhotoUrls?.length) {
+    const idx = Math.floor(Math.random() * sharedAssets.bankPhotoUrls.length);
+    return { photoUrl: sharedAssets.bankPhotoUrls[idx], photoBgSrc: "" };
+  }
 
   // Pick a random local class photo and encode it as base64
   if (sharedAssets.photoPaths?.length) {
