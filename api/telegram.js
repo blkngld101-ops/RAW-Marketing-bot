@@ -24,7 +24,9 @@ import {
   saveSourceDocuments,
   saveSupplementalBank,
   getExperiments,
-  saveExperiments
+  saveExperiments,
+  getPhotoBank,
+  savePhotoBank
 } from "../scripts/queue.js";
 import { processPodcastEpisode, fetchRssFeed, formatEpisodeList } from "../scripts/lib/podcast.js";
 import { recordOutcome, buildScorecard } from "../scripts/lib/growth.js";
@@ -644,6 +646,17 @@ async function persistContext(context, fields = ["queue", "reviewMemory", "sourc
     );
   }
 
+  if (fields.includes("photoBank")) {
+    tasks.push(
+      savePhotoBank(
+        process.env.GITHUB_TOKEN,
+        process.env.GITHUB_REPO,
+        context.photoBank,
+        context.photoBankSha
+      )
+    );
+  }
+
   await Promise.all(tasks);
 }
 
@@ -739,7 +752,8 @@ async function handleTextMessage(update, context) {
       "",
       "CONTENT SOURCES",
       "/class — ingest a class transcript or audio",
-      "/article <url> — ingest an article",
+      "/article <url> — ingest an article (deadline.com → commentary mode)",
+      "/session start|end — live class photo intake session",
       "/podcast <rss_url> [index] — ingest a podcast episode",
       "/source-status — source pipeline status",
       "",
@@ -786,6 +800,50 @@ async function handleTextMessage(update, context) {
   if (lower.startsWith("/regenerate")) {
     await triggerWorkflow();
     await sendMessage(chatId, "GitHub Actions regenerate workflow triggered.");
+    return;
+  }
+
+  if (lower.startsWith("/session") && !lower.startsWith("/sessions")) {
+    const sub = lower.replace("/session", "").trim();
+
+    if (sub === "start") {
+      if (context.reviewMemory.active_session) {
+        await sendMessage(chatId, `Session already active (started ${context.reviewMemory.active_session.started_at}). Send /session end first.`);
+        return;
+      }
+      context.reviewMemory.active_session = {
+        session_id: `session-${Date.now()}`,
+        started_at: new Date().toISOString()
+      };
+      context.reviewMemory.updated_at = new Date().toISOString();
+      await persistContext(context, ["reviewMemory"]);
+      await sendMessage(chatId, "Class session started. Any photo you send will be saved to the class bank automatically. Send /session end when done.");
+      return;
+    }
+
+    if (sub === "end") {
+      if (!context.reviewMemory.active_session) {
+        await sendMessage(chatId, "No active session. Send /session start to begin.");
+        return;
+      }
+      const sessionId = context.reviewMemory.active_session.session_id;
+      const count = (context.photoBank?.photos || []).filter((p) => p.session_id === sessionId).length;
+      delete context.reviewMemory.active_session;
+      context.reviewMemory.updated_at = new Date().toISOString();
+      await persistContext(context, ["reviewMemory"]);
+      await sendMessage(chatId, `Session ended. ${count} photo${count === 1 ? "" : "s"} saved to class bank.`);
+      return;
+    }
+
+    // /session with no subcommand — status
+    if (context.reviewMemory.active_session) {
+      const { session_id, started_at } = context.reviewMemory.active_session;
+      const count = (context.photoBank?.photos || []).filter((p) => p.session_id === session_id).length;
+      await sendMessage(chatId, `Session active since ${started_at}.\n${count} photo${count === 1 ? "" : "s"} banked so far.\nSend /session end to close.`);
+    } else {
+      const total = (context.photoBank?.photos || []).filter((p) => p.quality_status === "usable").length;
+      await sendMessage(chatId, `No active session. ${total} usable photo${total === 1 ? "" : "s"} in bank.\nSend /session start to begin.`);
+    }
     return;
   }
 
@@ -1150,6 +1208,40 @@ async function handlePhotoMessage(update, context) {
   const message = update.message;
   const chatId = message.chat.id;
   const awaiting = context.reviewMemory.awaiting_input;
+
+  // ── SESSION CASE: active class session — auto-bank photo ──
+  if (context.reviewMemory.active_session && !awaiting) {
+    try {
+      const buffer = await downloadTelegramFile(message.photo[message.photo.length - 1].file_id);
+      const ts = Date.now();
+      const dateStr = new Date().toISOString().slice(0, 10);
+      const photoPath = `photos/class-live/${dateStr}/photo-${ts}.jpg`;
+      await uploadBinaryToGitHub(process.env.GITHUB_TOKEN, process.env.GITHUB_REPO, photoPath, buffer);
+
+      const record = {
+        id: `photo-${dateStr}-${ts}`,
+        file_path: photoPath,
+        session_id: context.reviewMemory.active_session.session_id,
+        submitted_at: new Date().toISOString(),
+        asset_type: "class_photo",
+        consent_status: "internal_only",
+        quality_status: "usable"
+      };
+
+      context.photoBank = context.photoBank || { updated_at: null, photos: [] };
+      context.photoBank.photos = [...(context.photoBank.photos || []), record];
+      context.photoBank.updated_at = new Date().toISOString();
+      await persistContext(context, ["photoBank"]);
+
+      const sessionCount = context.photoBank.photos.filter(
+        (p) => p.session_id === context.reviewMemory.active_session.session_id
+      ).length;
+      await sendMessage(chatId, `Saved to class bank ✓ (${sessionCount} this session)`);
+    } catch (err) {
+      await sendMessage(chatId, `Failed to bank photo: ${err.message}`);
+    }
+    return;
+  }
 
   // ── CASE 1: awaiting a composed image re-roll (user sent a photo mid-flow) ──
   // This shouldn't normally happen but handle gracefully by treating as new upload.
@@ -1810,13 +1902,14 @@ export default async function handler(req, res) {
       return json(res, 200, { ok: true, ignored: "unauthorized_chat" });
     }
 
-    const [queueState, reviewMemoryState, sourceDocumentState, supplementalState, experimentsState, data] =
+    const [queueState, reviewMemoryState, sourceDocumentState, supplementalState, experimentsState, photoBankState, data] =
       await Promise.all([
         getQueue(process.env.GITHUB_TOKEN, process.env.GITHUB_REPO),
         getReviewMemory(process.env.GITHUB_TOKEN, process.env.GITHUB_REPO),
         getSourceDocuments(process.env.GITHUB_TOKEN, process.env.GITHUB_REPO),
         getSupplementalBank(process.env.GITHUB_TOKEN, process.env.GITHUB_REPO),
         getExperiments(process.env.GITHUB_TOKEN, process.env.GITHUB_REPO),
+        getPhotoBank(process.env.GITHUB_TOKEN, process.env.GITHUB_REPO),
         loadProjectData()
       ]);
 
@@ -1831,7 +1924,9 @@ export default async function handler(req, res) {
       supplementalBank: supplementalState.supplementalBank,
       supplementalBankSha: supplementalState.sha,
       experiments: experimentsState.experiments,
-      experimentsSha: experimentsState.sha
+      experimentsSha: experimentsState.sha,
+      photoBank: photoBankState.photoBank,
+      photoBankSha: photoBankState.sha
     };
 
     if (update.message?.text) {
