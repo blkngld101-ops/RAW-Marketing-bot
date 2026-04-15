@@ -9,6 +9,9 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
+
+const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 const require = createRequire(import.meta.url);
 
@@ -18,6 +21,19 @@ async function getOpenAI() {
   }
   const { default: OpenAI } = await import("openai");
   return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+}
+
+async function pickBrandRefPhoto() {
+  const brandRefDir = path.join(ROOT_DIR, "photos", "brand-ref");
+  try {
+    const files = await fs.readdir(brandRefDir);
+    const images = files.filter((f) => /\.(jpg|jpeg|png)$/i.test(f));
+    if (!images.length) return null;
+    const chosen = images[Math.floor(Math.random() * images.length)];
+    return await fs.readFile(path.join(brandRefDir, chosen));
+  } catch {
+    return null;
+  }
 }
 
 // ─── STYLE DESCRIPTORS ────────────────────────────────────────────────────────
@@ -245,26 +261,33 @@ export function buildCompositionPrompt({ variantId, analysis, userNotes = "" }) 
 export async function composeImage({ imageBuffer, prompt }) {
   const openai = await getOpenAI();
 
-  // gpt-image-1 edit requires a File-like object
   const { toFile } = await import("openai");
   const imageFile = await toFile(imageBuffer, "photo.jpg", { type: "image/jpeg" });
 
+  // Optionally attach a brand-ref photo as style anchor
+  const styleRefBuffer = await pickBrandRefPhoto();
+  let imageArg = imageFile;
+  let promptWithRef = prompt;
+  if (styleRefBuffer) {
+    const styleRefFile = await toFile(styleRefBuffer, "style-ref.jpg", { type: "image/jpeg" });
+    imageArg = [imageFile, styleRefFile];
+    promptWithRef = `${prompt}\n\nThe second image is a RAW Actor Studio brand reference — use it to calibrate the visual tone and aesthetic only. Do not copy its composition or subject matter.`;
+  }
+
   const response = await openai.images.edit({
     model: "gpt-image-1",
-    image: imageFile,
-    prompt,
+    image: imageArg,
+    prompt: promptWithRef,
     n: 1,
     size: "1024x1024"
   });
 
   const imageData = response.data[0];
 
-  // gpt-image-1 returns base64 by default
   if (imageData.b64_json) {
     return Buffer.from(imageData.b64_json, "base64");
   }
 
-  // Fallback: URL
   if (imageData.url) {
     const res = await fetch(imageData.url);
     return Buffer.from(await res.arrayBuffer());
